@@ -24,14 +24,6 @@ The Bookstore Management App is a Java-based application designed to help bookst
     📚 View All Books: Retrieve a complete list of available books.
     🗑️ Delete Books (optional): Remove outdated or incorrect entries.
 
--------------
-## 🚧 Possible Improvements
-
-    🛠️ Add Pagination: Handle large datasets more efficiently.
-    🔒 Add Authentication: Protect APIs using Spring Security.
-    🎨 Add User Interface: Implement a frontend using JavaFX, React, or Angular.
-    ☁️ Cloud Deployment: Deploy the application on AWS, Heroku, or Azure.
-
 ---------
 ## 🏗️ Project Structure
 
@@ -48,6 +40,13 @@ The Bookstore Management App is a Java-based application designed to help bookst
     ┣ 📜 pom.xml   // Maven Dependencies
     ┣ 📜 README.md // Documentation (this file)
 
+-------------
+## 🚧 Possible Improvements
+
+    🛠️ Add Pagination: Handle large datasets more efficiently.
+    🔒 Add Authentication: Protect APIs using Spring Security.
+    🎨 Add User Interface: Implement a frontend using JavaFX, React, or Angular.
+    ☁️ Cloud Deployment: Deploy the application on AWS, Heroku, or Azure.
 
 ----------------
 ## 👥 Contributing

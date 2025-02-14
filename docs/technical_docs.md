@@ -13,12 +13,12 @@
 
 ### Data Structures:
 - Main DB(name, book): Binary Search Tree
-- Indexes: Binary Search Tree
+- Indexes: Hash Map 
 
 ### Indexes:
-- Name
-- Author
-- Tag
+- Name 
+- Author 
+- Tag 
 - Price
 - Date 
 <br>
