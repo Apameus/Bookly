@@ -1,7 +1,7 @@
-### High Level Architecture
+# High Level Architecture
 ```mermaid
 flowchart LR
-    UI --> BS[BookService] --> BR[BookRepo] --> Files
+    UI --> BS[BookService] --> BR[BookRepo] --> I[Indexes] --> DB[BookDB] 
 ```
 
 [//]: # (- Server)
@@ -21,10 +21,12 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
-    U ->> BS: addBook(name, author, tags, price date)
+    participant I as Indexes
+    participant DB as BookDataBase
+    U ->> BS: addBook(name, author, tags, price, date)
     BS ->> BR: addBook( >> )
-    BR ->> F: .
+    BR ->> DB: insert( book )
+    DB ->> I: updateIndexes( book, offset )
 ```
 
 ## Search book by name:
@@ -33,11 +35,11 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
-    U ->> BS: getBook(name)
-    BS ->> BR: getBook(name)
-    BR ->> F: getBook(name)
-    F  -->> BS: List<Book>  books
+    participant DB as BookDataBase
+    U ->> BS: getBooksBy(name)
+    BS ->> BR: getBooksBy(name)
+    BR ->> DB: getBooksBy(name)
+    DB -->> BS: List<Book>  books
     alt books == null
         BS -->> U: Book doesn't exist
     end
@@ -50,18 +52,17 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
-    U ->> BS: getBook(author)
-    BS ->> BR: getBook(author)
-    BR ->> F: getBook(author)
-    F ->> F: getDatabaseOffsetsOf(Author)
-    F ->> BR: List<Long> databaseOffsets
-    alt databaseOffset == null
-        BR ->> U: Couldn't find books from this Author    
-    end
-    BR ->> BR: readBooks(databaseOffsets)
-    BR -->> BS: List<Book> books
-    BS -->> U: books
+    participant I as Indexes
+    participant DB as BookDateBase
+    U ->> BS: getBooksBy(author)
+    BS ->> BR: getBooksBy(author)
+    BR->> I: getBooksFromIndex(Author)
+    I -->> BR: List<Long> databaseOffsets
+        alt dataBaseOffsets.length == 0
+            BR -->> U: Couldn't find books from this Author
+        end
+    BR ->> DB: readBooks(databaseOffsets)
+    DB -->> U: List<Book> books
 
 ```
 
@@ -71,18 +72,17 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
+    participant I as Index
+    participant DB as BookDataBase
     U ->> BS: getBook(tags)
     BS ->> BR: getBook(tags)
-    BR ->> F: getBook(tags)
-    F ->> F: getDatabaseOffsetsOf(tags)
-    F ->> BR: List<Long> databaseOffsets
-    alt databaseOffset == null
+    BR ->> I: getBooksFromIndex(Tag)
+    I ->> BR: List<Long> databaseOffsets
+    alt databaseOffsets == null
         BR ->> U: Couldn't find books from this tags    
     end
-    BR ->> BR: readBooks(databaseOffsets)
-    BR -->> BS: List<Book> books
-    BS -->> U: books
+    BR ->> DB: readBooks(databaseOffsets)
+    DB -->> U: List<Book> books
 
 ```
 
@@ -92,18 +92,17 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
+    participant I as Index
+    participant DB as BookDataBase
     U ->> BS: getBook(priceRange)
     BS ->> BR: getBook(priceRange)
-    BR ->> F: getBook(priceRange)
-    F ->> F: getDatabaseOffsetsOf(priceRange)
-    F ->> BR: List<Long> databaseOffsets
-    alt databaseOffset == null
+    BR ->> I: getBooksFromIndex(priceRange)
+    I ->> BR: List<Long> databaseOffsets
+    alt databaseOffsets == null
         BR ->> U: Couldn't find books from this priceRange    
     end
-    BR ->> BR: readBooks(databaseOffsets)
-    BR -->> BS: List<Book> books
-    BS -->> U: books
+    BR ->> DB: readBooks(databaseOffsets)
+    DB -->> U: List<Book> books
 
 ```
 
@@ -113,18 +112,17 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant F as Files
+    participant I as Index
+    participant DB as BookDataBase
     U ->> BS: getBook(date)
     BS ->> BR: getBook(date)
-    BR ->> F: getBook(date)
-    F ->> F: getDatabaseOffsetsOf(date)
-    F ->> BR: List<Long> databaseOffsets
-    alt databaseOffset == null
+    BR ->> I: getBooksFromIndex(date)
+    I ->> BR: List<Long> databaseOffsets
+    alt databaseOffsets == null
         BR ->> U: Couldn't find books from this date    
     end
-    BR ->> BR: readBooks(databaseOffsets)
-    BR -->> BS: List<Book> books
-    BS -->> U: books
+    BR ->> DB: readBooks(databaseOffsets)
+    DB -->> U: List<Book> books
 
 ```
 

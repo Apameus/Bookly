@@ -2,17 +2,18 @@
 
 ### Classes:
 - <h3>Book:</h3>
+<b>Long</b> id,
 <b>String</b> name, 
 <b>String</b> Author, 
 <b>List\<Tag></b> tags, 
 <b>Double</b> price, 
 <b>Date</b> date
 - <h3>Tag:</h3>
-<b>Enum</b> (ex. Comedy, Fantasy, ..)
+<b>String</b> (ex. Comedy, Fantasy, ..)
 
 
 ### Data Structures:
-- Main DB(name, book): Binary Search Tree
+- Main DB(id, book): Binary Search Tree
 - Indexes: Hash Map 
 
 ### Indexes:
@@ -26,5 +27,4 @@
 
 
 ### Features:
-- Add id field to book class
 - ..
