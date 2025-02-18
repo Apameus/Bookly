@@ -3,7 +3,6 @@ import codec.TreeCodec;
 import codec.TreeNode_DualValue_Pointers;
 import codec.TreeNode_Pointers;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
@@ -47,24 +46,27 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
     }
     private void insert(K key, V value, long offset) throws IOException {
         if (offset == 0) return;
+        if (storedEntries == availableEntries) resize();
         accessFile.seek(offset);
         while (accessFile.read() == EXIST_FLAG){
-            TreeNode_Pointers<K> found = treeCodec.read(accessFile);
+            var found = treeCodec.read(accessFile);
             if (comparator.compare(key, found.data) < 0){
-                if (found.leftChild == 0){
+                if (found.leftPointer == 0){
                     long leftPointer = updatePointer(offset, "L");
                     insert(key, value, leftPointer);
                     return;
                 }
-                accessFile.seek(found.leftChild);
+                offset = found.leftPointer;
+                accessFile.seek(found.leftPointer);
             }
             else if (comparator.compare(key, found.data) > 0) {
-                if (found.rightChild == 0){
+                if (found.rightPointer == 0){
                     long rightPointer = updatePointer(offset, "R");
                     insert(key, value, rightPointer);
                     return;
                 }
-                accessFile.seek(found.rightChild);
+                offset = found.rightPointer;
+                accessFile.seek(found.rightPointer);
             }
         }
         accessFile.seek(offset);
@@ -82,8 +84,8 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
         if (offset == 0) return null;
         accessFile.seek(offset + FLAG_SIZE);
         TreeNode_Pointers<K> node = treeCodec.read(accessFile);
-        if (comparator.compare(key, node.data) < 0) return get(key, node.leftChild);
-        else if (comparator.compare(key, node.data) > 0) return get(key, node.rightChild);
+        if (comparator.compare(key, node.data) < 0) return get(key, node.leftPointer);
+        else if (comparator.compare(key, node.data) > 0) return get(key, node.rightPointer);
         else return valueCodec.read(accessFile);
     }
 
@@ -94,13 +96,13 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
     private void delete(K key, long offset, long prevOffset, String prevLeftOrRight) throws IOException {
         if (offset == 0) return;
         accessFile.seek(offset + FLAG_SIZE);
-        TreeNode_Pointers<K> node = treeCodec.read(accessFile);
-        if (comparator.compare(key, node.data) < 0) delete(key, node.leftChild, offset, "L");
-        else if (comparator.compare(key, node.data) > 0) delete(key, node.rightChild, offset, "R");
+        var node = treeCodec.read(accessFile);
+        if (comparator.compare(key, node.data) < 0) delete(key, node.leftPointer, offset, "L");
+        else if (comparator.compare(key, node.data) > 0) delete(key, node.rightPointer, offset, "R");
         else {
-            if (node.leftChild == 0){
-                if (node.rightChild != 0){
-                    accessFile.seek(node.rightChild + FLAG_SIZE);
+            if (node.leftPointer == 0){
+                if (node.rightPointer != 0){
+                    accessFile.seek(node.rightPointer + FLAG_SIZE);
                     var rightChild = treeCodec.read(accessFile);
                     V value = valueCodec.read(accessFile);
                     accessFile.seek(offset + FLAG_SIZE);
@@ -114,8 +116,8 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
                 }
                 updateStoredEntries(--storedEntries);
             }
-            else if (node.rightChild == 0){
-                accessFile.seek(node.leftChild);
+            else if (node.rightPointer == 0){
+                accessFile.seek(node.leftPointer);
                 var leftChild = treeCodec.read(accessFile);
                 V value = valueCodec.read(accessFile);
                 accessFile.seek(offset + FLAG_SIZE);
@@ -124,13 +126,13 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
                 updateStoredEntries(--storedEntries);
             }
             else {
-                var successor = leftMost(node.rightChild);
+                var successor = leftMost(node.rightPointer);
                 accessFile.seek(offset + FLAG_SIZE);
                 keyCodec.write(accessFile, successor.key);
                 accessFile.skipBytes(CHILD_REFERENCE_SIZE * 2);
                 valueCodec.write(accessFile, successor.value);
                 updateStoredEntries(storedEntries - 1);
-                delete(successor.key, node.rightChild, offset, "R");
+                delete(successor.key, node.rightPointer, offset, "R");
             }
         }
     }
@@ -153,24 +155,35 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
 
     private long findEmptySlot() throws IOException {
         long offset = STORED_ENTRIES_SIZE;
+        accessFile.seek(offset);
         while (accessFile.read() == EXIST_FLAG){
             offset += maxSizeOfEntry;
+            accessFile.seek(offset);
         }
         return offset;
     }
 
-    private TreeNode_DualValue_Pointers<K,V> leftMost(long offset) throws IOException {
-        accessFile.seek(offset + FLAG_SIZE);
-        TreeNode_Pointers<K> node = treeCodec.read(accessFile);
-        if (node.leftChild == 0){
+    private TreeNode_DualValue_Pointers<K,V> leftMost(long nodePointer) throws IOException {
+        accessFile.seek(nodePointer + FLAG_SIZE);
+        var node = treeCodec.read(accessFile);
+        if (node.leftPointer == 0){
             V value = valueCodec.read(accessFile);
             return new TreeNode_DualValue_Pointers<>(node, value);
         }
-        return leftMost(node.leftChild);
+        return leftMost(node.leftPointer);
     }
 
     private void updateStoredEntries(int storedEntries) throws IOException {
         accessFile.seek(0);
         accessFile.write(storedEntries);
+    }
+
+    public int size() {
+        return storedEntries;
+    }
+
+    private void resize() throws IOException {
+        availableEntries *= 2;
+        accessFile.setLength((long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE);
     }
 }

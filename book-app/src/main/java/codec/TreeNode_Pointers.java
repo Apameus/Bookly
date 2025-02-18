@@ -1,11 +1,9 @@
 package codec;
 
-import java.security.Key;
-
 public final class TreeNode_Pointers<T> {
     public T data;
-    public long leftChild;
-    public long rightChild;
+    public long leftPointer;
+    public long rightPointer;
 
     public TreeNode_Pointers(T data) {
         this.data = data;
@@ -13,8 +11,8 @@ public final class TreeNode_Pointers<T> {
 
     public TreeNode_Pointers(T data, long leftChild, long rightChild) {
         this.data = data;
-        this.leftChild = leftChild;
-        this.rightChild = rightChild;
+        this.leftPointer = leftChild;
+        this.rightPointer = rightChild;
     }
 
 

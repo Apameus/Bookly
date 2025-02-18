@@ -18,6 +18,6 @@ public final class TreeNode_DualValue_Pointers<K, V> {
     }
 
     public TreeNode_DualValue_Pointers(TreeNode_Pointers<K> treeNodeSingleValue, V value) {
-        this(treeNodeSingleValue.data, treeNodeSingleValue.leftChild, treeNodeSingleValue.rightChild, value);
+        this(treeNodeSingleValue.data, treeNodeSingleValue.leftPointer, treeNodeSingleValue.rightPointer, value);
     }
 }

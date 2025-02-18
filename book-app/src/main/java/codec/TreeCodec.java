@@ -11,8 +11,8 @@ public record TreeCodec<T>(Codec<T> genericDataCodec) implements Codec<TreeNode_
     @Override
     public void write(RandomAccessFile accessFile, TreeNode_Pointers<T> node) throws IOException {
         genericDataCodec.write(accessFile, node.data);
-        accessFile.writeLong(node.leftChild);
-        accessFile.writeLong(node.rightChild);
+        accessFile.writeLong(node.leftPointer);
+        accessFile.writeLong(node.rightPointer);
     }
 
     @Override
