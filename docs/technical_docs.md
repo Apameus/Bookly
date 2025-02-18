@@ -5,7 +5,7 @@
 <b>Long</b> id,
 <b>String</b> name, 
 <b>String</b> Author, 
-<b>List\<Tag></b> tags, 
+<b>List\<String></b> tags, 
 <b>Double</b> price, 
 <b>Date</b> date
 - <h3>Tag:</h3>
