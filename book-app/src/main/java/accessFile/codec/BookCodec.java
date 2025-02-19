@@ -1,10 +1,9 @@
-package codec;
+package accessFile.codec;
 
 import model.Book;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Date;
 
 public final class BookCodec implements Codec<Book>{ //TODO
     StringCodec stringCodec = new StringCodec();

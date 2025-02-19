@@ -1,12 +1,9 @@
-package codec;
+package accessFile.codec;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
 
 public final class DateCodec implements Codec<LocalDate>{ //TODO
     private LocalDate date;

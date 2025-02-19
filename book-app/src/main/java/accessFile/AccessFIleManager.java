@@ -1,3 +1,5 @@
+package accessFile;
+
 import java.io.IOException;
 
 public interface AccessFIleManager<K,V> {

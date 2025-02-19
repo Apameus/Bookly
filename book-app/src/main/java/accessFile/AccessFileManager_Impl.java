@@ -1,7 +1,9 @@
-import codec.Codec;
-import codec.TreeCodec;
-import codec.TreeNode_DualValue_Pointers;
-import codec.TreeNode_Pointers;
+package accessFile;
+
+import accessFile.codec.Codec;
+import accessFile.codec.TreeCodec;
+import accessFile.codec.TreeNode_DualValue_Pointers;
+import accessFile.codec.TreeNode_Pointers;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

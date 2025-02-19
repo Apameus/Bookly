@@ -1,4 +1,4 @@
-package codec;
+package accessFile.codec;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
