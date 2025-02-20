@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public record TreeCodecDual<K,V>(Codec<K> keyCodec, Codec<V> valueCodec) implements Codec<TreeNode_DualValue_Pointers<K,V>>{
+
     @Override
     public int maxByteSize() {
         return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES + valueCodec.maxByteSize();
+    }
+
+    public int singleNodeByteSize(){
+        return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES;
     }
 
     @Override

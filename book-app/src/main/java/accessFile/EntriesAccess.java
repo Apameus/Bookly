@@ -17,16 +17,18 @@ public interface EntriesAccess<K,V> {
 
     void updateStoredEntries(int storedEntries) throws IOException;
 
-    int availableEntries();
+    boolean isFull();
 
-    void updateAvailableEntries();
+    void resize() throws IOException;
 
     K readKey(long offset) throws IOException; //ToDo: add writeKey ?
 
     V readValue(long offset) throws IOException; //ToDo: add writeValue ?
+    V readValue() throws IOException;
 
     TreeNode_DualValue_Pointers<K,V> readFullEntry(long offset) throws IOException;
     TreeNode_Pointers<K> readKeyEntry(long offset) throws IOException; //ToDo: add overload method without parameters?
+    TreeNode_Pointers<K> readKeyEntry() throws IOException;
 
     void writeNewEntry(K key, V value, long offset) throws IOException;
 
@@ -34,6 +36,8 @@ public interface EntriesAccess<K,V> {
 
     long updatePointer(long offset, String leftOrRight) throws IOException;
     void updatePointer(long offset, long pointer, String leftOrRight) throws IOException;
+
+    int compare(K a, K b);
 
     long findEmptySlot() throws IOException;
 
