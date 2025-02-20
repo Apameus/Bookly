@@ -10,7 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>{
+public final class FileManager_Impl<K,V> implements FileManager<K,V> {
     private final RandomAccessFile accessFile;
     private final TreeCodec<K> treeCodec;
     private final Codec<K> keyCodec;
@@ -27,7 +27,7 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
     private int availableEntries;
 
 
-    public AccessFileManager_Impl(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator, int availableEntries) throws IOException {
+    public FileManager_Impl(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator, int availableEntries) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         treeCodec = new TreeCodec<>(keyCodec);
         this.keyCodec = keyCodec;
@@ -38,7 +38,7 @@ public final class AccessFileManager_Impl<K,V> implements AccessFIleManager<K,V>
         maxSizeOfEntry = FLAG_SIZE + treeCodec.maxByteSize() + valueCodec.maxByteSize();
         if (accessFile.length() == 0) accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
     }
-    public AccessFileManager_Impl(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator) throws IOException {
+    public FileManager_Impl(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator) throws IOException {
         this(path,keyCodec,valueCodec, comparator,16);
     }
 

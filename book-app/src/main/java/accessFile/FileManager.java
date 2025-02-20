@@ -2,7 +2,7 @@ package accessFile;
 
 import java.io.IOException;
 
-public interface AccessFIleManager<K,V> {
+public interface FileManager<K,V> {
 
     void insert(K key, V value) throws IOException;
 

@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-public final class AccessFileManager_Impl_II<K,V> implements EntriesAccess<K,V>, AccessFIleManager<K,V>{
+public final class FileManager_BST<K,V> implements EntriesAccess<K,V>, FileManager<K,V> {
 
     private final RandomAccessFile accessFile;
     private final TreeCodecDual<K,V> treeCodec;
@@ -25,7 +25,7 @@ public final class AccessFileManager_Impl_II<K,V> implements EntriesAccess<K,V>,
     private int storedEntries;
     private int availableEntries;
 
-    public AccessFileManager_Impl_II(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator) throws IOException {
+    public FileManager_BST(Path path, Codec<K> keyCodec, Codec<V> valueCodec, Comparator<K> comparator) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         treeCodec = new TreeCodecDual<>(keyCodec, valueCodec);
         this.keyCodec = keyCodec;
