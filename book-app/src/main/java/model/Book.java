@@ -1,7 +1,7 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-public record Book(Long id, String name, String author, List<String> tags, Double price, Date date) {
+public record Book(long id, String name, String author, List<String> tags, double price, LocalDate date) {
 }

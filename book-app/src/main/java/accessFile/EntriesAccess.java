@@ -26,7 +26,7 @@ public interface EntriesAccess<K,V> {
     V readValue(long offset) throws IOException; //ToDo: add writeValue ?
 
     TreeNode_DualValue_Pointers<K,V> readFullEntry(long offset) throws IOException;
-    TreeNode_Pointers<K> readKeyEntry(long offset) throws IOException; //ToDo: add overload class without parameters?
+    TreeNode_Pointers<K> readKeyEntry(long offset) throws IOException; //ToDo: add overload method without parameters?
 
     void writeNewEntry(K key, V value, long offset) throws IOException;
 
