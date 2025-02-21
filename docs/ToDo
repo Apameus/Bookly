@@ -1,0 +1,5 @@
+BookCodec:
+    -DateCodec
+    -List<String>  --> Codec
+
+    -BookCodec
