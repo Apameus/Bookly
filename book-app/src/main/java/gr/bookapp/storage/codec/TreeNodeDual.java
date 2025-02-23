@@ -2,10 +2,10 @@ package gr.bookapp.storage.codec;
 
 public final class TreeNodeDual<K,V> {
 
-    K key;
-    long leftPointer;
-    long rightPointer;
-    V value;
+    public K key;
+    public long leftPointer;
+    public long rightPointer;
+    public V value;
 
     public TreeNodeDual(K key, V value) {
         this.key = key;

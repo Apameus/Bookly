@@ -1,5 +1,6 @@
 package gr.bookapp.storage;
 
+import gr.bookapp.storage.codec.TreeNodeDual;
 import gr.bookapp.storage.model.Node;
 
 import java.util.Comparator;
@@ -57,7 +58,51 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         delete(key, nodeStorage.rootOffset());
     }
     private void delete(K key, long offset) {
-        if (offset == 0) return;
+//        if (offset == 0) return;
+        if (nodeStorage.isNull(offset)) return;
+        Node<K> node = nodeStorage.readNode(offset);
+        if (comparator.compare(key, node.key()) < 0) delete(key, node.leftChild());
+        else if (comparator.compare(key, node.key()) > 0) delete(key, node.rightChild());
+        else {
+            if (nodeStorage.isNull(node.leftChild())){
+                if (!nodeStorage.isNull(node.rightChild())){
+                    var rightChild = readFullEntry(node.rightChild());
+                    nodeStorage.updateNode(rightChild.key, rightChild.value, offset);
+                }
+                else{
+                    nodeStorage.deleteNode(offset);
+//                    nodeStorage.updatePointer();
+                }
+//                nodeStorage.updateStoredEntries();
+            }
+            else if (nodeStorage.isNull(node.rightChild())){
+                TreeNodeDual<K, V> leftChild = readFullEntry(node.leftChild());
+                nodeStorage.updateNode(leftChild.key, leftChild.value, offset);
+                // updateStoredEntries
+            }
+            else {
+                var successor = leftMost(node.rightChild());
+                nodeStorage.updateNode(successor.key, successor.value, offset);
+                // updateStoredEntries
+                delete(successor.key, node.rightChild());
+            }
+        }
+    }
 
+    private TreeNodeDual<K, V> readFullEntry(long offset) {
+        Node<K> node = nodeStorage.readNode(offset);
+        V value = nodeStorage.readValue(offset);
+//        return new TreeNodeDual<K,V>(node, value);
+        return new TreeNodeDual<>(node.key(), node.leftChild(), node.rightChild(), value);
+    }
+
+    private TreeNodeDual<K,V> leftMost(long offset){
+        Node<K> node = nodeStorage.readNode(offset);
+        if (nodeStorage.isNull(node.leftChild())) {
+            V value = nodeStorage.readValue(offset);
+//            return new TreeNodeDual<>(node, value);
+            return new TreeNodeDual<>(node.key(), node.leftChild(), node.rightChild(), value);
+        }
+        return leftMost(node.leftChild());
     }
 }

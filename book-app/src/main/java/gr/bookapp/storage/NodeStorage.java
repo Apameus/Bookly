@@ -6,11 +6,19 @@ public interface NodeStorage<K, V> {
 
     boolean isNull(long nodeOffset);
 
+    void deleteNode(long nodeOffset);
+
+//    void updatePointer(long nodeOffset, long pointer, String leftOrRight);
+
     Node<K> readNode(long nodeOffset);
+
+    V readValue(long nodeOffset);
 
     void writeNewNode(K key, V value, long offset);
 
-    V readValue(long nodeOffset);
+    void updateNode(K key, V value, long offset);
+
+    void updateStoredEntries(int storedEntries);
 
     long rootOffset();
 }
