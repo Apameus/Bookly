@@ -2,9 +2,9 @@ package gr.bookapp.storage.codec;
 
 public class TreeNode<K> {
 
-    K key;
-    long leftPointer;
-    long rightPointer;
+    public K key;
+    public long leftPointer;
+    public long rightPointer;
 
     public TreeNode(K key) {
         this.key = key;

@@ -1,7 +1,7 @@
 package gr.bookapp.storage;
 
 import gr.bookapp.storage.codec.TreeNodeDual;
-import gr.bookapp.storage.model.Node;
+import gr.bookapp.storage.codec.TreeNode;
 
 import java.util.Comparator;
 
@@ -20,15 +20,15 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         insertAtOffset(key, value, nodeStorage.rootOffset());
     }
     private void insertAtOffset(K key, V value, long offset) {
-//        if (offset == 0) return;
         if (nodeStorage.isNull(offset)){
             nodeStorage.writeNewNode(key, value, offset);
-            // updateStoredEntries
+             nodeStorage.updateStoredEntries(+1);
             return;
         }
-        Node<K> found = nodeStorage.readNode(offset);
-        if (comparator.compare(key, found.key()) < 0) insertAtOffset(key, value, found.leftChild());
-        else if (comparator.compare(key, found.key()) > 0) insertAtOffset(key, value, found.rightChild());
+        TreeNode<K> found = nodeStorage.readNode(offset);
+        int compare = comparator.compare(key, found.key);
+        if (compare < 0) insertAtOffset(key, value, found.leftPointer);
+        else if (compare > 0) insertAtOffset(key, value, found.rightPointer);
     }
 
     @Override
@@ -36,73 +36,62 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         return retrieveFromOffset(key, nodeStorage.rootOffset());
     }
     private V retrieveFromOffset(K key, long offset){
-        if (nodeStorage.isNull(offset)){
-            return null;
-        }
-        Node<K> node = nodeStorage.readNode(offset);
-        int compare = comparator.compare(key, node.key());
-        if (compare < 0){
-            // key < node.key
-            return retrieveFromOffset(key, node.leftChild());
-        }
-        if (compare > 0) {
-            // key > node.key
-            return retrieveFromOffset(key, node.rightChild());
-        }
-        // key == node.key
+        if (nodeStorage.isNull(offset)) return null;
+        TreeNode<K> node = nodeStorage.readNode(offset);
+        int compare = comparator.compare(key, node.key);
+        if (compare < 0) return retrieveFromOffset(key, node.leftPointer);
+        if (compare > 0) return retrieveFromOffset(key, node.rightPointer);
         return nodeStorage.readValue(offset);
     }
 
     @Override
     public void delete(K key) {
-        delete(key, nodeStorage.rootOffset());
+        delete(key, nodeStorage.rootOffset(), 0, "");
     }
-    private void delete(K key, long offset) {
-//        if (offset == 0) return;
+    private void delete(K key, long offset, long prevOffset, String prevLeftOrRight) {
         if (nodeStorage.isNull(offset)) return;
-        Node<K> node = nodeStorage.readNode(offset);
-        if (comparator.compare(key, node.key()) < 0) delete(key, node.leftChild());
-        else if (comparator.compare(key, node.key()) > 0) delete(key, node.rightChild());
+        TreeNode<K> node = nodeStorage.readNode(offset);
+        int compare = comparator.compare(key, node.key);
+        if (compare < 0) delete(key, node.leftPointer, offset, "L");
+        else if (compare > 0) delete(key, node.rightPointer, offset, "R");
         else {
-            if (nodeStorage.isNull(node.leftChild())){
-                if (!nodeStorage.isNull(node.rightChild())){
-                    var rightChild = readFullEntry(node.rightChild());
+            if (nodeStorage.isNull(node.leftPointer)){
+                if (!nodeStorage.isNull(node.rightPointer)){
+                    var rightChild = readFullEntry(node.rightPointer);
                     nodeStorage.updateNode(rightChild.key, rightChild.value, offset);
                 }
                 else{
                     nodeStorage.deleteNode(offset);
-//                    nodeStorage.updatePointer();
+                    nodeStorage.updatePointer(prevOffset, 0, prevLeftOrRight);
                 }
-//                nodeStorage.updateStoredEntries();
+                nodeStorage.updateStoredEntries(-1);
             }
-            else if (nodeStorage.isNull(node.rightChild())){
-                TreeNodeDual<K, V> leftChild = readFullEntry(node.leftChild());
+            else if (nodeStorage.isNull(node.rightPointer)){
+                TreeNodeDual<K, V> leftChild = readFullEntry(node.leftPointer);
                 nodeStorage.updateNode(leftChild.key, leftChild.value, offset);
-                // updateStoredEntries
+                 nodeStorage.updateStoredEntries(-1);
             }
             else {
-                var successor = leftMost(node.rightChild());
+                var successor = leftMost(node.rightPointer);
                 nodeStorage.updateNode(successor.key, successor.value, offset);
-                // updateStoredEntries
-                delete(successor.key, node.rightChild());
+                nodeStorage.updateStoredEntries(-1);
+                delete(successor.key, node.rightPointer, offset, "R");
             }
         }
     }
 
     private TreeNodeDual<K, V> readFullEntry(long offset) {
-        Node<K> node = nodeStorage.readNode(offset);
+        TreeNode<K> node = nodeStorage.readNode(offset);
         V value = nodeStorage.readValue(offset);
-//        return new TreeNodeDual<K,V>(node, value);
-        return new TreeNodeDual<>(node.key(), node.leftChild(), node.rightChild(), value);
+        return new TreeNodeDual<K,V>(node, value);
     }
 
     private TreeNodeDual<K,V> leftMost(long offset){
-        Node<K> node = nodeStorage.readNode(offset);
-        if (nodeStorage.isNull(node.leftChild())) {
+        TreeNode<K> node = nodeStorage.readNode(offset);
+        if (nodeStorage.isNull(node.leftPointer)) {
             V value = nodeStorage.readValue(offset);
-//            return new TreeNodeDual<>(node, value);
-            return new TreeNodeDual<>(node.key(), node.leftChild(), node.rightChild(), value);
+            return new TreeNodeDual<>(node, value);
         }
-        return leftMost(node.leftChild());
+        return leftMost(node.leftPointer);
     }
 }

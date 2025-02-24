@@ -1,16 +1,16 @@
 package gr.bookapp.storage;
 
-import gr.bookapp.storage.model.Node;
+import gr.bookapp.storage.codec.TreeNode;
 
 public interface NodeStorage<K, V> {
 
+    long rootOffset();
+
     boolean isNull(long nodeOffset);
 
-    void deleteNode(long nodeOffset);
+    void updatePointer(long nodeOffset, long pointer, String leftOrRight);
 
-//    void updatePointer(long nodeOffset, long pointer, String leftOrRight);
-
-    Node<K> readNode(long nodeOffset);
+    TreeNode<K> readNode(long nodeOffset);
 
     V readValue(long nodeOffset);
 
@@ -18,7 +18,7 @@ public interface NodeStorage<K, V> {
 
     void updateNode(K key, V value, long offset);
 
-    void updateStoredEntries(int storedEntries);
+    void deleteNode(long nodeOffset);
 
-    long rootOffset();
+    void updateStoredEntries(int by);
 }

@@ -1,6 +1,6 @@
 package gr.bookapp.storage;
 
-import gr.bookapp.storage.model.Node;
+import gr.bookapp.storage.model.TreeNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class BinarySearchTreeUnitTests {
     void test() {
         int key = 20;
         long offset = 500L;
-        Node<Integer> node = new Node<Integer>(20, 0 ,0);
+        TreeNode<Integer> node = new TreeNode<Integer>(20, 0 ,0);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -61,7 +61,7 @@ class BinarySearchTreeUnitTests {
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
 
-        Node<Integer> node = new Node<>(19, 0, 0);
+        TreeNode<Integer> node = new TreeNode<>(19, 0, 0);
         when(nodeStorage.readNode(offset)).thenReturn(node);
         when(comparator.compare(key, node.key())).thenReturn(1);
 
@@ -80,11 +80,11 @@ class BinarySearchTreeUnitTests {
 
         int rootNodeKey = 19;
         long secondNodeOffset = 700L;
-        Node<Integer> rootNode = new Node<>(rootNodeKey, secondNodeOffset, 0);
+        TreeNode<Integer> rootNode = new TreeNode<>(rootNodeKey, secondNodeOffset, 0);
         when(nodeStorage.readNode(rootOffset)).thenReturn(rootNode);
         when(comparator.compare(key, rootNode.key())).thenReturn(-1);
 
-        Node<Integer> secondNode = new Node<>(key, 0, 0);
+        TreeNode<Integer> secondNode = new TreeNode<>(key, 0, 0);
         when(nodeStorage.isNull(secondNodeOffset)).thenReturn(false);
         when(nodeStorage.readNode(secondNodeOffset)).thenReturn(secondNode);
         when(comparator.compare(key, secondNode.key())).thenReturn(0);
@@ -108,7 +108,7 @@ class BinarySearchTreeUnitTests {
     @DisplayName("Insert with already existing node have less key")
     void insertWithAlreadyExistingNodeHaveLessKey() {
         long offset = 500L;
-        Node<Integer> foundNode = new Node<>(19, 0, 0);
+        TreeNode<Integer> foundNode = new TreeNode<>(19, 0, 0);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -127,8 +127,8 @@ class BinarySearchTreeUnitTests {
     @DisplayName("Insert with already 2 existing nodes having greater keys")
     void insertWithAlready2ExistingNodesHavingGreaterKeys() {
         long offset = 500L;
-        Node<Integer> foundNode = new Node<>(22, 550, 0);
-        Node<Integer> secondFoundNode = new Node<>(21, 0, 0);
+        TreeNode<Integer> foundNode = new TreeNode<>(22, 550, 0);
+        TreeNode<Integer> secondFoundNode = new TreeNode<>(21, 0, 0);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -151,7 +151,7 @@ class BinarySearchTreeUnitTests {
     @DisplayName("delete root")
     void deleteRoot() {
         long offset = 500L;
-        Node<Integer> node = new Node<>(20, 0, 0);
+        TreeNode<Integer> node = new TreeNode<>(20, 0, 0);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -169,7 +169,7 @@ class BinarySearchTreeUnitTests {
     @DisplayName("Delete node with only right child")
     void deleteNodeWithOnlyRightChild() {
         long offset = 500l;
-        Node<Integer> node = new Node<>(20, 0, 550);
+        TreeNode<Integer> node = new TreeNode<>(20, 0, 550);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -178,7 +178,7 @@ class BinarySearchTreeUnitTests {
 
         when(nodeStorage.isNull(node.leftChild())).thenReturn(true);
         when(nodeStorage.isNull(node.rightChild())).thenReturn(false);
-        Node<Integer> rightChild = new Node<>(25, 0, 0);
+        TreeNode<Integer> rightChild = new TreeNode<>(25, 0, 0);
         int rightChildValue = 250;
         when(nodeStorage.readNode(node.rightChild())).thenReturn(rightChild);
         when(nodeStorage.readValue(node.rightChild())).thenReturn(rightChildValue);
@@ -192,7 +192,7 @@ class BinarySearchTreeUnitTests {
     @DisplayName("Delete node with only leftChild")
     void deleteNodeWithOnlyLeftChild() {
         long offset = 500L;
-        Node<Integer> node = new Node<>(20, 550, 0);
+        TreeNode<Integer> node = new TreeNode<>(20, 550, 0);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -200,7 +200,7 @@ class BinarySearchTreeUnitTests {
         when(comparator.compare(20, node.key())).thenReturn(0);
         when(nodeStorage.isNull(node.leftChild())).thenReturn(false);
 
-        Node<Integer> leftChild = new Node<>(18, 0, 0);
+        TreeNode<Integer> leftChild = new TreeNode<>(18, 0, 0);
         int leftChildValue = 180;
         when(nodeStorage.isNull(node.rightChild())).thenReturn(true);
         when(nodeStorage.readNode(node.leftChild())).thenReturn(leftChild);
@@ -215,7 +215,7 @@ class BinarySearchTreeUnitTests {
     @DisplayName("delete node with both children")
     void deleteNodeWithBothChildren() {
         long offset = 500L;
-        Node<Integer> node = new Node<>(20, 550, 600);
+        TreeNode<Integer> node = new TreeNode<>(20, 550, 600);
 
         when(nodeStorage.rootOffset()).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(false);
@@ -225,11 +225,11 @@ class BinarySearchTreeUnitTests {
         when(nodeStorage.isNull(node.leftChild())).thenReturn(false);
         when(nodeStorage.isNull(node.rightChild())).thenReturn(false);
 
-        Node<Integer> rightChild = new Node<>(25, 650, 0);
+        TreeNode<Integer> rightChild = new TreeNode<>(25, 650, 0);
         when(nodeStorage.readNode(node.rightChild())).thenReturn(rightChild);
         when(nodeStorage.isNull(rightChild.leftChild())).thenReturn(false);
 
-        Node<Integer> successor = new Node<>(22, 0, 0);
+        TreeNode<Integer> successor = new TreeNode<>(22, 0, 0);
         int successorValue = 22;
         when(nodeStorage.readNode(rightChild.leftChild())).thenReturn(successor);
         when(nodeStorage.isNull(successor.leftChild())).thenReturn(true);
