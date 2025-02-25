@@ -7,6 +7,6 @@ public record TreeNodeDual<K,V>(K key, long leftPointer, long rightPointer, V va
     }
 
     public TreeNodeDual(TreeNode<K> keyNode, V value) {
-        this(keyNode.key, keyNode.leftPointer, keyNode.rightPointer, value);
+        this(keyNode.key(), keyNode.leftPointer(), keyNode.rightPointer(), value);
     }
 }
