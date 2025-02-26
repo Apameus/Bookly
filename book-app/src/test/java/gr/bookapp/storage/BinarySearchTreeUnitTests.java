@@ -145,10 +145,11 @@ class BinarySearchTreeUnitTests {
         when(comparator.compare(20, secondFoundNode.key())).thenReturn(-1);
 
         when(nodeStorage.isNull(secondFoundNode.leftPointer())).thenReturn(true);
+        when(nodeStorage.findEmptySlot()).thenReturn(600L);
 
 
         binarySearchTree.insert(20,20);
-        verify(nodeStorage, times(1)).writeNode(new TreeNodeDual<>(20,20) , secondFoundNode.leftPointer());
+        verify(nodeStorage, times(1)).writeNode(new TreeNodeDual<>(20,20) , 600L);
 
     }
 
