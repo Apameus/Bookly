@@ -11,7 +11,7 @@ public interface NodeStorage<K, V> {
 
     boolean isNull(long nodeOffset) ;
 
-    void updatePointer(long parentOffset, long childPointer, String childSide) ;
+    void updatePointer(long parentOffset, String childSide, long childPointer) ;
 
     V readValue(long nodeOffset) ;
 
@@ -19,7 +19,7 @@ public interface NodeStorage<K, V> {
 
     void writeNode(TreeNodeDual<K,V> node, long offset) ;
 
-    void updateNode(K key, V value, long offset) ; //todo remove?
+    void updateNode(K key, V value, long offset) ;
 
     void deleteNode(long nodeOffset) ;
 

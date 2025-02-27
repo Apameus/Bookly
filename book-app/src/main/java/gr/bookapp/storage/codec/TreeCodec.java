@@ -9,7 +9,7 @@ public record TreeCodec<K,V>(Codec<K> keyCodec, Codec<V> valueCodec) implements 
     public int maxByteSize() {
         return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES + valueCodec().maxByteSize();
     }
-    public int halfByteSize() {
+    public int singleNodeByteSize() {
         return keyCodec().maxByteSize() + Long.BYTES + Long.BYTES;
     }
 
@@ -23,11 +23,11 @@ public record TreeCodec<K,V>(Codec<K> keyCodec, Codec<V> valueCodec) implements 
     }
 
     @Override
-    public void write(RandomAccessFile accessFile, TreeNodeDual<K, V> obj) throws IOException {
-        keyCodec.write(accessFile, obj.key());
-        accessFile.writeLong(obj.leftPointer());
-        accessFile.writeLong(obj.rightPointer());
-        valueCodec.write(accessFile, obj.value());
+    public void write(RandomAccessFile accessFile, TreeNodeDual<K, V> node) throws IOException {
+        keyCodec.write(accessFile, node.key());
+        accessFile.writeLong(node.leftPointer());
+        accessFile.writeLong(node.rightPointer());
+        valueCodec.write(accessFile, node.value());
     }
 
     public void write(RandomAccessFile accessFile, K key, V value) throws IOException {

@@ -14,7 +14,8 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
     }
 
     @Override
-    public void insert(K key, V value) {insert(key, value, nodeStorage.rootOffset());}
+    public void insert(K key, V value) {
+        insert(key, value, nodeStorage.rootOffset());}
     private void insert(K key, V value, long offset) {
         if (nodeStorage.isNull(offset)){ // If the offset is empty we insert the node there
             writeNewNode(new TreeNodeDual<>(key, value), offset, +1);
@@ -22,12 +23,12 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         }
         var found = nodeStorage.readKeyNode(offset);
         int compare = comparator.compare(key, found.key());
-        if (compare < 0) insert(found.leftPointer(), key, value, offset, "L");
-        else if (compare > 0) insert(found.rightPointer(), key, value, offset, "R");
+        if (compare < 0) insertNewNode(found.leftPointer(), key, value, offset, "L");
+        else if (compare > 0) insertNewNode(found.rightPointer(), key, value, offset, "R");
         else nodeStorage.updateNode(key, value, offset);
     }
 
-    private void insert(long childPointer, K key, V value, long parentOffset, String childSide) {
+    private void insertNewNode(long childPointer, K key, V value, long parentOffset, String childSide) {
         if (nodeStorage.isNull(childPointer)) {
             insertNewNode(key, value, parentOffset, childSide);
             return;
@@ -37,7 +38,7 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     private void insertNewNode(K key, V value, long parentOffset, String childSide) {
         long emptySlot = nodeStorage.findEmptySlot();
-        nodeStorage.updatePointer(parentOffset, emptySlot, childSide);
+        nodeStorage.updatePointer(parentOffset, childSide, emptySlot);
         writeNewNode(new TreeNodeDual<>(key, value), emptySlot, +1);
     }
 
@@ -68,7 +69,7 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
                 }
                 else{ // Both children are null
                     nodeStorage.deleteNode(offset);
-                    nodeStorage.updatePointer(parentOffset, 0, childSide);
+                    nodeStorage.updatePointer(parentOffset, childSide, 0);
                 }
                 nodeStorage.updateStoredEntries(-1);
             }
