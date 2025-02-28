@@ -9,7 +9,7 @@ public record TreeCodec<K,V>(Codec<K> keyCodec, Codec<V> valueCodec) implements 
     public int maxByteSize() {
         return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES + valueCodec().maxByteSize();
     }
-    public int singleNodeByteSize() {
+    public int keyByteSize() {
         return keyCodec().maxByteSize() + Long.BYTES + Long.BYTES;
     }
 

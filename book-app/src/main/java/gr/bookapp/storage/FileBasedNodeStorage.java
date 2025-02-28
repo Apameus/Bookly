@@ -36,7 +36,7 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
             availableEntries = 16;
             accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
         }
-        else { availableEntries = (int) (accessFile.length() / maxSizeOfEntry - STORED_ENTRIES_SIZE); }
+        else { availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry); }
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
     @Override
     public V readValue(long nodeOffset){
         try {
-            accessFile.seek(nodeOffset + FLAG_SIZE+ treeCodec.singleNodeByteSize());
+            accessFile.seek(nodeOffset + FLAG_SIZE+ treeCodec.keyByteSize());
             return valueCodec.read(accessFile);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
