@@ -2,11 +2,11 @@
 
 ### Classes:
 - <h3>Book:</h3>
-<b>Long</b> id,
+<b>long</b> id,
 <b>String</b> name, 
 <b>String</b> Author, 
 <b>List\<String></b> tags, 
-<b>Double</b> price, 
+<b>double</b> price, 
 <b>Date</b> date
 - <h3>Tag:</h3>
 <b>String</b> (ex. Comedy, Fantasy, ..)
