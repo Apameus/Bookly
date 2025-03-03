@@ -3,7 +3,7 @@
 flowchart LR
     UI --> AS[AuthService] --> AR[AuthRepo] --> EDB[EmployeeDB]
     UI --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
-    BS --> SLS3
+    BS --> SLS
     ES --> SLS[SalesService] --> SLR[SalesRepo] --> SLDB[SalesDB]
     UI --> ES[EmployeeService] --> SS[StatsService] --> SR[StatsRepo] --> SDB[StatsDB]
     

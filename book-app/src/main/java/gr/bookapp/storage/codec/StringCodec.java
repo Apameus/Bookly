@@ -1,10 +1,14 @@
 package gr.bookapp.storage.codec;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public final class StringCodec implements Codec<String> {
-    private final byte maxStringLength = 40;
+public record StringCodec(int maxStringLength) implements Codec<String> {
+    public StringCodec() {
+        this(40);
+    }
 
     @Override
     public int maxByteSize() {
@@ -13,23 +17,24 @@ public final class StringCodec implements Codec<String> {
 
     @Override
     public String read(RandomAccessFile accessFile) throws IOException {
-        int stringLength = accessFile.read();
+        int stringLength = accessFile.readByte();
         if (stringLength == 0) return "";
         byte[] bytes = new byte[stringLength];
-        accessFile.read(bytes);
-        int bytesToSkip = maxStringLength - stringLength;
+        accessFile.readFully(bytes);
+        int bytesToSkip = maxStringLength - Byte.BYTES - stringLength;
         accessFile.skipBytes(bytesToSkip);
+
         return new String(bytes);
     }
 
     @Override
     public void write(RandomAccessFile accessFile, String string) throws IOException {
-        if (string.length() > 40) throw new IllegalStateException("String length can't be more than 40 characters");
+        if (string.length() > maxStringLength) throw new IllegalStateException(String.format("String length can't be more than %s characters", maxStringLength));
 
         accessFile.write(string.length());
         accessFile.write(string.getBytes());
 
-        int bytesToSkip = maxStringLength - string.length();
+        int bytesToSkip = maxStringLength - Byte.BYTES - string.length();
         accessFile.skipBytes(bytesToSkip);
     }
 }
