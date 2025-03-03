@@ -2,9 +2,12 @@
 ```mermaid
 flowchart LR
     UI --> AS[AuthService] --> AR[AuthRepo] --> EDB[EmployeeDB]
-    UI --> ES[EmployeeService] --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
-    ES --> SS[StatsService] --> SR[StatsRepo] --> SDB[StatsDB]
-    ES --> AUS[AuditService] --> AUR[AuditRepo] --> ADB[AuditDB]
+    UI --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
+    BS --> SLS3
+    ES --> SLS[SalesService] --> SLR[SalesRepo] --> SLDB[SalesDB]
+    UI --> ES[EmployeeService] --> SS[StatsService] --> SR[StatsRepo] --> SDB[StatsDB]
+    
+    *Services --> AUS[AuditService] --> AUR[AuditRepo] --> ADB[AuditDB]
 ```
 
 [//]: # (- Server)

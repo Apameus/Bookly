@@ -1,9 +1,9 @@
-package accessFile.codec;
+package gr.bookapp.storage.codec;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public final class StringCodec implements Codec<String>{
+public final class StringCodec implements Codec<String> {
     private final byte maxStringLength = 40;
 
     @Override

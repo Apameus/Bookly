@@ -1,9 +1,7 @@
-package gr.bookapp.storage;
+package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.TreeNode;
 import gr.bookapp.storage.codec.TreeNodeDual;
-
-import java.io.IOException;
 
 public interface NodeStorage<K, V> {
 

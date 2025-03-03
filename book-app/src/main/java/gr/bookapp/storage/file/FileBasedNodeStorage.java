@@ -1,4 +1,4 @@
-package gr.bookapp.storage;
+package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.Codec;
 import gr.bookapp.storage.codec.TreeCodec;
