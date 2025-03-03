@@ -12,16 +12,16 @@ public record StringCodec(int maxStringLength) implements Codec<String> {
 
     @Override
     public int maxByteSize() {
-        return Byte.BYTES + maxStringLength;
+        return Integer.BYTES + maxStringLength;
     }
 
     @Override
     public String read(RandomAccessFile accessFile) throws IOException {
-        int stringLength = accessFile.readByte();
+        int stringLength = accessFile.readInt();
         if (stringLength == 0) return "";
         byte[] bytes = new byte[stringLength];
         accessFile.readFully(bytes);
-        int bytesToSkip = maxStringLength - Byte.BYTES - stringLength;
+        int bytesToSkip = maxStringLength - Integer.BYTES - stringLength;
         accessFile.skipBytes(bytesToSkip);
 
         return new String(bytes);
@@ -31,10 +31,10 @@ public record StringCodec(int maxStringLength) implements Codec<String> {
     public void write(RandomAccessFile accessFile, String string) throws IOException {
         if (string.length() > maxStringLength) throw new IllegalStateException(String.format("String length can't be more than %s characters", maxStringLength));
 
-        accessFile.write(string.length());
+        accessFile.writeInt(string.length());
         accessFile.write(string.getBytes());
 
-        int bytesToSkip = maxStringLength - Byte.BYTES - string.length();
+        int bytesToSkip = maxStringLength - Integer.BYTES - string.length();
         accessFile.skipBytes(bytesToSkip);
     }
 }
