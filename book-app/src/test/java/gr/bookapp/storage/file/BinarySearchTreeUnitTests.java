@@ -21,7 +21,7 @@ class BinarySearchTreeUnitTests {
     @Mock
     Comparator<Integer> comparator;
     @Mock
-    NodeStorage<Integer, Integer> nodeStorage;
+    NodeStorage_Tree<Integer, Integer> nodeStorage;
     @InjectMocks
     BinarySearchTree<Integer, Integer> binarySearchTree;
 

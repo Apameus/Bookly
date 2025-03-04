@@ -17,14 +17,14 @@ class FileBasedNodeStorageTest {
     @TempDir Path dir;
     StringCodec keyCodec;
     StringCodec valueCodec;
-    FileBasedNodeStorage<String, String> fileBasedNodeStorage;
+    FileBasedNodeStorage_Tree<String, String> fileBasedNodeStorage;
     int maxSizeOfEntry;
 
     @BeforeEach
     void initialize() throws IOException {
         keyCodec = new StringCodec();
         valueCodec = new StringCodec();
-        fileBasedNodeStorage = new FileBasedNodeStorage<>(dir.resolve("FileBasedNodeStorageTest"), keyCodec, valueCodec);
+        fileBasedNodeStorage = new FileBasedNodeStorage_Tree<>(dir.resolve("FileBasedNodeStorageTest"), keyCodec, valueCodec);
         maxSizeOfEntry = Byte.BYTES + keyCodec.maxByteSize() + Long.BYTES * 2 + valueCodec.maxByteSize();
     }
 
