@@ -78,7 +78,7 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
     @Override
     public V readValue(long nodeOffset){
         try {
-            accessFile.seek(nodeOffset + FLAG_SIZE+ treeCodec.keyByteSize());
+            accessFile.seek(nodeOffset + FLAG_SIZE + treeCodec.keyByteSize());
             return valueCodec.read(accessFile);
         } catch (IOException e) {throw new RuntimeException(e);}
     }

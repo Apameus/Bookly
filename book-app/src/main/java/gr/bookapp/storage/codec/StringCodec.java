@@ -19,7 +19,7 @@ public record StringCodec(int maxStringLength) implements Codec<String> {
         if (stringLength == 0) return "";
         byte[] bytes = new byte[stringLength];
         accessFile.readFully(bytes);
-        int bytesToSkip = maxStringLength - Integer.BYTES - stringLength;
+        int bytesToSkip = maxStringLength - stringLength;
         accessFile.skipBytes(bytesToSkip);
 
         return new String(bytes);
@@ -32,7 +32,7 @@ public record StringCodec(int maxStringLength) implements Codec<String> {
         accessFile.writeInt(string.length());
         accessFile.write(string.getBytes());
 
-        int bytesToSkip = maxStringLength - Integer.BYTES - string.length();
+        int bytesToSkip = maxStringLength - string.length();
         accessFile.skipBytes(bytesToSkip);
     }
 }

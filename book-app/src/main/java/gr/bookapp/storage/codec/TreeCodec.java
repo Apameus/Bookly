@@ -7,10 +7,10 @@ public record TreeCodec<K,V>(Codec<K> keyCodec, Codec<V> valueCodec) implements 
 
     @Override
     public int maxByteSize() {
-        return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES + valueCodec().maxByteSize();
+        return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES + valueCodec.maxByteSize();
     }
     public int keyByteSize() {
-        return keyCodec().maxByteSize() + Long.BYTES + Long.BYTES;
+        return keyCodec.maxByteSize() + Long.BYTES + Long.BYTES;
     }
 
     @Override
