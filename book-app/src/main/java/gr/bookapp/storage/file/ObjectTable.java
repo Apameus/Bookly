@@ -1,6 +1,4 @@
-package gr.bookapp.storage;
-
-import java.io.IOException;
+package gr.bookapp.storage.file;
 
 public interface ObjectTable<K, V> {
 

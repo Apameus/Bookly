@@ -1,7 +1,13 @@
 # High Level Architecture
 ```mermaid
 flowchart LR
-    UI --> BS[BookService] --> BR[BookRepo] --> I[Indexes] --> DB[BookDB] 
+    UI --> AS[AuthService] --> AR[AuthRepo] --> EDB[EmployeeDB]
+    UI --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
+    BS --> SLS
+    ES --> SLS[SalesService] --> SLR[SalesRepo] --> SLDB[SalesDB]
+    UI --> ES[EmployeeService] --> SS[StatsService] --> SR[StatsRepo] --> SDB[StatsDB]
+    
+    *Services --> AUS[AuditService] --> AUR[AuditRepo] --> ADB[AuditDB]
 ```
 
 [//]: # (- Server)
@@ -15,76 +21,61 @@ flowchart LR
 [//]: # (```)
 
 
-## Add new book:
+## Add-Modify-Remove  book:
 ```mermaid
 sequenceDiagram
     actor U as User
+    participant ES as EmployeeService
     participant BS as BookService
     participant BR as BookRepo
-    participant I as Indexes
     participant DB as BookDataBase
-    U ->> BS: addBook(name, author, tags, price, date)
-    BS ->> BR: addBook( >> )
+    U ->> ES: addBook(name, author, tags, price, date)
+    ES ->> BS: addBook( .. )
+    BS ->> BR: addBook( .. )
     BR ->> DB: insert( book )
-    DB ->> I: updateIndexes( book, offset )
+    
+```
+```mermaid
+sequenceDiagram
+    EmployeeService ->> AuditService: note( employee, addBook )
+    AuditService ->> AuditRepo: ..
+    AuditRepo ->> AuditDB: ..
 ```
 
-## Search book by name:
+## Search book:
 ```mermaid
 sequenceDiagram
     actor U as User
+    participant ES as EmployeeService
     participant BS as BookService
     participant BR as BookRepo
     participant DB as BookDataBase
-    U ->> BS: getBooksBy(name)
-    BS ->> BR: getBooksBy(name)
-    BR ->> DB: getBooksBy(name)
-    DB -->> BS: List<Book>  books
+    U ->> ES: findBooksBy( .. )
+    ES ->> BS: getBooksBy( .. )
+    BS ->> BR: getBooksBy( .. )
+    BR ->> DB: getBooksBy( .. )
+    DB -->> BS: List<Book> books
     alt books == null
         BS -->> U: Book doesn't exist
     end
     BS -->> U: books
 ```
-
-## Search book by author:
 ```mermaid
 sequenceDiagram
-    actor U as User
-    participant BS as BookService
-    participant BR as BookRepo
-    participant I as Indexes
-    participant DB as BookDateBase
-    U ->> BS: getBooksBy(author)
-    BS ->> BR: getBooksBy(author)
-    BR->> I: getBooksFromIndex(Author)
-    I -->> BR: List<Long> databaseOffsets
-        alt dataBaseOffsets.length == 0
-            BR -->> U: Couldn't find books from this Author
-        end
-    BR ->> DB: readBooks(databaseOffsets)
-    DB -->> U: List<Book> books
-
+    participant ES as EmployeeService
+    participant SS as SalesService
+    participant SR as SalesRepo
+    participant SDB as SalesDataBase
+    ES ->> SS: ..
+    SS ->> SR: ..
+    SR ->> SDB: ..
+    SDB -->> ES: sale
 ```
+``` *Audit Update ```
 
-## Search book by Tags:
-```mermaid
-sequenceDiagram
-    actor U as User
-    participant BS as BookService
-    participant BR as BookRepo
-    participant I as Index
-    participant DB as BookDataBase
-    U ->> BS: getBook(tags)
-    BS ->> BR: getBook(tags)
-    BR ->> I: getBooksFromIndex(Tag)
-    I ->> BR: List<Long> databaseOffsets
-    alt databaseOffsets == null
-        BR ->> U: Couldn't find books from this tags    
-    end
-    BR ->> DB: readBooks(databaseOffsets)
-    DB -->> U: List<Book> books
 
-```
+
+
 
 ## Search book by Price:
 ```mermaid
@@ -92,19 +83,18 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant I as Index
     participant DB as BookDataBase
-    U ->> BS: getBook(priceRange)
-    BS ->> BR: getBook(priceRange)
-    BR ->> I: getBooksFromIndex(priceRange)
-    I ->> BR: List<Long> databaseOffsets
-    alt databaseOffsets == null
-        BR ->> U: Couldn't find books from this priceRange    
+    U ->> BS: getBooksFrom(minPrice, maxPrice)
+    BS ->> BR: getBooksFrom( .. )
+    BR ->> DB: retrieveBooksFrom( .. )
+    DB -->> BS: List<Book> books
+    alt books == null
+        BS -->> U: Couldn't find books from this price range
     end
-    BR ->> DB: readBooks(databaseOffsets)
-    DB -->> U: List<Book> books
+    BS -->> U: List<Book> books
 
 ```
+``` *Audit Update ```
 
 ## Search book by Date:
 ```mermaid
@@ -112,17 +102,54 @@ sequenceDiagram
     actor U as User
     participant BS as BookService
     participant BR as BookRepo
-    participant I as Index
     participant DB as BookDataBase
-    U ->> BS: getBook(date)
-    BS ->> BR: getBook(date)
-    BR ->> I: getBooksFromIndex(date)
-    I ->> BR: List<Long> databaseOffsets
-    alt databaseOffsets == null
-        BR ->> U: Couldn't find books from this date    
+    U ->> BS: getBooks(fromDate, toDate)
+    BS ->> BR: getBooks(fromDate, toDate)
+    BR ->> DB: retrieveBooksBy(fromDate, toDate)
+    DB -->> BS: List<Book> books
+    alt books == null
+        BS -->> U: Couldn't find books from this dates
     end
-    BR ->> DB: readBooks(databaseOffsets)
-    DB -->> U: List<Book> books
+    BS -->> U: List<Book> books
 
 ```
+``` *Audit Update ```
 
+## Sell Book:
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant ES as EmployeeService
+    participant BS as BookService
+    participant BR as BookRepo
+    participant DB as BookDataBase
+    U ->> ES: SearchBookBy( .. )
+    ES ->> BS: ..
+    BS ->> BR: ..
+    BR ->> DB: retrieve( .. )
+    DB ->> ES: book
+```
+```mermaid
+sequenceDiagram
+    participant ES as EmployeeService
+    participant SS as StatsService
+    participant SR as StatsRepo
+    participant SDB as StatsDataBase
+    ES ->> SS: updateBookQuantity(bookID, qnt)
+    SS ->> SR: ..
+    SR ->> SDB: ..
+```
+``` *Audit Update ```
+
+## Create Sale:
+```mermaid
+sequenceDiagram
+    actor  U as User
+    participant SS as SalesService
+    participant SR as SalesRepo
+    participant SDB as SalesDataBase
+    U ->> SS: createSale( Tag, Duration, Discount )
+    SS ->> SR: ..
+    SR ->> SDB: ..
+```
+``` *Audit Update ```
