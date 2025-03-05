@@ -44,57 +44,103 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
 
     @Override
     public boolean isNull(long nodeOffset) {
-        accessFile.seek(nodeOffset);
-        return accessFile.read() == NULL_FLAG;
+        try {
+            accessFile.seek(nodeOffset);
+            return accessFile.read() == NULL_FLAG;
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public long calculateOffset(K key) {
+        long hash = Math.abs(key.hashCode()) % availableEntries;
+        return hash * maxSizeOfEntry + STORED_ENTRIES_SIZE;
     }
 
 
     // START FROM START
     @Override
     public boolean pointerExceedRange(long pointer) { //todo
-        return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
+        try {
+            return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
     public boolean matchKey(long nodeOffset, K key) {
-        accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE);
-        return keyCodec.read(accessFile).equals(key);
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE);
+            return keyCodec.read(accessFile).equals(key);
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
     public V readValue(long nodeOffset) {
-        accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize());
-        return valueCodec.read(accessFile);
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize());
+            return valueCodec.read(accessFile);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public void writeValue(long nodeOffset, V value) {
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize());
+            valueCodec.write(accessFile, value);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public long readNextOffset(long nodeOffset) {
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE);
+            return accessFile.readLong();
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
     public void writeNode(K key, V value, long offset) {
-        accessFile.seek(offset);
-        accessFile.write(EXIST_FLAG);
-        //write nextOffset
-        accessFile.skipBytes(NEXT_OFFSET_SIZE);
-        keyCodec.write(accessFile, key);
-        valueCodec.write(accessFile, value);
+        try {
+            if (isFull()) resize();
+            accessFile.seek(offset);
+            accessFile.write(EXIST_FLAG);
+            accessFile.skipBytes(NEXT_OFFSET_SIZE);
+            keyCodec.write(accessFile, key);
+            valueCodec.write(accessFile, value);
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
     public void deleteNode(long nodeOffset) {
-        accessFile.seek(nodeOffset);
-        accessFile.write(NULL_FLAG);
+        try {
+            accessFile.seek(nodeOffset);
+            accessFile.write(NULL_FLAG);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public void updateNextOffset(long parentOffset, long childOffset) {
+        try {
+            accessFile.seek(parentOffset + FLAG_SIZE);
+            accessFile.writeLong(childOffset);
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
     public void updateStoredEntries(int by) {
-        accessFile.seek(0);
-        accessFile.writeInt(storedEntries + by);
+        try {
+            accessFile.seek(0);
+            accessFile.writeInt(storedEntries + by);
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     @Override
-    public long findEmptySlot() {
-        long offset = rootOffset();
-        accessFile.seek(offset);
-        while (isNull(offset)){ offset += maxSizeOfEntry; }
-        return offset;
+    public long findEmptySlot(long offset) {
+        for (int i = 0; i < availableEntries; i++) {
+            if (pointerExceedRange(offset)) offset = rootOffset();
+            if (isNull(offset)) return offset;
+            offset += maxSizeOfEntry;
+        }
+        throw new IllegalStateException("Couldn't find empty slot in the access file");
     }
 
 

@@ -14,8 +14,7 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
     }
 
     @Override
-    public void insert(K key, V value) {
-        insert(key, value, nodeStorage.rootOffset());}
+    public void insert(K key, V value) {insert(key, value, nodeStorage.rootOffset());}
     private void insert(K key, V value, long offset) {
         if (nodeStorage.isNull(offset)){ // If the offset is empty we insert the node there
             writeNewNode(new TreeNodeDual<>(key, value), offset, +1);

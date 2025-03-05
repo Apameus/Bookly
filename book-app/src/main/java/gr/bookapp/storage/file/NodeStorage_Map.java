@@ -6,18 +6,26 @@ public interface NodeStorage_Map<K,V> {
 
     boolean isNull(long nodeOffset) ;
 
-    boolean pointerExceedRange(long pointer) ;
+    long calculateOffset(K key);
+
+    boolean pointerExceedRange(long pointer) ; //..
 
     boolean matchKey(long nodeOffset, K key);
 
     V readValue(long nodeOffset);
 
+    void writeValue(long nodeOffset, V value);
+
+    long readNextOffset(long nodeOffset);
+
     void writeNode(K key, V value, long offset);
 
     void deleteNode(long nodeOffset);
 
+    void updateNextOffset(long parentOffset, long childOffset);
+
     void updateStoredEntries(int by);
 
-    long findEmptySlot();
+    long findEmptySlot(long startingOffset);
 
 }
