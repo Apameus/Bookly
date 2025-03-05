@@ -16,6 +16,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
     public static final byte NULL_FLAG = 0;
     public static final byte FLAG_SIZE = 1;
     public static final byte NEXT_OFFSET_SIZE = 8;
+    public static final byte CHILD_REFERENCE_SIZE = 8;
     public static final byte STORED_ENTRIES_SIZE = 4;
 
     private final int maxSizeOfEntry;
@@ -26,7 +27,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         this.keyCodec = keyCodec;
         this.valueCodec = valueCodec;
-        maxSizeOfEntry = FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() + valueCodec.maxByteSize();
+        maxSizeOfEntry = FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() + valueCodec.maxByteSize() + CHILD_REFERENCE_SIZE * 2;
         if (accessFile.length() == 0){
             availableEntries = 16;
             accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
@@ -129,7 +130,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
     public void updateStoredEntries(int by) {
         try {
             accessFile.seek(0);
-            accessFile.writeInt(storedEntries + by);
+            accessFile.writeInt(storedEntries += by);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 

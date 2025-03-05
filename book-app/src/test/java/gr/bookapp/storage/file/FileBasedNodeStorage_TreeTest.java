@@ -12,7 +12,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileBasedNodeStorageTest {
+class FileBasedNodeStorage_TreeTest {
 
     @TempDir Path dir;
     StringCodec keyCodec;
