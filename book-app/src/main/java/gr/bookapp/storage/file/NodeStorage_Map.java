@@ -1,10 +1,16 @@
 package gr.bookapp.storage.file;
 
+import java.util.HashMap;
+
 public interface NodeStorage_Map<K,V> {
 
     long rootOffset();
 
     boolean isNull(long nodeOffset) ;
+
+    boolean isFull();
+
+    HashMap<K,V> resize();
 
     long calculateOffset(K key);
 

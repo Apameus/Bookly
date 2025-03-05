@@ -17,6 +17,7 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
         insert(key, value, nodeStorage.calculateOffset(key));
     }
     private void insert(K key, V value, long offset){
+        if (nodeStorage.isFull()) resize();
         if (nodeStorage.isNull(offset)) nodeStorage.writeNode(key, value, offset);
         else {
             if (nodeStorage.matchKey(offset, key)) {
@@ -33,7 +34,7 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
         nodeStorage.updateStoredEntries(+1);
     }
 
-    @Override
+     @Override
     public V retrieve(K key) {
         long offset = nodeStorage.calculateOffset(key);
         return retrieve(key, offset);
@@ -58,6 +59,11 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
             if (nodeStorage.isNull(nextOffset)) return;
             delete(key, nextOffset);
         }
+    }
+
+    private void resize() {
+        java.util.HashMap<K, V> prevMap = nodeStorage.resize();
+        prevMap.forEach(this::insert);
     }
 
 

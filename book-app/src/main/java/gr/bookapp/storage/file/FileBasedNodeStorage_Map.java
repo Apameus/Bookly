@@ -2,10 +2,10 @@ package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.Codec;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>{
     private final RandomAccessFile accessFile;
@@ -100,7 +100,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
     @Override
     public void writeNode(K key, V value, long offset) {
         try {
-            if (isFull()) resize();
+//            if (isFull()) resize();
             accessFile.seek(offset);
             accessFile.write(EXIST_FLAG);
             accessFile.skipBytes(NEXT_OFFSET_SIZE);
@@ -143,9 +143,31 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
         throw new IllegalStateException("Couldn't find empty slot in the access file");
     }
 
-
+    @Override
     public boolean isFull(){return storedEntries == availableEntries;}
-    public void resize(){
 
+    @Override
+    public HashMap<K,V> resize(){
+        try {
+            long prevLength = accessFile.length();
+            availableEntries *= 2;
+            long newLength = (long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE;
+            accessFile.setLength(newLength);
+            HashMap<K,V> map = loadPrevEntries(prevLength);
+            storedEntries = 0;
+            return map;
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    private HashMap<K, V> loadPrevEntries(long prevLength) {
+        HashMap<K,V> map = new HashMap<>(storedEntries);
+        for (long offset = rootOffset(); offset < prevLength; offset += maxSizeOfEntry) {
+            try {
+                accessFile.seek(offset + FLAG_SIZE + NEXT_OFFSET_SIZE);
+                map.put(keyCodec.read(accessFile), readValue(offset));
+                deleteNode(offset);
+            } catch (IOException e) {throw new RuntimeException(e);}
+        }
+        return map;
     }
 }
