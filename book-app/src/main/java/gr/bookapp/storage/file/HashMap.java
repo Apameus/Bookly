@@ -30,6 +30,7 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
                 nodeStorage.updateNextOffset(offset, nextOffset);
             }
             insert(key, value, nextOffset);
+            return;
         }
         nodeStorage.updateStoredEntries(+1);
     }
