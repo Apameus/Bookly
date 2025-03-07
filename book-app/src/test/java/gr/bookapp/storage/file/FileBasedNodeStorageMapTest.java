@@ -1,7 +1,6 @@
 package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.StringCodec;
-import gr.bookapp.storage.codec.TreeNodeDual;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,19 +11,18 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-class FileBasedNodeStorage_MapTest {
+class FileBasedNodeStorageMapTest {
 
     @TempDir Path dir;
     StringCodec codec;
-    FileBasedNodeStorage_Map<String, String> nodeStorage;
+    FileBasedNodeStorageMap<String, String> nodeStorage;
     int maxSizeOfEntry;
 
     @BeforeEach
     void initialize() throws IOException {
         codec = new StringCodec();
-        nodeStorage = new FileBasedNodeStorage_Map<>(dir.resolve("NodeStorageMap.test"), codec, codec);
+        nodeStorage = new FileBasedNodeStorageMap<>(dir.resolve("NodeStorageMap.test"), codec, codec);
         maxSizeOfEntry = Byte.BYTES + Long.BYTES + codec.maxByteSize() * 2 + Long.BYTES * 2;
     }
 

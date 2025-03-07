@@ -12,19 +12,19 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileBasedNodeStorage_TreeTest {
+class FileBasedNodeStorageTreeTest {
 
     @TempDir Path dir;
     StringCodec keyCodec;
     StringCodec valueCodec;
-    FileBasedNodeStorage_Tree<String, String> fileBasedNodeStorage;
+    FileBasedNodeStorageTree<String, String> fileBasedNodeStorage;
     int maxSizeOfEntry;
 
     @BeforeEach
     void initialize() throws IOException {
         keyCodec = new StringCodec();
         valueCodec = new StringCodec();
-        fileBasedNodeStorage = new FileBasedNodeStorage_Tree<>(dir.resolve("FileBasedNodeStorageTest"), keyCodec, valueCodec);
+        fileBasedNodeStorage = new FileBasedNodeStorageTree<>(dir.resolve("FileBasedNodeStorageTest"), keyCodec, valueCodec);
         maxSizeOfEntry = Byte.BYTES + keyCodec.maxByteSize() + Long.BYTES * 2 + valueCodec.maxByteSize();
     }
 

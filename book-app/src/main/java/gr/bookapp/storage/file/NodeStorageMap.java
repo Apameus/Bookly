@@ -2,9 +2,7 @@ package gr.bookapp.storage.file;
 
 import java.util.HashMap;
 
-public interface NodeStorage_Map<K,V> {
-
-    long rootOffset();
+public interface NodeStorageMap<K,V> {
 
     boolean isNull(long nodeOffset) ;
 
@@ -14,7 +12,7 @@ public interface NodeStorage_Map<K,V> {
 
     long calculateOffset(K key);
 
-    boolean pointerExceedRange(long pointer) ; //..
+//    boolean pointerExceedRange(long pointer) ; //..
 
     boolean matchKey(long nodeOffset, K key);
 
@@ -24,14 +22,14 @@ public interface NodeStorage_Map<K,V> {
 
     long readNextOffset(long nodeOffset);
 
+    void updateNextOffset(long parentOffset, long childOffset);
+
     void writeNode(K key, V value, long offset);
 
     void deleteNode(long nodeOffset);
 
-    void updateNextOffset(long parentOffset, long childOffset);
+    long findEmptySlot(long startingOffset);
 
     void updateStoredEntries(int by);
-
-    long findEmptySlot(long startingOffset);
 
 }

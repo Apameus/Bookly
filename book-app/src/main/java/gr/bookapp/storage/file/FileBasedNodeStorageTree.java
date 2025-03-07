@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-public final class FileBasedNodeStorage_Tree<K, V> implements NodeStorage_Tree<K, V> {
+public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
     private final RandomAccessFile accessFile;
     private final TreeCodec<K,V> treeCodec;
@@ -25,7 +25,7 @@ public final class FileBasedNodeStorage_Tree<K, V> implements NodeStorage_Tree<K
     private int storedEntries;
     private int availableEntries;
 
-    public FileBasedNodeStorage_Tree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
+    public FileBasedNodeStorageTree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         treeCodec = new TreeCodec<K,V>(keyCodec, valueCodec);
         this.keyCodec = keyCodec;

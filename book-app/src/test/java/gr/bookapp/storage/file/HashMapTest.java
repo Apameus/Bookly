@@ -19,7 +19,7 @@ class HashMapTest {
     @Mock
     Comparator<Integer> comparator;
     @Mock
-    NodeStorage_Map<Integer, String> nodeStorage;
+    NodeStorageMap<Integer, String> nodeStorage;
     @InjectMocks
     HashMap<Integer, String> hashMap;
 
@@ -27,7 +27,7 @@ class HashMapTest {
     @Test
     @DisplayName("Retrieve with non-existing key")
     void retrieveWithNonExistingKey() {
-        int key = 15;
+        int key = 25;
         long offset = 25L;
         when(nodeStorage.calculateOffset(key)).thenReturn(offset);
         when(nodeStorage.isNull(offset)).thenReturn(true);
@@ -37,32 +37,38 @@ class HashMapTest {
     @Test
     @DisplayName("Insert-Retrieve test")
     void insertRetrieveTest() {
-        int key = 15;
+        int key = 25;
         long offset = 25L;
+        String value = "A";
+
         when(nodeStorage.calculateOffset(key)).thenReturn(offset);
         when(nodeStorage.isFull()).thenReturn(false);
         when(nodeStorage.isNull(offset)).thenReturn(true);
-//        nodeStorage.writeNode();
-        hashMap.insert(key, "A");
+        hashMap.insert(key, value);
+        verify(nodeStorage, times(1)).writeNode(key, value, offset);
 
         when(nodeStorage.isNull(offset)).thenReturn(false);
         when(nodeStorage.matchKey(offset, key)).thenReturn(true);
-        when(nodeStorage.readValue(offset)).thenReturn("A");
-        assertThat(hashMap.retrieve(key)).isEqualTo("A");
+        when(nodeStorage.readValue(offset)).thenReturn(value);
+        assertThat(hashMap.retrieve(key)).isEqualTo(value);
     }
 
     @Test
     @DisplayName("Insert-Retrieve from Collision")
     void insertRetrieveFromCollision() {
         long offsetA = 25L;
-        int keyA = 10;
+        int keyA = 25;
+        String valueA = "A";
+
         long offsetB = 50L;
-        int keyB = 20;
+        int keyB = 50;
+        String valueB = "B";
+
         when(nodeStorage.calculateOffset(keyA)).thenReturn(offsetA);
         when(nodeStorage.isFull()).thenReturn(false);
         when(nodeStorage.isNull(offsetA)).thenReturn(true);
-//        nodeStorage.writeNode();
-        hashMap.insert(keyA, "A");
+        hashMap.insert(keyA, valueA);
+        verify(nodeStorage, times(1)).writeNode(keyA, valueA, offsetA);
 
         when(nodeStorage.calculateOffset(keyB)).thenReturn(offsetA);
         when(nodeStorage.isNull(offsetA)).thenReturn(false);
@@ -71,21 +77,72 @@ class HashMapTest {
         when(nodeStorage.isNull(0L)).thenReturn(true);
         when(nodeStorage.findEmptySlot(0L)).thenReturn(offsetB);
         when(nodeStorage.isNull(offsetB)).thenReturn(true);
-//        nodeStorage.updateNextOffset(offsetA, offsetB);
-        hashMap.insert(keyB, "B");
+        hashMap.insert(keyB, valueB);
+        verify(nodeStorage, times(1)).updateNextOffset(offsetA, offsetB);
         verify(nodeStorage, times(2)).updateStoredEntries(+1);
 
         when(nodeStorage.isNull(offsetA)).thenReturn(false);
         when(nodeStorage.matchKey(offsetA, keyA)).thenReturn(true);
-        when(nodeStorage.readValue(offsetA)).thenReturn("A");
-        assertThat(hashMap.retrieve(keyA)).isEqualTo("A");
+        when(nodeStorage.readValue(offsetA)).thenReturn(valueA);
+        assertThat(hashMap.retrieve(keyA)).isEqualTo(valueA);
 
         when(nodeStorage.isNull(offsetB)).thenReturn(false);
         when(nodeStorage.matchKey(offsetA, keyB)).thenReturn(false);
         when(nodeStorage.readNextOffset(offsetA)).thenReturn(offsetB);
         when(nodeStorage.matchKey(offsetB, keyB)).thenReturn(true);
-        when(nodeStorage.readValue(offsetB)).thenReturn("B");
-        assertThat(hashMap.retrieve(keyB)).isEqualTo("B");
+        when(nodeStorage.readValue(offsetB)).thenReturn(valueB);
+        assertThat(hashMap.retrieve(keyB)).isEqualTo(valueB);
+    }
+
+    @Test
+    @DisplayName("Deletion test")
+    void deletionTest() {
+        int key = 25;
+        long offset = 25L;
+        String value = "A";
+
+        when(nodeStorage.calculateOffset(key)).thenReturn(offset);
+        when(nodeStorage.isFull()).thenReturn(false);
+        when(nodeStorage.isNull(offset)).thenReturn(true);
+        hashMap.insert(key, value);
+
+        when(nodeStorage.matchKey(offset, key)).thenReturn(true);
+        hashMap.delete(key);
+        verify(nodeStorage, times(1)).deleteNode(offset);
+        verify(nodeStorage, times(1)).updateStoredEntries(-1);
+    }
+
+    @Test
+    @DisplayName("Deletion from collision")
+    void deletionFromCollision() {
+        long offsetA = 25L;
+        int keyA = 25;
+        String valueA = "A";
+
+        long offsetB = 50L;
+        int keyB = 50;
+        String valueB = "B";
+
+        when(nodeStorage.calculateOffset(keyA)).thenReturn(offsetA);
+        when(nodeStorage.isFull()).thenReturn(false);
+        when(nodeStorage.isNull(offsetA)).thenReturn(true);
+        hashMap.insert(keyA, valueA);
+
+        when(nodeStorage.calculateOffset(keyB)).thenReturn(offsetA);
+        when(nodeStorage.isNull(offsetA)).thenReturn(false);
+        when(nodeStorage.matchKey(offsetA, keyB)).thenReturn(false);
+        when(nodeStorage.readNextOffset(offsetA)).thenReturn(0L);
+        when(nodeStorage.isNull(0L)).thenReturn(true);
+        when(nodeStorage.findEmptySlot(0L)).thenReturn(offsetB);
+        when(nodeStorage.isNull(offsetB)).thenReturn(true);
+        hashMap.insert(keyB, valueB);
+
+        when(nodeStorage.readNextOffset(offsetA)).thenReturn(offsetB);
+        when(nodeStorage.isNull(offsetB)).thenReturn(false);
+        when(nodeStorage.matchKey(offsetB, keyB)).thenReturn(true);
+        hashMap.delete(keyB);
+        verify(nodeStorage, times(1)).deleteNode(offsetB);
+        verify(nodeStorage, times(1)).updateStoredEntries(-1);
     }
 
 

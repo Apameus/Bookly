@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>{
+public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
     private final Codec<K> keyCodec;
     private final Codec<V> valueCodec;
@@ -23,7 +23,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
     private int availableEntries;
     private int storedEntries;
 
-    public FileBasedNodeStorage_Map(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
+    public FileBasedNodeStorageMap(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         this.keyCodec = keyCodec;
         this.valueCodec = valueCodec;
@@ -36,11 +36,6 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
             storedEntries = accessFile.readInt();
             availableEntries = (int) ((accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
         }
-    }
-
-    @Override
-    public long rootOffset() {
-        return STORED_ENTRIES_SIZE;
     }
 
     @Override
@@ -59,8 +54,8 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
 
 
     // START FROM START
-    @Override
-    public boolean pointerExceedRange(long pointer) { //todo
+//    @Override
+    public boolean pointerExceedRange(long pointer) {
         try {
             return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
         } catch (IOException e) {throw new RuntimeException(e);}
@@ -137,7 +132,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
     @Override
     public long findEmptySlot(long offset) {
         for (int i = 0; i < availableEntries; i++) {
-            if (pointerExceedRange(offset)) offset = rootOffset();
+            if (pointerExceedRange(offset)) offset = STORED_ENTRIES_SIZE;
             if (isNull(offset)) return offset;
             offset += maxSizeOfEntry;
         }
@@ -162,7 +157,7 @@ public final class FileBasedNodeStorage_Map<K,V> implements NodeStorage_Map<K,V>
 
     private HashMap<K, V> loadPrevEntries(long prevLength) {
         HashMap<K,V> map = new HashMap<>(storedEntries);
-        for (long offset = rootOffset(); offset < prevLength; offset += maxSizeOfEntry) {
+        for (long offset = STORED_ENTRIES_SIZE; offset < prevLength; offset += maxSizeOfEntry) {
             try {
                 accessFile.seek(offset + FLAG_SIZE + NEXT_OFFSET_SIZE);
                 map.put(keyCodec.read(accessFile), readValue(offset));

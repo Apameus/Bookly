@@ -6,9 +6,9 @@ import java.util.Comparator;
 public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     private final Comparator<K> comparator;
-    private final NodeStorage_Tree<K, V> nodeStorage;
+    private final NodeStorageTree<K, V> nodeStorage;
 
-    public BinarySearchTree(Comparator<K> comparator, NodeStorage_Tree<K, V> nodeStorage) {
+    public BinarySearchTree(Comparator<K> comparator, NodeStorageTree<K, V> nodeStorage) {
         this.comparator = comparator;
         this.nodeStorage = nodeStorage;
     }

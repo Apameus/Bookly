@@ -3,7 +3,7 @@ package gr.bookapp.storage.file;
 import gr.bookapp.storage.codec.TreeNode;
 import gr.bookapp.storage.codec.TreeNodeDual;
 
-public interface NodeStorage_Tree<K, V> {
+public interface NodeStorageTree<K, V> {
 
     long rootOffset();
 
