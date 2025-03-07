@@ -15,9 +15,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class HashMapTest {
 
-
-    @Mock
-    Comparator<Integer> comparator;
     @Mock
     NodeStorageMap<Integer, String> nodeStorage;
     @InjectMocks
