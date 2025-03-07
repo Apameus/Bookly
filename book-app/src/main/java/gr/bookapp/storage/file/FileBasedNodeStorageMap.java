@@ -132,6 +132,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     @Override
     public long findEmptySlot(long offset) {
         for (int i = 0; i < availableEntries; i++) {
+            if (offset == 0) offset = STORED_ENTRIES_SIZE;
             if (pointerExceedRange(offset)) offset = STORED_ENTRIES_SIZE;
             if (isNull(offset)) return offset;
             offset += maxSizeOfEntry;
@@ -146,10 +147,10 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     public HashMap<K,V> resize(){
         try {
             long prevLength = accessFile.length();
+            HashMap<K,V> map = loadPrevEntries(prevLength);
             availableEntries *= 2;
             long newLength = (long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE;
             accessFile.setLength(newLength);
-            HashMap<K,V> map = loadPrevEntries(prevLength);
             storedEntries = 0;
             return map;
         } catch (IOException e) {throw new RuntimeException(e);}
@@ -160,7 +161,8 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
         for (long offset = STORED_ENTRIES_SIZE; offset < prevLength; offset += maxSizeOfEntry) {
             try {
                 accessFile.seek(offset + FLAG_SIZE + NEXT_OFFSET_SIZE);
-                map.put(keyCodec.read(accessFile), readValue(offset));
+                K key = keyCodec.read(accessFile);
+                map.put(key, readValue(offset));
                 deleteNode(offset);
             } catch (IOException e) {throw new RuntimeException(e);}
         }

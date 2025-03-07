@@ -5,12 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class HashMapIntegrationTest {
 
@@ -61,6 +60,19 @@ class HashMapIntegrationTest {
     }
 
     @Test
+    @DisplayName("Insert with already existing key")
+    void insertWithAlreadyExistingKey() {
+        String key = "A1";
+        String valueA = "A";
+        String valueB = "B";
+
+        hashMap.insert(key,valueA);
+        assertThat(hashMap.retrieve(key)).isEqualTo(valueA);
+        hashMap.insert(key,valueB);
+        assertThat(hashMap.retrieve(key)).isEqualTo(valueB);
+    }
+
+    @Test
     @DisplayName("Deletion Test")
     void deletionTest() {
         String key = "A1";
@@ -87,5 +99,16 @@ class HashMapIntegrationTest {
         hashMap.delete(keyB);
         assertThat(hashMap.retrieve(keyA)).isEqualTo(valueA);
         assertThat(hashMap.retrieve(keyB)).isNull();
+    }
+
+    @Test
+    @DisplayName("Overload insert & retrieve")
+    void overloadInsertRetrieve() {
+        for (int i = 0; i < 30; i++) {
+            hashMap.insert(valueOf(i), valueOf(i));
+        }
+        for (int i = 0; i < 30; i++) {
+            assertThat(hashMap.retrieve(valueOf(i))).isEqualTo(valueOf(i));
+        }
     }
 }
