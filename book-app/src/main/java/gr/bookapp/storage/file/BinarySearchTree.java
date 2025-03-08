@@ -6,19 +6,19 @@ import java.util.Comparator;
 public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     private final Comparator<K> comparator;
-    private final NodeStorage<K, V> nodeStorage;
+    private final NodeStorageTree<K, V> nodeStorage;
 
-    public BinarySearchTree(Comparator<K> comparator, NodeStorage<K, V> nodeStorage) {
+    public BinarySearchTree(Comparator<K> comparator, NodeStorageTree<K, V> nodeStorage) {
         this.comparator = comparator;
         this.nodeStorage = nodeStorage;
     }
 
     @Override
-    public void insert(K key, V value) {
-        insert(key, value, nodeStorage.rootOffset());}
+    public void insert(K key, V value) {insert(key, value, nodeStorage.rootOffset());}
     private void insert(K key, V value, long offset) {
         if (nodeStorage.isNull(offset)){ // If the offset is empty we insert the node there
-            writeNewNode(new TreeNodeDual<>(key, value), offset, +1);
+            nodeStorage.writeNode(new TreeNodeDual<>(key, value), offset);
+            nodeStorage.updateStoredEntries(+1);
             return;
         }
         var found = nodeStorage.readKeyNode(offset);
@@ -30,17 +30,15 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     private void insertNewNode(long childPointer, K key, V value, long parentOffset, String childSide) {
         if (nodeStorage.isNull(childPointer)) {
-            insertNewNode(key, value, parentOffset, childSide);
+            long emptySlot = nodeStorage.findEmptySlot();
+            nodeStorage.updatePointer(parentOffset, childSide, emptySlot);
+            nodeStorage.writeNode(new TreeNodeDual<>(key, value), emptySlot);
+            nodeStorage.updateStoredEntries(+1);
             return;
         }
         insert(key, value, childPointer);
     }
 
-    private void insertNewNode(K key, V value, long parentOffset, String childSide) {
-        long emptySlot = nodeStorage.findEmptySlot();
-        nodeStorage.updatePointer(parentOffset, childSide, emptySlot);
-        writeNewNode(new TreeNodeDual<>(key, value), emptySlot, +1);
-    }
 
     @Override
     public V retrieve(K key) {return retrieveFromOffset(key, nodeStorage.rootOffset());}
@@ -75,12 +73,12 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
             }
             else if (nodeStorage.isNull(node.rightPointer())){ // Right child is null
                 var leftChild = readFullEntry(node.leftPointer());
-                writeNewNode(leftChild, offset, -1);
+                nodeStorage.writeNode(leftChild, offset);
+                nodeStorage.updateStoredEntries(-1);
             }
             else { // both children are present
                 var successor = leftMost(node.rightPointer());
                 nodeStorage.updateNode(successor.key(), successor.value(), offset);
-                nodeStorage.updateStoredEntries(-1);
                 delete(successor.key(), node.rightPointer(), offset, "R");
             }
         }
@@ -101,8 +99,4 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         return leftMost(node.leftPointer());
     }
 
-    private void writeNewNode(TreeNodeDual<K, V> node, long offset, int by) {
-        nodeStorage.writeNode(node, offset);
-        nodeStorage.updateStoredEntries(by);
-    }
 }

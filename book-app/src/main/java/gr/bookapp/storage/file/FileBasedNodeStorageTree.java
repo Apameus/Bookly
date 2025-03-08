@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
+public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
     private final RandomAccessFile accessFile;
     private final TreeCodec<K,V> treeCodec;
@@ -25,7 +25,7 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
     private int storedEntries;
     private int availableEntries;
 
-    public FileBasedNodeStorage(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
+    public FileBasedNodeStorageTree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         treeCodec = new TreeCodec<K,V>(keyCodec, valueCodec);
         this.keyCodec = keyCodec;
@@ -36,7 +36,11 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
             availableEntries = 16;
             accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
         }
-        else { availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry); }
+        else {
+            accessFile.seek(0);
+            storedEntries = accessFile.readInt();
+            availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
+        }
     }
 
     @Override
@@ -140,7 +144,7 @@ public final class FileBasedNodeStorage<K, V> implements NodeStorage<K, V> {
     public void resize() {
         availableEntries *= 2;
         try {
-            accessFile.setLength((long) availableEntries * storedEntries + maxSizeOfEntry);
+            accessFile.setLength((long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
