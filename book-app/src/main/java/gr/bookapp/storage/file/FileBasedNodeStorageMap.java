@@ -33,6 +33,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
         }
         else {
+            accessFile.seek(0);
             storedEntries = accessFile.readInt();
             availableEntries = (int) ((accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
         }
@@ -52,20 +53,19 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
         return hash * maxSizeOfEntry + STORED_ENTRIES_SIZE;
     }
 
-
-    // START FROM START
-//    @Override
-    public boolean pointerExceedRange(long pointer) {
-        try {
-            return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
-        } catch (IOException e) {throw new RuntimeException(e);}
-    }
-
     @Override
     public boolean matchKey(long nodeOffset, K key) {
         try {
             accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE);
             return keyCodec.read(accessFile).equals(key);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public K readKey(long nodeOffset) {
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE + NEXT_OFFSET_SIZE);
+            return keyCodec.read(accessFile);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
@@ -96,7 +96,6 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     @Override
     public void writeNode(K key, V value, long offset) {
         try {
-//            if (isFull()) resize();
             accessFile.seek(offset);
             accessFile.write(EXIST_FLAG);
             accessFile.skipBytes(NEXT_OFFSET_SIZE);
@@ -167,5 +166,12 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             } catch (IOException e) {throw new RuntimeException(e);}
         }
         return map;
+    }
+
+
+    private boolean pointerExceedRange(long pointer) {
+        try {
+            return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
+        } catch (IOException e) {throw new RuntimeException(e);}
     }
 }

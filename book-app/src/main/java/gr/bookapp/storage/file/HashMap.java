@@ -51,15 +51,18 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
         delete(key, nodeStorage.calculateOffset(key));
     }
     private void delete(K key, long offset){
+        if (nodeStorage.isNull(offset)) return;
+        long nextOffset = nodeStorage.readNextOffset(offset);
+
         if (nodeStorage.matchKey(offset, key)) {
-            nodeStorage.deleteNode(offset);
+            if (nodeStorage.isNull(nextOffset)) nodeStorage.deleteNode(offset);
+            else {
+                nodeStorage.writeNode(nodeStorage.readKey(nextOffset), nodeStorage.readValue(nextOffset), offset);
+                nodeStorage.updateNextOffset(offset, nodeStorage.readNextOffset(nextOffset));
+            }
             nodeStorage.updateStoredEntries(-1);
         }
-        else {
-            long nextOffset = nodeStorage.readNextOffset(offset);
-            if (nodeStorage.isNull(nextOffset)) return;
-            delete(key, nextOffset);
-        }
+        else delete(key, nextOffset);
     }
 
     private void resize() {

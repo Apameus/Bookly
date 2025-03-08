@@ -12,9 +12,9 @@ public interface NodeStorageMap<K,V> {
 
     long calculateOffset(K key);
 
-//    boolean pointerExceedRange(long pointer) ; //..
-
     boolean matchKey(long nodeOffset, K key);
+
+    K readKey(long nodeOffset);
 
     V readValue(long nodeOffset);
 

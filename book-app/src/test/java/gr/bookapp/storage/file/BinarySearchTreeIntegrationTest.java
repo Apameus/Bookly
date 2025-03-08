@@ -1,16 +1,15 @@
 package gr.bookapp.storage.file;
 
+import gr.bookapp.storage.codec.IntegerCodec;
 import gr.bookapp.storage.codec.StringCodec;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
 import java.io.IOException;
 import java.nio.file.Path;
-
+import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class BinarySearchTreeIntegrationTest {
 
@@ -88,6 +87,94 @@ class BinarySearchTreeIntegrationTest {
         binarySearchTree.delete(keyB);
         assertThat(binarySearchTree.retrieve(keyA)).isEqualTo(valueA);
         assertThat(binarySearchTree.retrieve(keyB)).isNull();
+    }
+
+
+    @Test
+    @DisplayName("Overload acceding insertion-deletion test")
+    void overloadTest() throws IOException {
+        NodeStorageTree<Integer, String> nodeStorageTree = new FileBasedNodeStorageTree<>(dir.resolve("fff.test"), new IntegerCodec(), stringCodec);
+        BinarySearchTree<Integer, String> bst = new BinarySearchTree<>(Integer::compareTo, nodeStorageTree);
+        for (int i = 0; i < 100; i++) {
+            bst.insert(i, valueOf(i));
+        }
+        for (int i = 0; i < 100; i++) {
+            assertThat(bst.retrieve(i)).isEqualTo(valueOf(i));
+            bst.delete(i);
+        }
+        assertThat(binarySearchTree.retrieve("0")).isNull();
+    }
+
+    @Test
+    @DisplayName("Overload descending insertion-deletion test")
+    void overloadTestII() throws IOException {
+        NodeStorageTree<Integer, String> nodeStorageTree = new FileBasedNodeStorageTree<>(dir.resolve("fff.test"), new IntegerCodec(), stringCodec);
+        BinarySearchTree<Integer, String> bst = new BinarySearchTree<>(Integer::compareTo, nodeStorageTree);
+        for (int i = 100; i > 0; i--) {
+            bst.insert(i, valueOf(i));
+        }
+        for (int i = 100; i > 0; i--) {
+            assertThat(bst.retrieve(i)).isEqualTo(valueOf(i));
+            bst.delete(i);
+        }
+        assertThat(binarySearchTree.retrieve("0")).isNull();
+    }
+
+    @Test
+    @DisplayName("Overload Test")
+    void overloadTestIII() throws IOException {
+        for (int i = 0; i < 1000; i++) {
+            binarySearchTree.insert(valueOf(i), valueOf(i));
+        }
+        for (int i = 0; i < 1000; i++) {
+            assertThat(binarySearchTree.retrieve(valueOf(i))).isEqualTo(valueOf(i));
+            binarySearchTree.delete(valueOf(i));
+        }
+        assertThat(binarySearchTree.retrieve("0")).isNull();
+        assertThat(binarySearchTree.retrieve("9")).isNull();
+    }
+
+    @Test
+    @DisplayName("Delete root")
+    void deleteRoot() throws IOException {
+        NodeStorageTree<Integer, String> nodeStorageTree = new FileBasedNodeStorageTree<>(dir.resolve("fff.test"), new IntegerCodec(), stringCodec);
+        BinarySearchTree<Integer, String> bst = new BinarySearchTree<>(Integer::compareTo, nodeStorageTree);
+
+        bst.insert(10, "10");
+        bst.insert(5, "5");
+        bst.insert(12, "12");
+        bst.insert(11, "11");
+
+        bst.delete(10);
+        assertThat(bst.retrieve(10)).isNull();
+        assertThat(bst.retrieve(5)).isEqualTo("5");
+        assertThat(bst.retrieve(12)).isEqualTo("12");
+        assertThat(bst.retrieve(11)).isEqualTo("11");
+    }
+
+    @Test
+    @DisplayName("Chain insertion-deletion test")
+    void chainInsertionDeletionTest() throws IOException {
+        NodeStorageTree<Integer, String> nodeStorageTree = new FileBasedNodeStorageTree<>(dir.resolve("fff.test"), new IntegerCodec(), stringCodec);
+        BinarySearchTree<Integer, String> bst = new BinarySearchTree<>(Integer::compareTo, nodeStorageTree);
+
+        bst.insert(10, "10");
+        bst.insert(5,"5");
+        bst.insert(15,"15");
+        bst.insert(7,"7");
+        bst.insert(3, "3");
+        bst.insert(17,"17");
+        bst.insert(13,"13");
+        bst.insert(20, "20");
+        //      10
+        //   5      15
+        // 3  7   13  17
+        //              20
+        bst.delete(10);
+        bst.delete(13);
+        bst.delete(15);
+        bst.delete(17);
+        bst.delete(3);
     }
 
 }

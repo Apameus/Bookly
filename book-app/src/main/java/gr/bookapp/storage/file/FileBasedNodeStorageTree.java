@@ -37,8 +37,9 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
         }
         else {
-            availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
+            accessFile.seek(0);
             storedEntries = accessFile.readInt();
+            availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
         }
     }
 
@@ -143,7 +144,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     public void resize() {
         availableEntries *= 2;
         try {
-            accessFile.setLength((long) availableEntries * storedEntries + maxSizeOfEntry);
+            accessFile.setLength((long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

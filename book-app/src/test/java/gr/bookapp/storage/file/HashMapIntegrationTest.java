@@ -102,13 +102,15 @@ class HashMapIntegrationTest {
     }
 
     @Test
-    @DisplayName("Overload insert & retrieve")
-    void overloadInsertRetrieve() {
-        for (int i = 0; i < 30; i++) {
+    @DisplayName("Overload Test")
+    void overloadTest() {
+        for (int i = 0; i < 50; i++) {
             hashMap.insert(valueOf(i), valueOf(i));
         }
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 50; i++) {
             assertThat(hashMap.retrieve(valueOf(i))).isEqualTo(valueOf(i));
+            hashMap.delete(valueOf(i));
         }
+        assertThat(hashMap.retrieve("0")).isNull();
     }
 }
