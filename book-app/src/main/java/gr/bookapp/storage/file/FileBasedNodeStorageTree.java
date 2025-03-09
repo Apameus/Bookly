@@ -7,6 +7,9 @@ import gr.bookapp.storage.codec.TreeNodeDual;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
@@ -134,6 +137,18 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             }
         } catch (IOException e) {throw new RuntimeException(e);}
         return offset;
+    }
+
+    @Override
+    public Map<K, V> getAllEntries() {
+        Map<K,V> entries = new HashMap<>(storedEntries);
+        long offset = rootOffset();
+        for (int i = 0; i < storedEntries; i++) {
+            K key = readKeyNode(offset).key();
+            V value = readValue(offset);
+            entries.put(key, value);
+        }
+        return entries;
     }
 
 

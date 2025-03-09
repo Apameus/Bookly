@@ -1,6 +1,8 @@
 package gr.bookapp.storage.file;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 public interface NodeStorageMap<K,V> {
 
@@ -32,4 +34,5 @@ public interface NodeStorageMap<K,V> {
 
     void updateStoredEntries(int by);
 
+    Map<K,V> getAllEntries();
 }

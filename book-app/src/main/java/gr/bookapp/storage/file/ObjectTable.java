@@ -1,6 +1,8 @@
 package gr.bookapp.storage.file;
 
-public interface ObjectTable<K, V> {
+import java.util.Map;
+
+public interface ObjectTable<K, V> extends Iterable<Map.Entry<K,V>> {
 
     void insert(K key, V value);
 

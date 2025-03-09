@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
@@ -126,6 +127,18 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             accessFile.seek(0);
             accessFile.writeInt(storedEntries += by);
         } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public Map<K, V> getAllEntries() {
+        Map<K,V> entries = new HashMap<>();
+      try {
+          for (long offset = STORED_ENTRIES_SIZE; offset < accessFile.length(); offset += maxSizeOfEntry) {
+              if (isNull(offset)) continue;
+              entries.put(readKey(offset), readValue(offset));
+          }
+      } catch (IOException e) {throw new RuntimeException(e); }
+        return entries;
     }
 
     @Override

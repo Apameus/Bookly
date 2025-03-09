@@ -3,6 +3,9 @@ package gr.bookapp.storage.file;
 import gr.bookapp.storage.codec.TreeNode;
 import gr.bookapp.storage.codec.TreeNodeDual;
 
+import java.util.Iterator;
+import java.util.Map;
+
 public interface NodeStorageTree<K, V> {
 
     long rootOffset();
@@ -24,4 +27,6 @@ public interface NodeStorageTree<K, V> {
     void updateStoredEntries(int by) ;
 
     long findEmptySlot() ;
+
+    Map<K,V> getAllEntries();
 }
