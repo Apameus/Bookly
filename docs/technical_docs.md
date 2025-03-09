@@ -2,14 +2,25 @@
 
 ### Classes:
 - <h3>Book:</h3>
-<b>Long</b> id,
+<b>long</b> id,
 <b>String</b> name, 
 <b>String</b> Author, 
 <b>List\<String></b> tags, 
-<b>Double</b> price, 
-<b>Date</b> date
-- <h3>Tag:</h3>
-<b>String</b> (ex. Comedy, Fantasy, ..)
+<b>double</b> price, 
+<b>long</b> date.
+
+- <h3>Employee</h3>
+<b>String</b> username,
+<b>String</b> password.
+
+- <h3>Sale</h3>
+<b>List\<String></b> tags,
+<b>int</b> percentage,
+<b>long</b> untilDate.
+
+- <h3>BookStatics:</h3>
+<b>long</b> bookID,
+<b>long</b> sales.
 
 
 ### Data Structures:

@@ -2,6 +2,8 @@ package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.TreeNodeDual;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
@@ -79,7 +81,6 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
             else { // both children are present
                 var successor = leftMost(node.rightPointer());
                 nodeStorage.updateNode(successor.key(), successor.value(), offset);
-//                nodeStorage.updateStoredEntries(-1);
                 delete(successor.key(), node.rightPointer(), offset, "R");
             }
         }
@@ -100,8 +101,8 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         return leftMost(node.leftPointer());
     }
 
-//    private void writeNewNode(TreeNodeDual<K, V> node, long offset, int by) {
-//        nodeStorage.writeNode(node, offset);
-//        nodeStorage.updateStoredEntries(by);
-//    }
+    @Override
+    public Iterator<Map.Entry<K, V>> iterator() {
+        return nodeStorage.entriesIterator();
+    }
 }

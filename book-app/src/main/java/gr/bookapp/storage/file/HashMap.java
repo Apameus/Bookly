@@ -1,6 +1,8 @@
 package gr.bookapp.storage.file;
 
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class HashMap<K,V> implements ObjectTable<K,V>{
 
@@ -70,5 +72,10 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
         prevMap.forEach(this::insert);
     }
 
+
+    @Override
+    public Iterator<Map.Entry<K, V>> iterator() {
+        return nodeStorage.entriesIterator().entrySet().iterator();
+    }
 
 }
