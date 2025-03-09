@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
@@ -129,6 +131,40 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     }
 
     @Override
+    public Iterator<Map.Entry<K, V>> entriesIterator() {
+        return new Iterator<Map.Entry<K, V>>() {
+            long offset = STORED_ENTRIES_SIZE;
+            int remainingSlots = availableEntries;
+            Map.Entry<K,V> next = findNext();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Map.Entry<K, V> next() {
+                var curr = next;
+                next = findNext();
+                return curr;
+            }
+
+            private Map.Entry<K, V> findNext() {
+                if (remainingSlots == 0) return null;
+                if (isNull(offset)){
+                    offset += maxSizeOfEntry;
+                    remainingSlots--;
+                    return findNext();
+                }
+                K key = readKey(offset);
+                V value = readValue(offset);
+                remainingSlots--;
+                return Map.entry(key,value);
+            }
+        };
+    }
+
+    @Override
     public long findEmptySlot(long offset) {
         for (int i = 0; i < availableEntries; i++) {
             if (offset == 0) offset = STORED_ENTRIES_SIZE;
@@ -174,4 +210,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
         } catch (IOException e) {throw new RuntimeException(e);}
     }
+
+
+    private int getAvailableEntries() { return availableEntries; }
 }

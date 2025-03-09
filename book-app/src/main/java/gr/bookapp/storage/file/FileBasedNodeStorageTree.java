@@ -7,6 +7,8 @@ import gr.bookapp.storage.codec.TreeNodeDual;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.util.*;
+import java.util.HashMap;
 
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
@@ -134,6 +136,58 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             }
         } catch (IOException e) {throw new RuntimeException(e);}
         return offset;
+    }
+
+
+    @Override
+    public Iterator<Map.Entry<K, V>> entriesIterator() {
+        return new Iterator<Map.Entry<K, V>>() {
+            long offset = STORED_ENTRIES_SIZE;
+            int remainingEntries = availableEntries;
+            Map.Entry<K,V> next = findNext();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Map.Entry<K, V> next() {
+                var curr = next;
+                next = findNext();
+                return curr;
+            }
+
+            private Map.Entry<K, V> findNext() {
+                if (remainingEntries == 0) return null;
+                if (isNull(offset)){
+                    offset += maxSizeOfEntry;
+                    remainingEntries--;
+                    return findNext();
+                }
+                else {
+                    K key = readKey(offset);
+                    V value = readValue(offset);
+                    remainingEntries--;
+                    return Map.entry(key,value);
+                }
+            }
+        };
+    }
+
+    private K readKey(long nodeOffset){
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE);
+            return keyCodec.read(accessFile);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+
+    private void pushAllLeft(long nodePointer, Stack<TreeNodeDual<K, V>> stack) {
+        if (isNull(nodePointer)) return;
+        TreeNode<K> node = readKeyNode(nodePointer);
+        stack.push(new TreeNodeDual<>(node, readValue(nodePointer)));
+        pushAllLeft(node.leftPointer(), stack);
     }
 
 
