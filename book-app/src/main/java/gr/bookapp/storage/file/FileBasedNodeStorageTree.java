@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.HashMap;
 
+
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
     private final RandomAccessFile accessFile;
@@ -183,6 +184,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
         stack.push(new TreeNodeDual<>(node, readValue(nodePointer)));
         pushAllLeft(node.leftPointer(), stack);
     }
+
 
 
     public boolean isFull() {

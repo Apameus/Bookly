@@ -2,7 +2,6 @@ package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.TreeNode;
 import gr.bookapp.storage.codec.TreeNodeDual;
-
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,4 +28,5 @@ public interface NodeStorageTree<K, V> {
     long findEmptySlot() ;
 
     Iterator<Map.Entry<K,V>> entriesIterator();
+
 }

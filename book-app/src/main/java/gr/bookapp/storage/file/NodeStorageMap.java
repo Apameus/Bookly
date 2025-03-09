@@ -35,4 +35,5 @@ public interface NodeStorageMap<K,V> {
     void updateStoredEntries(int by);
 
     Iterator<Map.Entry<K,V>> entriesIterator();
+
 }

@@ -2,7 +2,6 @@ package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.Codec;
 import gr.bookapp.storage.codec.TreeNodeDual;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
@@ -214,7 +213,4 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
         } catch (IOException e) {throw new RuntimeException(e);}
     }
-
-
-    private int getAvailableEntries() { return availableEntries; }
 }
