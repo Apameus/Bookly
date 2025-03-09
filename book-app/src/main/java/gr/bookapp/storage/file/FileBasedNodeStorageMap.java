@@ -1,12 +1,15 @@
 package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.Codec;
+import gr.bookapp.storage.codec.TreeNodeDual;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Stack;
 
 public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
@@ -130,15 +133,39 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     }
 
     @Override
-    public Map<K, V> getAllEntries() {
-        Map<K,V> entries = new HashMap<>();
-      try {
-          for (long offset = STORED_ENTRIES_SIZE; offset < accessFile.length(); offset += maxSizeOfEntry) {
-              if (isNull(offset)) continue;
-              entries.put(readKey(offset), readValue(offset));
-          }
-      } catch (IOException e) {throw new RuntimeException(e); }
-        return entries;
+    public Iterator<Map.Entry<K, V>> entriesIterator() {
+        return new Iterator<Map.Entry<K, V>>() {
+            long offset = STORED_ENTRIES_SIZE;
+            int remainingEntries = availableEntries;
+            Map.Entry<K,V> next = findNext();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Map.Entry<K, V> next() {
+                var curr = next;
+                next = findNext();
+                return curr;
+            }
+
+            private Map.Entry<K, V> findNext() {
+                if (remainingEntries == 0) return null;
+                if (isNull(offset)){
+                    offset += maxSizeOfEntry;
+                    remainingEntries--;
+                    return findNext();
+                }
+                else {
+                    K key = readKey(offset);
+                    V value = readValue(offset);
+                    remainingEntries--;
+                    return Map.entry(key,value);
+                }
+            }
+        };
     }
 
     @Override
@@ -187,4 +214,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
         } catch (IOException e) {throw new RuntimeException(e);}
     }
+
+
+    private int getAvailableEntries() { return availableEntries; }
 }

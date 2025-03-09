@@ -103,6 +103,6 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
-        return nodeStorage.getAllEntries().entrySet().iterator();
+        return nodeStorage.entriesIterator();
     }
 }

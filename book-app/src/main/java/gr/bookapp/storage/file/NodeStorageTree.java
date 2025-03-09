@@ -28,5 +28,5 @@ public interface NodeStorageTree<K, V> {
 
     long findEmptySlot() ;
 
-    Map<K,V> getAllEntries();
+    Iterator<Map.Entry<K,V>> entriesIterator();
 }

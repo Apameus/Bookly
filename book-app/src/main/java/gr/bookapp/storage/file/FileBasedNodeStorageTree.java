@@ -7,9 +7,8 @@ import gr.bookapp.storage.codec.TreeNodeDual;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.util.*;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
@@ -139,16 +138,50 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
         return offset;
     }
 
+
     @Override
-    public Map<K, V> getAllEntries() {
-        Map<K,V> entries = new HashMap<>(storedEntries);
-        long offset = rootOffset();
-        for (int i = 0; i < storedEntries; i++) {
-            K key = readKeyNode(offset).key();
-            V value = readValue(offset);
-            entries.put(key, value);
-        }
-        return entries;
+    public Iterator<Map.Entry<K, V>> entriesIterator() {
+        return new Iterator<Map.Entry<K, V>>() {
+            long offset = STORED_ENTRIES_SIZE;
+            int remainingEntries = availableEntries;
+            TreeNodeDual<K,V> next = findNext();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Map.Entry<K, V> next() {
+                var curr = next;
+                next = findNext();
+                return Map.entry(curr.key(), curr.value());
+            }
+
+            private TreeNodeDual<K, V> findNext() {
+                if (remainingEntries == 0) return null;
+                if (isNull(offset)){
+                    offset += maxSizeOfEntry;
+                    remainingEntries--;
+                    return findNext();
+                }
+                else {
+                    TreeNode<K> node = readKeyNode(offset);
+                    V value = readValue(offset);
+                    remainingEntries--;
+                    return new TreeNodeDual<>(node,value);
+                }
+            }
+        };
+    }
+
+
+
+    private void pushAllLeft(long nodePointer, Stack<TreeNodeDual<K, V>> stack) {
+        if (isNull(nodePointer)) return;
+        TreeNode<K> node = readKeyNode(nodePointer);
+        stack.push(new TreeNodeDual<>(node, readValue(nodePointer)));
+        pushAllLeft(node.leftPointer(), stack);
     }
 
 
