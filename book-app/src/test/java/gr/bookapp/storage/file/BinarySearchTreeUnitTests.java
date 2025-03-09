@@ -21,7 +21,7 @@ class BinarySearchTreeUnitTests {
     @Mock
     Comparator<Integer> comparator;
     @Mock
-    NodeStorage<Integer, Integer> nodeStorage;
+    NodeStorageTree<Integer, Integer> nodeStorage;
     @InjectMocks
     BinarySearchTree<Integer, Integer> binarySearchTree;
 
@@ -235,23 +235,25 @@ class BinarySearchTreeUnitTests {
         when(nodeStorage.readKeyNode(node.rightPointer())).thenReturn(rightChild);
         when(nodeStorage.isNull(rightChild.leftPointer())).thenReturn(false);
 
-        TreeNode<Integer> successor = new TreeNode<>(22, 0, 0);
+        TreeNode<Integer> successor = new TreeNode<>(22, 0, 700);
         int successorValue = 22;
         when(nodeStorage.readKeyNode(rightChild.leftPointer())).thenReturn(successor);
         when(nodeStorage.isNull(successor.leftPointer())).thenReturn(true);
         when(nodeStorage.readValue(rightChild.leftPointer())).thenReturn(successorValue);
 
+        when(comparator.compare(successorValue, rightChild.key())).thenReturn(-1);
 
-        // + delete successor
-//        when(nodeStorage.isNull(rightChild.leftChild())).thenReturn(false);
-//        when(nodeStorage.readNode(rightChild.leftChild())).thenReturn(successor);
-//        when(comparator.compare(22, successor.key())).thenReturn(0);
-//        when(nodeStorage.isNull(successor.leftChild())).thenReturn(true);
-//        when(nodeStorage.isNull(successor.rightChild())).thenReturn(true);
-                //
+                // + delete successor
+        when(comparator.compare(22, successor.key())).thenReturn(0);
+        when(nodeStorage.isNull(successor.leftPointer())).thenReturn(true);
+        when(nodeStorage.isNull(successor.rightPointer())).thenReturn(false);
+        TreeNode<Integer> succRight = new TreeNode<>(24);
+        when(nodeStorage.readKeyNode(successor.rightPointer())).thenReturn(succRight);
+        when(nodeStorage.readValue(successor.rightPointer())).thenReturn(24);
+
         binarySearchTree.delete(20);
         verify(nodeStorage, times(1)).updateNode(successor.key(), successorValue, offset);
-//        verify(nodeStorage, times(1)).deleteNode(rightChild.leftChild());
+        nodeStorage.writeNode(new TreeNodeDual<>(succRight, 24), offset);
     }
 
 
