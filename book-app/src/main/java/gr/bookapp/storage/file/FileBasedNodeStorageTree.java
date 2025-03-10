@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.HashMap;
 
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
@@ -22,6 +23,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     private static final byte CHILD_REFERENCE_SIZE = 8;
     private static final byte STORED_ENTRIES_SIZE = 4;
     private final int maxSizeOfEntry;
+
 
     int storedEntries;
     int availableEntries;
@@ -181,6 +183,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             return keyCodec.read(accessFile);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
+
 
 
     private void pushAllLeft(long nodePointer, Stack<TreeNodeDual<K, V>> stack) {

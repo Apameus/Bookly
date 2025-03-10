@@ -75,6 +75,8 @@ public final class HashMap<K,V> implements ObjectTable<K,V>{
 
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
+
         return nodeStorage.entriesIterator();
     }
+
 }

@@ -2,12 +2,20 @@ package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.Codec;
 
+
+
+import gr.bookapp.storage.codec.TreeNodeDual;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+
+import java.util.Stack;
+
 
 public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
@@ -134,7 +142,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     public Iterator<Map.Entry<K, V>> entriesIterator() {
         return new Iterator<Map.Entry<K, V>>() {
             long offset = STORED_ENTRIES_SIZE;
-            int remainingSlots = availableEntries;
+            int remainingEntries = availableEntries;
             Map.Entry<K,V> next = findNext();
 
             @Override
@@ -161,6 +169,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
                 offset += maxSizeOfEntry;
                 remainingSlots--;
                 return Map.entry(key,value);
+
             }
         };
     }
@@ -211,7 +220,4 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             return pointer >= accessFile.length() - STORED_ENTRIES_SIZE;
         } catch (IOException e) {throw new RuntimeException(e);}
     }
-
-
-    private int getAvailableEntries() { return availableEntries; }
 }
