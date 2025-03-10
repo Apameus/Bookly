@@ -1,37 +1,21 @@
 package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
-import gr.bookapp.database.Index;
 import gr.bookapp.models.Offer;
-
-import java.util.List;
 
 public final class OfferRepository {
 
-    private final Database<Long , Offer> offerDatabase;
-    private final Index<Offer, List<String>> tagIndex;
-
-    public OfferRepository(Database<Long, Offer> offerDatabase, Index<Offer, List<String>> tagIndex) {
-        this.offerDatabase = offerDatabase;
-        this.tagIndex = tagIndex;
-    }
-
-    public List<Offer> getOffersByTags(List<String> tags){
-        return offerDatabase.findAllByIndex(tagIndex, tags);
-    }
+    Database<Long , Offer> offerDatabase;
 
     public void add(Offer offer){
         offerDatabase.insert(offer.offerID(), offer);
     }
     
-    public void deleteOfferById(long offerID){
+    public void delete(long offerID){
         offerDatabase.delete(offerID);
     }
 
-    public Offer getOfferById(long offerID){
+    public Offer get(long offerID){
         return offerDatabase.retrieve(offerID);
     }
-
-    public List<Offer> getAllOffers(){ return offerDatabase.findAll(); }
-
 }

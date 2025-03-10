@@ -1,31 +1,21 @@
 package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
-import gr.bookapp.database.Index;
 import gr.bookapp.models.Employee;
 
 public final class EmployeeRepository {
 
-    private final Database<Long, Employee> employeeDatabase;
-    private final Index<Employee, String> usernameIndex = Employee::username;
-
-    public EmployeeRepository(Database<Long, Employee> employeeDatabase) {
-        this.employeeDatabase = employeeDatabase;
-    }
+    Database<Long, Employee> employeeDatabase;
 
     public void add(Employee employee){
         employeeDatabase.insert(employee.id(), employee);
     }
 
-    public void deleteEmployeeByID(long employeeID){
+    public void delete(long employeeID){
         employeeDatabase.delete(employeeID);
     }
 
-    public Employee getEmployeeByID(long employeeID){
+    public Employee get(long employeeID){
         return employeeDatabase.retrieve(employeeID);
-    }
-
-    public Employee getEmployeeByUsername(String username){
-        return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
     }
 }
