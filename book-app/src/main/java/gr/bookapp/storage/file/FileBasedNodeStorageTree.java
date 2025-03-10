@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.HashMap;
 
 public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, V> {
 
@@ -24,8 +23,8 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     private static final byte STORED_ENTRIES_SIZE = 4;
     private final int maxSizeOfEntry;
 
-    private int storedEntries;
-    private int availableEntries;
+    int storedEntries;
+    int availableEntries;
 
     public FileBasedNodeStorageTree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
@@ -142,8 +141,8 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     @Override
     public Iterator<Map.Entry<K, V>> entriesIterator() {
         return new Iterator<Map.Entry<K, V>>() {
-            long offset = STORED_ENTRIES_SIZE;
-            int remainingEntries = availableEntries;
+            long offset = rootOffset();
+            int remainingSlots = availableEntries;
             Map.Entry<K,V> next = findNext();
 
             @Override
@@ -159,23 +158,24 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             }
 
             private Map.Entry<K, V> findNext() {
-                if (remainingEntries == 0) return null;
+                if (remainingSlots == 0) return null;
                 if (isNull(offset)){
                     offset += maxSizeOfEntry;
-                    remainingEntries--;
+                    remainingSlots--;
                     return findNext();
                 }
                 else {
                     K key = readKey(offset);
                     V value = readValue(offset);
-                    remainingEntries--;
+                    offset += maxSizeOfEntry;
+                    remainingSlots--;
                     return Map.entry(key,value);
                 }
             }
         };
     }
 
-    private K readKey(long nodeOffset){
+    public K readKey(long nodeOffset){
         try {
             accessFile.seek(nodeOffset + FLAG_SIZE);
             return keyCodec.read(accessFile);

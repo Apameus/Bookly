@@ -9,6 +9,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,5 +77,19 @@ class FileBasedNodeStorageTreeTest {
             fileBasedNodeStorage.writeNode(new TreeNodeDual<>("i", "i"), entry(i));
         }
         assertThat(fileBasedNodeStorage.findEmptySlot()).isEqualTo(entry(5));
+    }
+
+    @Test
+    @DisplayName("Entry Iterator test")
+    void entryIteratorTest() {
+        for (int i = 0; i < 5; i++) {
+            fileBasedNodeStorage.writeNode(new TreeNodeDual<>(String.valueOf(i), String.valueOf(i)), entry(i));
+        }
+        Iterator<Map.Entry<String, String>> entryIterator = fileBasedNodeStorage.entriesIterator();
+        for (int i = 0; i < 5; i++) {
+            assertThat(entryIterator.hasNext()).isTrue();
+            assertThat(entryIterator.next()).isEqualTo(Map.entry(String.valueOf(i), String.valueOf(i)));
+        }
+        assertThat(entryIterator.hasNext()).isFalse();
     }
 }
