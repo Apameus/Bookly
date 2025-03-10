@@ -158,6 +158,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
                 }
                 K key = readKey(offset);
                 V value = readValue(offset);
+                offset += maxSizeOfEntry;
                 remainingSlots--;
                 return Map.entry(key,value);
             }

@@ -1,6 +1,7 @@
 package gr.bookapp.storage.file;
 
 import gr.bookapp.storage.codec.StringCodec;
+import gr.bookapp.storage.codec.TreeNodeDual;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,6 +75,18 @@ class FileBasedNodeStorageMapTest {
         }
     }
 
-
+    @Test
+    @DisplayName("Entry Iterator test")
+    void entryIteratorTest() {
+        for (int i = 0; i < 5; i++) {
+            nodeStorage.writeNode(String.valueOf(i), String.valueOf(i), entry(i));
+        }
+        Iterator<Map.Entry<String, String>> entryIterator = nodeStorage.entriesIterator();
+        for (int i = 0; i < 5; i++) {
+            assertThat(entryIterator.hasNext()).isTrue();
+            assertThat(entryIterator.next()).isEqualTo(Map.entry(String.valueOf(i), String.valueOf(i)));
+        }
+        assertThat(entryIterator.hasNext()).isFalse();
+    }
 
 }

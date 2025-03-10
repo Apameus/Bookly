@@ -29,4 +29,8 @@ public interface NodeStorageTree<K, V> {
     long findEmptySlot() ;
 
     Iterator<Map.Entry<K,V>> entriesIterator();
+
+    default K readKey(long offset){
+        return readKeyNode(offset).key();
+    }
 }
