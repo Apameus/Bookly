@@ -11,11 +11,7 @@ public final class BookSalesRepository {
         bookSalesDatabase.insert(bookSales.bookID(), bookSales);
     }
 
-    public void delete(long bookID){
-        bookSalesDatabase.delete(bookID);
-    }
-
-    public BookSales get(long bookID){
+    public BookSales getSalesByBookID(long bookID){
         return bookSalesDatabase.retrieve(bookID);
     }
 

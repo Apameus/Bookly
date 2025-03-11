@@ -1,6 +1,5 @@
 package gr.bookapp.database;
 
-import gr.bookapp.models.Book;
 import gr.bookapp.storage.file.ObjectTable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,6 +12,14 @@ public final class Database<PM, T> {
 
     public Database(ObjectTable<PM, T> objectTable) {
         this.objectTable = objectTable;
+    }
+
+    public List<T> findAll(){
+        ArrayList<T> objects = new ArrayList<>();
+        for (var obj : objectTable) {
+            objects.add(obj.getValue());
+        }
+        return objects;
     }
 
     public <K> List<T> findAllBy(Index<T, K> index, K key){
