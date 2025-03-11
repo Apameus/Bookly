@@ -5,10 +5,7 @@ import gr.bookapp.database.Index;
 import gr.bookapp.database.RangeIndex;
 import gr.bookapp.models.Book;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class BookRepository {
 
@@ -16,8 +13,8 @@ public final class BookRepository {
     Index<Book, String> nameIndex = Book::name;
     Index<Book, List<String>> authorIndex = Book::author;
     Index<Book, List<String>> tagIndex = Book::tags;
-    RangeIndex<Book, Double> priceRangeIndex;
-    RangeIndex<Book, Long> releaseDateRangeIndex;
+    RangeIndex<Book, Double> priceRangeIndex = RangeIndex.of(Book::price, Double::compareTo);
+    RangeIndex<Book, Long> releaseDateRangeIndex = RangeIndex.of(Book::releaseDate, Long::compareTo);
 
     public List<Book> findBooksWithName(String name){
         return bookDatabase.findAllBy(nameIndex, name);
@@ -31,25 +28,9 @@ public final class BookRepository {
         return bookDatabase.findAllBy(tagIndex, tag);
     }
 
-    public List<Book> findBooksInPriceRange(double min, double max){
-        var books = new ArrayList<Book>();
-        var entryIterator = bookDatabase.entryIterator();
-        while (entryIterator.hasNext()) {
-            Book book = entryIterator.next().getValue();
-            if (book.price() >= min && book.price() <= max) books.add(book);
-        }
-        return books;
-    }
+    public List<Book> findBooksInPriceRange(double min, double max){ return bookDatabase.findAllInRange(priceRangeIndex, min, max); }
 
-    public List<Book> findBooksInDateRange(long min, long max){
-        var books = new ArrayList<Book>();
-        var entryIterator = bookDatabase.entryIterator();
-        while (entryIterator.hasNext()) {
-            Book book = entryIterator.next().getValue();
-            if (book.releaseDate() >= min && book.releaseDate() <= max) books.add(book);
-        }
-        return books;
-    }
+    public List<Book> findBooksInDateRange(long min, long max){ return bookDatabase.findAllInRange(releaseDateRangeIndex, min, max); }
 
     public void add(Book book){
         bookDatabase.insert(book.id(), book);

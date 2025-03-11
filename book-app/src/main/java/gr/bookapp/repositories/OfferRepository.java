@@ -11,11 +11,11 @@ public final class OfferRepository {
         offerDatabase.insert(offer.offerID(), offer);
     }
     
-    public void delete(long offerID){
+    public void deleteOfferById(long offerID){
         offerDatabase.delete(offerID);
     }
 
-    public Offer get(long offerID){
+    public Offer getOfferById(long offerID){
         return offerDatabase.retrieve(offerID);
     }
 }
