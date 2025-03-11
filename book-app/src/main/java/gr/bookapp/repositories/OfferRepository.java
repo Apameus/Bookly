@@ -1,16 +1,24 @@
 package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
+import gr.bookapp.database.Index;
 import gr.bookapp.models.Offer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public final class OfferRepository {
 
-    Database<Long , Offer> offerDatabase;
+    private final Database<Long , Offer> offerDatabase;
+    private final Index<Offer, List<String>> tagIndex;
+
+    public OfferRepository(Database<Long, Offer> offerDatabase, Index<Offer, List<String>> tagIndex) {
+        this.offerDatabase = offerDatabase;
+        this.tagIndex = tagIndex;
+    }
+
+    public List<Offer> getOffersByTags(List<String> tags){
+        return offerDatabase.findAllByIndex(tagIndex, tags);
+    }
 
     public void add(Offer offer){
         offerDatabase.insert(offer.offerID(), offer);
@@ -25,4 +33,5 @@ public final class OfferRepository {
     }
 
     public List<Offer> getAllOffers(){ return offerDatabase.findAll(); }
+
 }
