@@ -6,8 +6,12 @@ import gr.bookapp.models.Employee;
 
 public final class EmployeeRepository {
 
-    Database<Long, Employee> employeeDatabase;
-    Index<Employee, String> usernameIndex = Employee::username;
+    private final Database<Long, Employee> employeeDatabase;
+    private final Index<Employee, String> usernameIndex = Employee::username;
+
+    public EmployeeRepository(Database<Long, Employee> employeeDatabase) {
+        this.employeeDatabase = employeeDatabase;
+    }
 
     public void add(Employee employee){
         employeeDatabase.insert(employee.id(), employee);
@@ -22,6 +26,6 @@ public final class EmployeeRepository {
     }
 
     public Employee getEmployeeByUsername(String username){
-        return employeeDatabase.findAllBy(usernameIndex, username).getFirst();
+        return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
     }
 }
