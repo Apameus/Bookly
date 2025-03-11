@@ -1,6 +1,5 @@
 package gr.bookapp.database;
 
-import gr.bookapp.models.Book;
 import gr.bookapp.storage.file.ObjectTable;
 import java.util.ArrayList;
 import java.util.Iterator;
