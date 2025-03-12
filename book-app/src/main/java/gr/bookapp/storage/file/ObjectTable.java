@@ -10,4 +10,5 @@ public interface ObjectTable<K, V> extends Iterable<Map.Entry<K,V>> {
 
     void delete(K key);
 
+    int size();
 }
