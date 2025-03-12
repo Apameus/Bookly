@@ -3,9 +3,9 @@
 flowchart LR
     UI --> AS[AuthService] --> AR[AuthRepo] --> EDB[EmployeeDB]
     UI --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
-    BS --> SLS
-    ES --> SLS[SalesService] --> SLR[SalesRepo] --> SLDB[SalesDB]
-    UI --> ES[EmployeeService] --> SS[StatsService] --> SR[StatsRepo] --> SDB[StatsDB]
+    BS --> OS
+    ES --> OS[OfferService] --> OR[OfferRepo] --> ODB[OfferDB]
+    UI --> ES[EmployeeService] --> SS[SalesService] --> SR[SalesRepo] --> SDB[SalesDB]
     
     *Services --> AUS[AuditService] --> AUR[AuditRepo] --> ADB[AuditDB]
 ```
