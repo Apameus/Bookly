@@ -55,6 +55,12 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     @Override
     public void delete(K key) {delete(key, nodeStorage.rootOffset(), 0, "");}
+
+    @Override
+    public int size() {
+        return nodeStorage.size();
+    }
+
     private void delete(K key, long offset, long parentOffset, String childSide) {
         if (nodeStorage.isNull(offset)) return;
         var node = nodeStorage.readKeyNode(offset);

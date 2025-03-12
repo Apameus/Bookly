@@ -23,14 +23,14 @@ public final class OfferService {
     }
     public void createOffer(List<String> tags, int percentage, long untilDate) throws OfferDurationException, InvalidInputException, TagAlreadyOnOfferException {
         List<Offer> offers = offerRepository.getOffersByTags(tags);
-        if (!offers.isEmpty()) throw new TagAlreadyOnOfferException(offers);
+        if (!offers.isEmpty()) throw new TagAlreadyOnOfferException(offers); //TODO refactor logic
 
-        if (percentage <= 0) throw new InvalidInputException("percentage");
+        if (percentage <= 0) throw new InvalidInputException("Percentage must be greater than 0");
 
         long now = LocalDate.now().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
         if (untilDate > 30 || untilDate <= now) throw new OfferDurationException();
 
-        long id = ThreadLocalRandom.current().nextLong(0,1000); //todo Who decides the ID ???
+        long id = offerRepository.getOfferCount() + 1;
         Offer offer = new Offer(id, tags, percentage, untilDate);
         offerRepository.add(offer);
     }

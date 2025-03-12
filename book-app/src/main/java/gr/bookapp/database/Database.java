@@ -56,4 +56,8 @@ public final class Database<PM, T> {
     public Iterator<Map.Entry<PM, T>> entryIterator(){
         return objectTable.iterator();
     }
+
+    public int size(){
+        return objectTable.size();
+    }
 }

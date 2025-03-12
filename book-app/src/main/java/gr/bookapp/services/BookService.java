@@ -26,7 +26,7 @@ public final class BookService {
     /**
      *
      * @param bookID
-     * @return the bock or exc
+     * @return the Book if exist or BookNotFoundException if not
      * @throws BookNotFoundException
      */
     public Book getBookByID(long bookID) throws BookNotFoundException {

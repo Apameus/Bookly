@@ -30,6 +30,8 @@ public interface NodeStorageTree<K, V> {
 
     Iterator<Map.Entry<K,V>> entriesIterator();
 
+    int size();
+
     default K readKey(long offset){
         return readKeyNode(offset).key();
     }
