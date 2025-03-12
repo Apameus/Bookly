@@ -22,7 +22,7 @@ public final class Database<PM, T> {
         return objects;
     }
 
-    public <K> List<T> findAllBy(Index<T, K> index, K key){
+    public <K> List<T> findAllByIndex(Index<T, K> index, K key){
         ArrayList<T> list = new ArrayList<>();
         for (var obj : objectTable){
             K indexKey = index.extractKey(obj.getValue());

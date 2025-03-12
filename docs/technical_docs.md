@@ -3,8 +3,8 @@
 ### Classes:
 - <h3>Book:</h3>
 <b>long</b> id,
-<b>String</b> name, 
-<b>String</b> Author, 
+<b>String</b> name,
+<b>List\<String></b>Author,
 <b>List\<String></b> tags, 
 <b>double</b> price, 
 <b>long</b> date.
