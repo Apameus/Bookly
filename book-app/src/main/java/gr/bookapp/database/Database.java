@@ -14,6 +14,14 @@ public final class Database<PM, T> {
         this.objectTable = objectTable;
     }
 
+    public List<T> findAll(){
+        ArrayList<T> objects = new ArrayList<>();
+        for (var obj : objectTable) {
+            objects.add(obj.getValue());
+        }
+        return objects;
+    }
+
     public <K> List<T> findAllBy(Index<T, K> index, K key){
         ArrayList<T> list = new ArrayList<>();
         for (var obj : objectTable){
@@ -21,6 +29,16 @@ public final class Database<PM, T> {
             if (indexKey.equals(key)) list.add(obj.getValue());
         }
         return list;
+    }
+
+    public <K> List<T> findAllInRange(RangeIndex<T, K> index, K min, K max){
+        var result = new ArrayList<T>();
+        for (var obj : objectTable) {
+            K indexKey = index.extractKey(obj.getValue());
+            if (index.comparator().compare(indexKey, min) >= 0 && index.comparator().compare(indexKey, max) <= 0)
+                result.add(obj.getValue());
+        }
+        return result;
     }
 
     public T retrieve(PM key){

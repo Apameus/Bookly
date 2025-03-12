@@ -1,4 +1,4 @@
 package gr.bookapp.models;
 
-public record Employee(String username, String password) {
+public record Employee(long id, String username, String password) {
 }
