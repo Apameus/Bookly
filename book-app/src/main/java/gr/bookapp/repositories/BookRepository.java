@@ -11,7 +11,7 @@ public final class BookRepository {
 
     private final Database<Long, Book> bookDatabase;
     private final Index<Book, String> nameIndex = Book::name;
-    private final Index<Book, List<String>> authorIndex = Book::author;
+    private final Index<Book, List<String>> authorIndex = Book::authors;
     private final Index<Book, List<String>> tagIndex = Book::tags;
     private final RangeIndex<Book, Double> priceRangeIndex = RangeIndex.of(Book::price, Double::compareTo);
 
@@ -29,8 +29,8 @@ public final class BookRepository {
         return bookDatabase.findAllByIndex(authorIndex, author);
     }
 
-    public List<Book> findBooksWithTags(List<String> tag){
-        return bookDatabase.findAllByIndex(tagIndex, tag);
+    public List<Book> findBooksWithTags(List<String> tags){
+        return bookDatabase.findAllByIndex(tagIndex, tags);
     }
 
     public List<Book> findBooksInPriceRange(double min, double max){ return bookDatabase.findAllInRange(priceRangeIndex, min, max); }

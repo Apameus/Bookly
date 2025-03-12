@@ -30,19 +30,25 @@ public final class EmployeeService {
         offerService.createOffer(tags, percentage, untilDate);
     }
 
-    // sell a book
-    public void sellBook(long bookID) throws InvalidQuantityException, BookNotFoundException {
-        //TODO  //check if the book has an offer
+    public void sellBook(long bookID) throws  BookNotFoundException {
+        //check if the book has an offer
         Book book = bookRepository.getBookByID(bookID);
-        List<Offer> offers = offerService.getOffers(book.tags());
-        //TODO //calculate the new price of the book
-
+        var offers = offerService.getOffers(book.tags());
+        if (!offers.isEmpty()){
+            double price = book.price() - (book.price() * offers.getFirst().percentage() / 100.0 );
+            book.withPrice(price);
+        }
+        showPrice(book.price()); //todo add logic..
         bookSalesService.increaseSalesOfBook(bookID);
     }
 
     public void hireNewEmployee(String username, String password){
-        long id;
+        long id = employeeRepository.getEmployeeCount() + 1;
         Employee employee = new Employee(id, username, password);
         employeeRepository.add(employee);
+    }
+
+    public void showPrice(double price) {
+        System.out.println(price);
     }
 }

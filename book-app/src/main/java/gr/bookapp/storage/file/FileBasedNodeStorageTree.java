@@ -175,6 +175,11 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
         };
     }
 
+    @Override
+    public int size() {
+        return storedEntries;
+    }
+
     public K readKey(long nodeOffset){
         try {
             accessFile.seek(nodeOffset + FLAG_SIZE);
@@ -203,4 +208,6 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             throw new RuntimeException(e);
         }
     }
+
+
 }
