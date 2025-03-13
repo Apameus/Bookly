@@ -1,11 +1,11 @@
 # High Level Architecture
 ```mermaid
 flowchart LR
-    UI --> AS[AuthService] --> AR[AuthRepo] --> EDB[EmployeeDB]
+    UI --> AS[AuthService] --> ER[EmployeeRepo] --> EDB[EmployeeDB]
     UI --> BS[BookService] --> BR[BookRepo] --> BDB[BookDB]
     BS --> OS
-    ES --> OS[OfferService] --> OR[OfferRepo] --> ODB[OfferDB]
     UI --> ES[EmployeeService] --> SS[SalesService] --> SR[SalesRepo] --> SDB[SalesDB]
+    ES --> OS[OfferService] --> OR[OfferRepo] --> ODB[OfferDB]
     
     *Services --> AUS[AuditService] --> AUR[AuditRepo] --> ADB[AuditDB]
 ```
@@ -20,6 +20,14 @@ flowchart LR
 
 [//]: # (```)
 
+## Audit:
+```mermaid
+
+sequenceDiagram
+    Service ->> AuditService: note( employee, method )
+    AuditService ->> AuditRepo: ..
+    AuditRepo ->> AuditDB: ..
+```
 
 ## Add-Modify-Remove  book:
 ```mermaid
@@ -35,12 +43,8 @@ sequenceDiagram
     BR ->> DB: insert( book )
     
 ```
-```mermaid
-sequenceDiagram
-    EmployeeService ->> AuditService: note( employee, addBook )
-    AuditService ->> AuditRepo: ..
-    AuditRepo ->> AuditDB: ..
-```
+[*Audit update](#audit)
+
 
 ## Search book:
 ```mermaid
@@ -63,16 +67,15 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant ES as EmployeeService
-    participant SS as SalesService
-    participant SR as SalesRepo
-    participant SDB as SalesDataBase
-    ES ->> SS: ..
-    SS ->> SR: ..
-    SR ->> SDB: ..
-    SDB -->> ES: sale
+    participant OS as OfferService
+    participant OR as OfferRepo
+    participant ODB as OfferDataBase
+    ES ->> OS: ..
+    OS ->> OR: ..
+    OR ->> ODB: ..
+    ODB -->> ES: sale
 ```
-``` *Audit Update ```
-
+[*Audit update](#audit)
 
 
 
@@ -94,7 +97,7 @@ sequenceDiagram
     BS -->> U: List<Book> books
 
 ```
-``` *Audit Update ```
+[*Audit update](#audit)
 
 ## Search book by Date:
 ```mermaid
@@ -113,7 +116,7 @@ sequenceDiagram
     BS -->> U: List<Book> books
 
 ```
-``` *Audit Update ```
+[*Audit update](#audit)
 
 ## Sell Book:
 ```mermaid
@@ -132,24 +135,32 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant ES as EmployeeService
-    participant SS as StatsService
-    participant SR as StatsRepo
-    participant SDB as StatsDataBase
-    ES ->> SS: updateBookQuantity(bookID, qnt)
-    SS ->> SR: ..
-    SR ->> SDB: ..
+    participant BS as BookSalesService
+    participant BR as BookSalesRepo
+    participant BDB as BookSalesDataBase
+    ES ->> BS: updateBookQuantity(bookID, qnt)
+    BS ->> BR: ..
+    BR ->> BDB: ..
 ```
-``` *Audit Update ```
+```**Check if the book has an offer``` <br>
+[*Audit update](#audit)
 
-## Create Sale:
+## Create Offer:
 ```mermaid
 sequenceDiagram
     actor  U as User
-    participant SS as SalesService
-    participant SR as SalesRepo
-    participant SDB as SalesDataBase
-    U ->> SS: createSale( Tag, Duration, Discount )
-    SS ->> SR: ..
-    SR ->> SDB: ..
+    participant ES as EmployeeService
+    participant OS as OfferService
+    participant OR as OfferRepo
+    participant ODB as OfferDataBase
+    U ->> ES: createOffer( Tag, Duration, Discount )
+    ES ->> OS: createOffer( .. )
+    alt percentage <=0 || date < now 
+            OS -->> ES: InvalidInputException
+    end
+    OS ->> OR: getOfferCount( )
+    OR -->> OS: offerCount
+    OS ->> OR: add(offer)
+    OR ->> ODB: insert(offer)
 ```
-``` *Audit Update ```
+[*Audit update](#audit)
