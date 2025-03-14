@@ -1,7 +1,9 @@
 package gr.bookapp.services;
 
+import gr.bookapp.AuditContext;
 import gr.bookapp.exceptions.BookNotFoundException;
 import gr.bookapp.models.Book;
+import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.BookSalesRepository;
 
@@ -10,18 +12,22 @@ import java.util.List;
 public final class BookService {
 
     private final BookRepository bookRepository;
-    private final BookSalesRepository bookSalesRepository;
+    private final AuditRepository auditRepository;
 
-    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository) {
+    public BookService(BookRepository bookRepository, AuditRepository auditRepository) {
         this.bookRepository = bookRepository;
-        this.bookSalesRepository = bookSalesRepository;
+        this.auditRepository = auditRepository;
     }
 
     public void addBook(Book book){
         bookRepository.add(book);
+        auditRepository.audit(AuditContext.getEmployeeID(), "Book added", System.currentTimeMillis());
     }
 
-    public void deleteBookByID(long bookID){ bookRepository.deleteBookByID(bookID); }
+    public void deleteBookByID(long bookID){
+        bookRepository.deleteBookByID(bookID);
+        auditRepository.audit(AuditContext.getEmployeeID(), "Book deleted", System.currentTimeMillis());
+    }
 
     /**
      *
@@ -53,11 +59,8 @@ public final class BookService {
         return books;
     }
 
-    public List<Book> getBooksInDate(long from, long to){
+    public List<Book> getBooksInDateRange(long from, long to){
         return bookRepository.findBooksInDateRange(from, to);
     }
-
-
-
 
 }
