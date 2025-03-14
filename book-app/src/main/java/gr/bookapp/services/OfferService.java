@@ -1,38 +1,43 @@
 package gr.bookapp.services;
 
-import gr.bookapp.exceptions.OfferDurationException;
+import gr.bookapp.AuditContext;
+import gr.bookapp.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
-import gr.bookapp.exceptions.TagAlreadyOnOfferException;
+import gr.bookapp.exceptions.TagsAlreadyOnOfferException;
+import gr.bookapp.models.Audit;
 import gr.bookapp.models.Offer;
+import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
-
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public final class OfferService {
     private final OfferRepository offerRepository;
+    private final IdGenerator idGenerator;
+    private final AuditRepository auditRepository;
 
-    public OfferService(OfferRepository offerRepository) {
+    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditRepository auditRepository) {
         this.offerRepository = offerRepository;
+        this.idGenerator = idGenerator;
+        this.auditRepository = auditRepository;
     }
 
     public void createOffer(Offer offer){
         offerRepository.add(offer);
     }
-    public void createOffer(List<String> tags, int percentage, long untilDate) throws OfferDurationException, InvalidInputException, TagAlreadyOnOfferException {
-        List<Offer> offers = offerRepository.getOffersByTags(tags);
-        if (!offers.isEmpty()) throw new TagAlreadyOnOfferException(offers); //TODO refactor logic
-
+    public void createOffer(List<String> tags, int percentage, long untilDate) throws InvalidInputException {
         if (percentage <= 0) throw new InvalidInputException("Percentage must be greater than 0");
 
-        long now = LocalDate.now().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-        if (untilDate > 30 || untilDate <= now) throw new OfferDurationException();
+        long now = System.currentTimeMillis();
+        if (untilDate <= now) throw new InvalidInputException("Invalid date");
 
-        long id = offerRepository.getOfferCount() + 1;
+        long id = idGenerator.generateID();
         Offer offer = new Offer(id, tags, percentage, untilDate);
         offerRepository.add(offer);
+
+        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), offer.untilDate());
+        auditRepository.audit(AuditContext.getEmployeeID(), action, System.currentTimeMillis());
     }
 
 
