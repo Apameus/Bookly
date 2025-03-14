@@ -36,7 +36,4 @@ public final class OfferRepository {
 
     public List<Offer> getAllOffers(){ return offerDatabase.findAll(); }
 
-    public int getOfferCount() {
-        return offerDatabase.size();
-    }
 }
