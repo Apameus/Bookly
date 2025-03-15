@@ -5,6 +5,7 @@ import gr.bookapp.database.Index;
 import gr.bookapp.database.RangeIndex;
 import gr.bookapp.models.Book;
 
+import java.time.Instant;
 import java.util.*;
 
 public final class BookRepository {
@@ -19,7 +20,7 @@ public final class BookRepository {
         this.bookDatabase = bookDatabase;
     }
 
-    private final RangeIndex<Book, Long> releaseDateRangeIndex = RangeIndex.of(Book::releaseDate, Long::compareTo);
+    private final RangeIndex<Book, Instant> releaseDateRangeIndex = RangeIndex.of(Book::releaseDate, Instant::compareTo);
 
     public List<Book> findBooksWithName(String name){
         return bookDatabase.findAllByIndex(nameIndex, name);
@@ -35,7 +36,7 @@ public final class BookRepository {
 
     public List<Book> findBooksInPriceRange(double min, double max){ return bookDatabase.findAllInRange(priceRangeIndex, min, max); }
 
-    public List<Book> findBooksInDateRange(long min, long max){ return bookDatabase.findAllInRange(releaseDateRangeIndex, min, max); }
+    public List<Book> findBooksInDateRange(Instant from, Instant to){ return bookDatabase.findAllInRange(releaseDateRangeIndex, from, to); }
 
     public void add(Book book){
         bookDatabase.insert(book.id(), book);

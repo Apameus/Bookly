@@ -29,7 +29,4 @@ public final class EmployeeRepository {
         return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
     }
 
-    public int getEmployeeCount() {
-        return employeeDatabase.size();
-    }
 }

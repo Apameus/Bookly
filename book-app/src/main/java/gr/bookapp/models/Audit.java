@@ -1,4 +1,6 @@
 package gr.bookapp.models;
 
-public record Audit(long employeeID, String action, long time) {
+import java.time.Instant;
+
+public record Audit(long employeeID, String action, Instant time) {
 }
