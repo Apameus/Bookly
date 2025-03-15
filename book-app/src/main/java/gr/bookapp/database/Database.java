@@ -57,7 +57,4 @@ public final class Database<PM, T> {
         return objectTable.iterator();
     }
 
-    public int size(){
-        return objectTable.size();
-    }
 }

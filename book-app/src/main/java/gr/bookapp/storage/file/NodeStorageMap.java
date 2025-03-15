@@ -12,8 +12,6 @@ public interface NodeStorageMap<K,V> {
 
     HashMap<K,V> resize();
 
-    int size();
-
     long calculateOffset(K key);
 
     boolean matchKey(long nodeOffset, K key);
