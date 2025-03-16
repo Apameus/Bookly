@@ -38,17 +38,42 @@ public final class EmployeeService {
         offerService.createOffer(tags, percentage, durationInDays);
     }
 
-    public Book sellBook(long bookID) {
+    /**
+     *
+     * @param bookID
+     * @return Book
+     */
+    public Book sellBook(long bookID) throws InvalidInputException {
         var book = bookRepository.getBookByID(bookID);
+        if (book == null) throw new InvalidInputException("BookId doesn't exist");
         var offers = offerService.getOffers(book.tags());
+        Offer bestOffer = null;
         if (!offers.isEmpty()){
-            Offer bestOffer = Collections.max(offers, Comparator.comparing(Offer::percentage));
+            bestOffer = bestOffer(offers);
             double price = book.price() - (book.price() * bestOffer.percentage() / 100.0 );
             book = book.withPrice(price);
         }
         bookSalesService.increaseSalesOfBook(bookID);
-        auditRepository.audit(auditContext.getEmployeeID(), "Book sailed", clock.instant());
+
+        String auditMsg;
+        if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
+        else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
+        auditRepository.audit(auditContext.getEmployeeID(), auditMsg, clock.instant());
         return book;
+    }
+
+    private Offer bestOffer(List<Offer> offers) {
+        Offer bestOffer = null;
+        for (Offer offer : offers) {
+            if (offer.untilDate().isBefore(clock.instant())) continue;
+            if (bestOffer == null){
+                bestOffer = offer;
+                continue;
+            }
+            if (offer.percentage() > bestOffer.percentage()) bestOffer = offer;
+        }
+
+        return bestOffer;
     }
 
 //    public void hireNewEmployee(String username, String password){
