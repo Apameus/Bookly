@@ -1,18 +1,18 @@
 package gr.bookapp.common;
 
 public final class AuditContextImp implements AuditContext{
-    private static final ThreadLocal<Long> currentEmployee = new ThreadLocal<>();
+    private static final ThreadLocal<Long> currentEmployeeID = new ThreadLocal<>();
 
     public static void add(long employeeID){
-        currentEmployee.set(employeeID);
+        currentEmployeeID.set(employeeID);
     }
 
     public static Long get(){
-        return currentEmployee.get();
+        return currentEmployeeID.get();
     }
 
     public static void clear(){
-        currentEmployee.remove();
+        currentEmployeeID.remove();
     }
 
     @Override
