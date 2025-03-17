@@ -22,11 +22,20 @@ public final class Database<PM, T> {
         return objects;
     }
 
-    public <K> List<T> findAllBy(Index<T, K> index, K key){
+    public <K> List<T> findAllByIndex(Index<T, K> index, K key){
         ArrayList<T> list = new ArrayList<>();
         for (var obj : objectTable){
             K indexKey = index.extractKey(obj.getValue());
             if (indexKey.equals(key)) list.add(obj.getValue());
+        }
+        return list;
+    }
+
+    public <K> List<T> findAllByIndexWithKeys(Index<T, List<K>> index, K key){ //TODO !!!
+        ArrayList<T> list = new ArrayList<>();
+        for (var obj : objectTable){
+            List<K> indexKeys = index.extractKey(obj.getValue()); //list K
+            if (indexKeys.contains(key)) list.add(obj.getValue());
         }
         return list;
     }
@@ -56,4 +65,5 @@ public final class Database<PM, T> {
     public Iterator<Map.Entry<PM, T>> entryIterator(){
         return objectTable.iterator();
     }
+
 }

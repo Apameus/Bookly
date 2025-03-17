@@ -28,4 +28,5 @@ public final class EmployeeRepository {
     public Employee getEmployeeByUsername(String username){
         return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
     }
+
 }
