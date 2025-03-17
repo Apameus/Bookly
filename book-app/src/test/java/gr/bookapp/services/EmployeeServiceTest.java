@@ -34,9 +34,7 @@ class EmployeeServiceTest {
 
     @BeforeEach
     void initialize(){
-        ZoneId zone = ZoneId.of("UTC");
         when(clock.instant()).thenReturn(Clock.systemUTC().instant());
-        when(clock.getZone()).thenReturn(zone);
         employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock);
     }
 
@@ -44,15 +42,17 @@ class EmployeeServiceTest {
     @DisplayName("Sell Book without offer test")
     void sellBookTest() throws InvalidInputException {
         long bookID = 100L;
+        List<String> authors = List.of("Omiros");
+        List<String> tags = List.of("Philosophy", "Adventure");
         ZonedDateTime zonedDateTime = LocalDate.of(-300, 1, 1).atStartOfDay(ZoneId.of("UTC"));
-        List<String> tags = List.of("Omiros");
-        Book book = new Book(1, "Odyssey", tags, 100, zonedDateTime.toInstant(), List.of("Philosophy", "Adventure"));
+        Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
-        when(offerService.getOffers(tags)).thenReturn(new ArrayList<>());
+        when(offerService.getOffers(authors)).thenReturn(new ArrayList<>());
         when(auditContext.getEmployeeID()).thenReturn(999L);
-        employeeService.sellBook(bookID);
+
+        assertThat(employeeService.sellBook(bookID)).isEqualTo(book);
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
-        verify(auditRepository, times(1)).audit(999, "Book sailed", clock.instant());
+        verify(auditRepository, times(1)).audit(999, "Book with id: 100 sold", clock.instant());
     }
 
     @Test
@@ -62,7 +62,7 @@ class EmployeeServiceTest {
         ZonedDateTime zonedDateTime = LocalDate.of(-300, 1, 1).atStartOfDay(ZoneId.of("UTC"));
         List<String> authors = List.of("Omiros");
         List<String> tags = List.of("Philosophy", "Adventure");
-        Book book = new Book(1, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
+        Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
         Offer offer = new Offer(700, tags,15, clock.instant().plus(5, ChronoUnit.DAYS));
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
@@ -74,8 +74,31 @@ class EmployeeServiceTest {
     }
 
     @Test
+    @DisplayName("Sell a book with multiple offers")
+    void sellABookWithMultipleOffers() throws InvalidInputException {
+        long bookID = 100L;
+        ZonedDateTime zonedDateTime = LocalDate.of(-300, 1, 1).atStartOfDay(ZoneId.of("UTC"));
+        List<String> authors = List.of("Omiros");
+        List<String> tags = List.of("Philosophy", "Adventure");
+        Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
+
+        Offer offer1 = new Offer(700, List.of("Philosophy"),15, clock.instant().plus(5, ChronoUnit.DAYS));
+        Offer offer2 = new Offer(800, List.of("Adventure"), 35, clock.instant().plus(9, ChronoUnit.DAYS));
+        Offer expiredOffer = new Offer(900, List.of("Adventure"), 70, clock.instant().minus(1, ChronoUnit.DAYS));
+        List<Offer> offers = List.of(offer1, offer2, expiredOffer);
+
+        when(bookRepository.getBookByID(bookID)).thenReturn(book);
+        when(offerService.getOffers(tags)).thenReturn(offers);
+        when(auditContext.getEmployeeID()).thenReturn(999L);
+        assertThat(employeeService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * offer2.percentage() / 100.0)));
+        verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
+        verify(auditRepository, times(1)).audit(999, "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer2.percentage(), offer2.offerID()), clock.instant());
+    }
+
+    @Test
     @DisplayName("Sell book with invalid bookID")
     void sellBookWithInvalidBookId() {
+        when(bookRepository.getBookByID(anyLong())).thenReturn(null);
         assertThrows(InvalidInputException.class, () -> employeeService.sellBook(0));
     }
 

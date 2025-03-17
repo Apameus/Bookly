@@ -27,7 +27,6 @@ class OfferServiceUnitTest {
 
     @BeforeEach
     void initialize(){
-//        clock = Clock.fixed(fixedInstant, zone);
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
         ZoneId zone = ZoneId.of("UTC");
         when(clock.instant()).thenReturn(fixedInstant);
@@ -40,16 +39,16 @@ class OfferServiceUnitTest {
     void createOfferTest() throws InvalidInputException {
         long offerId = 111L;
         int percentage = 15;
-        long durationInDays = 30;
+        Duration duration = Duration.ofDays(30);
         List<String> tags = List.of("Comedy");
         Instant now = clock.instant();
-        Instant untilDate = now.plus(durationInDays, ChronoUnit.DAYS);
+        Instant untilDate = now.plus(duration);
 
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
         when(auditContext.getEmployeeID()).thenReturn(999L);
-        offerService.createOffer(tags, percentage, durationInDays);
+        offerService.createOffer(tags, percentage, duration);
 
         verify(offerRepository, times(1)).add(offer);
 
@@ -58,19 +57,36 @@ class OfferServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Create offer with invalid inputs test")
+    @DisplayName("Create offer with invalid percentage test")
     void createOfferWithInvalidInputsTest() {
         long offerId = 111L;
         int percentage = 0;
-        long durationInDays = -3;
+        Duration duration = Duration.ofDays(3);
         List<String> tags = List.of("");
 
         Instant now = clock.instant();
-        Instant untilDate = now.plus(durationInDays, ChronoUnit.DAYS);
+        Instant untilDate = now.plus(duration);
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
         when(auditContext.getEmployeeID()).thenReturn(999L);
-        assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, durationInDays));
+        assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
+    }
+
+    @Test
+    @DisplayName("Create offer with invalid duration test")
+    void createOfferWithInvalidDurationTest() {
+        long offerId = 111L;
+        int percentage = 10;
+        Duration duration = Duration.ofDays(-3);
+        List<String> tags = List.of("");
+
+        Instant now = clock.instant();
+        Instant untilDate = now.plus(duration);
+        Offer offer = new Offer(offerId , tags, percentage, untilDate);
+
+        when(idGenerator.generateID()).thenReturn(offerId);
+        when(auditContext.getEmployeeID()).thenReturn(999L);
+        assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 }

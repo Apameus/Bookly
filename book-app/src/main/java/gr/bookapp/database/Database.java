@@ -31,6 +31,15 @@ public final class Database<PM, T> {
         return list;
     }
 
+    public <K> List<T> findAllByIndexWithKeys(Index<T, List<K>> index, K key){ //TODO !!!
+        ArrayList<T> list = new ArrayList<>();
+        for (var obj : objectTable){
+            List<K> indexKeys = index.extractKey(obj.getValue()); //list K
+            if (indexKeys.contains(key)) list.add(obj.getValue());
+        }
+        return list;
+    }
+
     public <K> List<T> findAllInRange(RangeIndex<T, K> index, K min, K max){
         var result = new ArrayList<T>();
         for (var obj : objectTable) {

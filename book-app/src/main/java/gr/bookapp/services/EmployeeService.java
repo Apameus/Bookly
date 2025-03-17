@@ -34,15 +34,11 @@ public final class EmployeeService {
         this.clock = clock;
     }
 
-    public void createOffer(List<String> tags, int percentage, long durationInDays) throws InvalidInputException {
-        offerService.createOffer(tags, percentage, durationInDays);
+    public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
+        offerService.createOffer(tags, percentage, duration);
     }
 
-    /**
-     *
-     * @param bookID
-     * @return Book
-     */
+
     public Book sellBook(long bookID) throws InvalidInputException {
         var book = bookRepository.getBookByID(bookID);
         if (book == null) throw new InvalidInputException("BookId doesn't exist");
@@ -76,11 +72,5 @@ public final class EmployeeService {
         return bestOffer;
     }
 
-//    public void hireNewEmployee(String username, String password){
-//        long id = employeeRepository.getEmployeeCount() + 1;
-//        Employee employee = new Employee(id, username, password);
-//        employeeRepository.add(employee);
-//
-//    }
 
 }

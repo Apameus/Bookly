@@ -27,12 +27,12 @@ public final class OfferService {
         this.clock = clock;
     }
 
-    public void createOffer(List<String> tags, int percentage, long duration) throws InvalidInputException {
+    public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
         if (percentage <= 0) throw new InvalidInputException("Percentage must be greater than 0");
 
-        if (duration <= 0) throw new InvalidInputException("Invalid date");
+        if (duration.isNegative()) throw new InvalidInputException("Invalid date");
         Instant now = Instant.now(clock);
-        Instant untilDate = now.plus(Duration.ofDays(duration));
+        Instant untilDate = now.plus(duration);
 
         long id = idGenerator.generateID();
         Offer offer = new Offer(id, tags, percentage, untilDate);
