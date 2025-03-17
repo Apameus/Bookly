@@ -31,7 +31,7 @@ public final class Database<PM, T> {
         return list;
     }
 
-    public <K> List<T> findAllByIndexWithKeys(Index<T, List<K>> index, K key){ //TODO !!!
+    public <K> List<T> findAllByIndexWithKeys(Index<T, List<K>> index, K key){
         ArrayList<T> list = new ArrayList<>();
         for (var obj : objectTable){
             List<K> indexKeys = index.extractKey(obj.getValue()); //list K
