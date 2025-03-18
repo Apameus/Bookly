@@ -22,7 +22,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     public static final byte STORED_ENTRIES_SIZE = 4;
 
     private final int maxSizeOfEntry;
-    private int availableEntries;
+    private int maxAvailableEntries;
     private int storedEntries;
 
     public FileBasedNodeStorageMap(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
@@ -31,13 +31,13 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
         this.valueCodec = valueCodec;
         maxSizeOfEntry = FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() + valueCodec.maxByteSize() + CHILD_REFERENCE_SIZE * 2;
         if (accessFile.length() == 0){
-            availableEntries = 16;
-            accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
+            maxAvailableEntries = 16;
+            accessFile.setLength((long) maxSizeOfEntry * maxAvailableEntries + STORED_ENTRIES_SIZE);
         }
         else {
             accessFile.seek(0);
             storedEntries = accessFile.readInt();
-            availableEntries = (int) ((accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
+            maxAvailableEntries = (int) ((accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
         }
     }
 
@@ -51,7 +51,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
 
     @Override
     public long calculateOffset(K key) {
-        long hash = Math.abs(key.hashCode()) % availableEntries;
+        long hash = Math.abs(key.hashCode()) % maxAvailableEntries;
         return hash * maxSizeOfEntry + STORED_ENTRIES_SIZE;
     }
 
@@ -134,7 +134,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     public Iterator<Map.Entry<K, V>> entriesIterator() {
         return new Iterator<Map.Entry<K, V>>() {
             long offset = STORED_ENTRIES_SIZE;
-            int remainingSlots = availableEntries;
+            int remainingSlots = maxAvailableEntries;
             Map.Entry<K,V> next = findNext();
 
             @Override
@@ -167,7 +167,7 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
 
     @Override
     public long findEmptySlot(long offset) {
-        for (int i = 0; i < availableEntries; i++) {
+        for (int i = 0; i < maxAvailableEntries; i++) {
             if (offset == 0) offset = STORED_ENTRIES_SIZE;
             if (pointerExceedRange(offset)) offset = STORED_ENTRIES_SIZE;
             if (isNull(offset)) return offset;
@@ -177,15 +177,15 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     }
 
     @Override
-    public boolean isFull(){return storedEntries == availableEntries;}
+    public boolean isFull(){return storedEntries == maxAvailableEntries;}
 
     @Override
     public HashMap<K,V> resize(){
         try {
             long prevLength = accessFile.length();
             HashMap<K,V> map = loadPrevEntries(prevLength);
-            availableEntries *= 2;
-            long newLength = (long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE;
+            maxAvailableEntries *= 2;
+            long newLength = (long) maxAvailableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE;
             accessFile.setLength(newLength);
             storedEntries = 0;
             return map;
@@ -213,5 +213,5 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     }
 
 
-    private int getAvailableEntries() { return availableEntries; }
+    private int getMaxAvailableEntries() { return maxAvailableEntries; }
 }

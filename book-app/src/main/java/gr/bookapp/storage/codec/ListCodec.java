@@ -5,11 +5,12 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public record ListCodec<T>(Codec<T> valueCodec) implements Codec<List<T>> {
+public record ListCodec<T>(Codec<T> valueCodec, int maxEntries) implements Codec<List<T>> {
+    public ListCodec(Codec<T> valueCodec){ this(valueCodec, 20); }
 
     @Override
-    public int maxByteSize() { //todo check
-        return valueCodec().maxByteSize() * 20; // MAX 20 ENTRIES FOR THE LIST
+    public int maxByteSize() {
+        return Integer.BYTES + valueCodec().maxByteSize() * maxEntries;
     }
 
     @Override

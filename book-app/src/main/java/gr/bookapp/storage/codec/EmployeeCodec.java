@@ -5,10 +5,10 @@ import gr.bookapp.models.Employee;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public record EmployeeCodec( StringCodec stringCodec) implements Codec<Employee>{
+public record EmployeeCodec(StringCodec stringCodec) implements Codec<Employee>{
     @Override
     public int maxByteSize() {
-        return Long.BYTES + stringCodec.maxByteSize();
+        return Long.BYTES + stringCodec.maxByteSize() * 2;
     }
 
     @Override

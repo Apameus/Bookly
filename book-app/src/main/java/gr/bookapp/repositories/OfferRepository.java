@@ -18,7 +18,7 @@ public final class OfferRepository {
 
     public List<Offer> getOffersByTags(List<String> tags){
         ArrayList<Offer> offers = new ArrayList<>();
-        offers.forEach(offer -> offers.addAll(offerDatabase.findAllByIndexWithKeys(tagIndex, offer))); //TODO ??
+        tags.forEach(tag -> offers.addAll(offerDatabase.findAllByIndexWithKeys(tagIndex, tag)));
         return offers;
     }
 

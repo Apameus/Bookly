@@ -19,9 +19,10 @@ class StringCodecTest {
     StringCodec stringCodec;
 
     @BeforeEach
-    void initialize(@TempDir Path dir) throws FileNotFoundException {
+    void initialize(@TempDir Path dir) throws IOException {
         stringCodec = new StringCodec();
         accessFile = new RandomAccessFile(dir.resolve("stringCodec.data").toFile(), "rw");
+        accessFile.setLength(1000);
     }
 
     @Test
@@ -32,6 +33,20 @@ class StringCodecTest {
         accessFile.seek(0);
         String value = stringCodec.read(accessFile);
         assertThat(value).isEqualTo(input);
+    }
+
+    @Test
+    @DisplayName("Multiple Write-Read test")
+    void multipleWriteReadTest() throws IOException {
+        String input = "Beef";
+        String secondInput = "Chicken";
+        stringCodec.write(accessFile, input);
+        stringCodec.write(accessFile, secondInput);
+        accessFile.seek(0);
+        String value = stringCodec.read(accessFile);
+        String secondValue = stringCodec.read(accessFile);
+        assertThat(value).isEqualTo(input);
+        assertThat(secondValue).isEqualTo(secondInput);
     }
 
 }

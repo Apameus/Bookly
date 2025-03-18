@@ -2,6 +2,7 @@ package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
+import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.models.Employee;
 
 public final class EmployeeRepository {
@@ -25,8 +26,10 @@ public final class EmployeeRepository {
         return employeeDatabase.retrieve(employeeID);
     }
 
-    public Employee getEmployeeByUsername(String username){
-        return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
+    public Employee getEmployeeByUsername(String username) throws AuthenticationFailedException {
+        try {
+            return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
+        } catch (Exception e) {throw new AuthenticationFailedException(); }
     }
 
 }

@@ -1,8 +1,11 @@
 package gr.bookapp.services;
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.models.Book;
+import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
+import gr.bookapp.repositories.BookSalesRepository;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -10,12 +13,14 @@ import java.util.List;
 public final class BookService {
 
     private final BookRepository bookRepository;
+    private final BookSalesRepository bookSalesRepository;
     private final AuditRepository auditRepository;
     private final AuditContext auditContext;
     private final Clock clock;
 
-    public BookService(BookRepository bookRepository, AuditRepository auditRepository, AuditContext auditContext, Clock clock) {
+    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditRepository auditRepository, AuditContext auditContext, Clock clock) {
         this.bookRepository = bookRepository;
+        this.bookSalesRepository = bookSalesRepository;
         this.auditRepository = auditRepository;
         this.auditContext = auditContext;
         this.clock = clock;
@@ -23,6 +28,7 @@ public final class BookService {
 
     public void addBook(Book book){
         bookRepository.add(book);
+        bookSalesRepository.add(new BookSales(book.id(), 0));
         auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s added".formatted(book.id()), clock.instant());
     }
 

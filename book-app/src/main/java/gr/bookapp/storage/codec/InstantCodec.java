@@ -4,19 +4,22 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.time.Instant;
 
-public record InstantCodec(LongCodec longCodec) implements Codec<Instant> {
+public record InstantCodec(StringCodec stringCodec) implements Codec<Instant> {
+
     @Override
     public int maxByteSize() {
-        return longCodec().maxByteSize();
+        return stringCodec.maxByteSize();
     }
 
     @Override
     public Instant read(RandomAccessFile accessFile) throws IOException {
-        return Instant.ofEpochSecond(longCodec().read(accessFile));
+        String date = stringCodec.read(accessFile);
+        return InstantFormatter.parse(date);
     }
 
     @Override
     public void write(RandomAccessFile accessFile, Instant obj) throws IOException {
-        longCodec.write(accessFile, obj.getEpochSecond());
+        String date = InstantFormatter.serialize(obj);
+        stringCodec.write(accessFile, date);
     }
 }

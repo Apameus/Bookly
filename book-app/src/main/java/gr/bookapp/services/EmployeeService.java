@@ -3,6 +3,7 @@ package gr.bookapp.services;
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.exceptions.*;
 import gr.bookapp.models.Book;
+import gr.bookapp.models.Employee;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
@@ -70,6 +71,10 @@ public final class EmployeeService {
         }
 
         return bestOffer;
+    }
+
+    public void hireEmployee(String username, String password){
+        employeeRepository.add(new Employee(System.currentTimeMillis(), username, password));
     }
 
 
