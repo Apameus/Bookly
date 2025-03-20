@@ -42,9 +42,11 @@ public final class BookRepository {
 
     public List<Book> findBooksInDateRange(Instant from, Instant to){ return bookDatabase.findAllInRange(releaseDateRangeIndex, from, to); }
 
-    public void add(Book book){
-        bookDatabase.insert(book.id(), book);
+    public List<Book> getAllBooks(){
+        return bookDatabase.findAll();
     }
+
+    public void add(Book book){bookDatabase.insert(book.id(), book);}
 
     public void deleteBookByID(long bookID){
         bookDatabase.delete(bookID);

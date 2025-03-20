@@ -1,9 +1,11 @@
 package gr.bookapp.services;
 
 import gr.bookapp.common.AuditContext;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
+import gr.bookapp.repositories.BookSalesRepository;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import java.time.*;
@@ -13,14 +15,16 @@ import static org.mockito.Mockito.*;
 @TestMethodOrder(MethodOrderer.class)
 class BookServiceTest {
     BookRepository bookRepository = Mockito.mock(BookRepository.class);
+    BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
     AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
+    Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     BookService bookService;
 
     @BeforeEach
     void initialize(){
-        bookService = new BookService(bookRepository, auditRepository, auditContext, clock);
+        bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, logger);
     }
 
     @Test

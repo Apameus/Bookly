@@ -45,7 +45,9 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
     @Override
     public V retrieve(K key) {return retrieveFromOffset(key, nodeStorage.rootOffset());}
     private V retrieveFromOffset(K key, long offset) {
-        if (nodeStorage.isNull(offset)) return null;
+//        if ()
+//        if (nodeStorage.isNull(offset)) return retrieveFromOffset(key, offset += maxSizeOfEntry);
+        if (nodeStorage.isNull(offset)) return null; //TODO warning
         var node = nodeStorage.readKeyNode(offset);
         int compare = comparator.compare(key, node.key());
         if (compare < 0) return retrieveFromOffset(key, node.leftPointer());
@@ -53,15 +55,14 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
         return nodeStorage.readValue(offset);
     }
 
-    @Override
-    public void delete(K key) {delete(key, nodeStorage.rootOffset(), 0, "");}
-
     public int size() {
         return nodeStorage.size();
     }
 
-    private void delete(K key, long offset, long parentOffset, String childSide) {
-        if (nodeStorage.isNull(offset)) return;
+    @Override
+    public void delete(K key) {delete(key, nodeStorage.rootOffset(), 0, "");}
+    private void delete(K key, long offset, long parentOffset, String childSide) { //TODO: //WARNING: the successor isn't be deleted
+        if (nodeStorage.isNull(offset)) return; //TODO: warning (if the first entry is null ??)
         var node = nodeStorage.readKeyNode(offset);
         int compare = comparator.compare(key, node.key());
         if (compare < 0) delete(key, node.leftPointer(), offset, "L");
@@ -71,6 +72,7 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
                 if (!nodeStorage.isNull(node.rightPointer())){
                     var rightChild = readFullEntry(node.rightPointer());
                     nodeStorage.writeNode(rightChild, offset);
+                    nodeStorage.deleteNode(node.rightPointer());
                 }
                 else{ // Both children are null
                     nodeStorage.deleteNode(offset);

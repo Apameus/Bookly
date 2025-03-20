@@ -1,6 +1,7 @@
 package gr.bookapp.services;
 
 import gr.bookapp.exceptions.AuthenticationFailedException;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Employee;
 import gr.bookapp.repositories.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +17,11 @@ class AuthenticationServiceUnitTest {
 
     EmployeeRepository employeeRepository = Mockito.mock(EmployeeRepository.class);
     AuthenticationService authenticationService;
+    Logger.Factory logger = Mockito.mock(Logger.Factory.class);
 
     @BeforeEach
     void initialise(){
-        authenticationService = new AuthenticationService(employeeRepository);
+        authenticationService = new AuthenticationService(employeeRepository, logger);
     }
 
     @Test
@@ -32,7 +34,7 @@ class AuthenticationServiceUnitTest {
 
     @Test
     @DisplayName("Failed authentication test")
-    void failedAuthenticationTest() {
+    void failedAuthenticationTest() throws AuthenticationFailedException {
         Employee employee = new Employee(007, "Manolis", "123");
         when(employeeRepository.getEmployeeByUsername("Manolis")).thenReturn(employee);
         assertThrows(AuthenticationFailedException.class, () -> authenticationService.authenticate(employee.username(), ""));

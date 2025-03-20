@@ -4,6 +4,10 @@ import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.database.Database;
+import gr.bookapp.log.CompositeLoggerFactory;
+import gr.bookapp.log.ConsoleLogger;
+import gr.bookapp.log.FileLogger;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.*;
 import gr.bookapp.repositories.*;
 import gr.bookapp.services.*;
@@ -22,9 +26,10 @@ import java.util.List;
 
 public final class App {
     public static void main(String[] args) throws IOException {
-        IdGenerator idGenerator = new IdGenerator();
-        Clock clock = Clock.systemUTC();
         AuditContext auditContext = new AuditContextImpl();
+        Clock clock = Clock.systemUTC();
+        Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Log")));
+        IdGenerator idGenerator = new IdGenerator();
 
         LongCodec longCodec = new LongCodec();
         StringCodec stringCodec = new StringCodec();
@@ -35,7 +40,7 @@ public final class App {
         BookSalesCodec bookSalesCodec = new BookSalesCodec();
         EmployeeCodec employeeCodec = new EmployeeCodec(stringCodec);
         OfferCodec offerCodec = new OfferCodec(listCodec, instantCodec);
-        AuditCodec auditCodec = new AuditCodec(stringCodec, instantCodec);
+        AuditCodec auditCodec = new AuditCodec(new StringCodec(100), instantCodec);
 
         //DBs
         FileBasedNodeStorageTree<Long, Book> bookNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Books"), longCodec, bookCodec);
@@ -67,11 +72,11 @@ public final class App {
         OfferRepository offerRepository = new OfferRepository(offerDataBase);
 
         //Services
-        BookSalesService bookSalesService = new BookSalesService(bookSalesRepository);
-        BookService bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock);
-        OfferService offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock);
-        EmployeeService employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock);
-        AuthenticationService authenticationService = new AuthenticationService(employeeRepository);
+        BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
+        BookService bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
+        OfferService offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
+        EmployeeService employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        AuthenticationService authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
 
 
         //UI

@@ -1,6 +1,7 @@
 package gr.bookapp.services;
 
 import gr.bookapp.exceptions.InvalidInputException;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.BookSalesRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +13,8 @@ import static org.mockito.Mockito.*;
 
 class BookSalesServiceTest {
     BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
-    BookSalesService bookSalesService = new BookSalesService(bookSalesRepository);
+    Logger.Factory logger = Mockito.mock(Logger.Factory.class);
+    BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, logger);
 
     @Test
     @DisplayName("Increase sales of book test")

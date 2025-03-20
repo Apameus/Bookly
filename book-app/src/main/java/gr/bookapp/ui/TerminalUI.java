@@ -6,7 +6,6 @@ import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Employee;
-import gr.bookapp.models.Offer;
 import gr.bookapp.services.AuthenticationService;
 import gr.bookapp.services.BookService;
 import gr.bookapp.services.EmployeeService;
@@ -15,6 +14,7 @@ import gr.bookapp.storage.codec.InstantFormatter;
 import java.io.Console;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,13 +41,14 @@ public final class TerminalUI {
 //            String[] ss = input.split(" ");
 //            employeeService.hireEmployee(ss[0], ss[1]);
 //        }
+        AuditContextImpl.clear();
         initialLoop:
         while (true){
             String username = console.readLine("Username: ");
             String password = console.readLine("Password: ");
             try {
                 Employee employee = authenticationService.authenticate(username, password);
-                AuditContextImpl.add(employee.id());
+                AuditContextImpl.set(employee.id());
             } catch (AuthenticationFailedException e) {
                 System.err.println("Authentication failed! Please try again.");
                 continue initialLoop;
@@ -73,77 +74,83 @@ public final class TerminalUI {
         String input = console.readLine("Book_ID: ");
         try {
             bookID = Long.parseLong(input);
-        } catch (Exception e) {
-            System.err.println("Invalid input !");
-            return;
-        }
-        try {
             Book book = employeeService.sellBook(bookID);
             printBookDetails(book);
-
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input !");
         } catch (InvalidInputException e) {
-            System.err.println("Invalid BookID");
+            System.err.println("Invalid BookID !");
         }
     }
 
     private void createOffer() {
         try {
             String inputTags = console.readLine("Tags (separated by space): ");
+            if (inputTags.isBlank()) throw new InvalidInputException("Every offer needs at least 1 tag !");
             List<String> tags = Arrays.stream(inputTags.split(" ")).toList();
             int percentage = Integer.parseInt(console.readLine("Percentage: "));
             Long inputDuration = Long.valueOf(console.readLine("Duration in days: "));
             Duration duration = Duration.ofDays(inputDuration);
-            long id = idGenerator.generateID();
             employeeService.createOffer(tags, percentage, duration);
         } catch (Exception e) {
-            System.err.println("Invalid input !");
+            System.err.println("Invalid input:  " + e.getMessage());
         }
-//        String inputDate = console.readLine("Until Date (dd-MM-yyyy G): ");
-//        Instant untilDate = InstantFormatter.parse(inputDate);
-//        Offer offer = new Offer(id, tags, percentage, untilDate);
-    }
-
-    private void deleteBook() {
-        try {
-            long bookID = Long.parseLong(console.readLine("Book_ID: "));
-            bookService.deleteBookByID(bookID);
-        }catch (Exception e) {
-            System.err.println("Invalid input !");
-        }
-
     }
 
     private void addBook() {
         Book book = null;
         try {
             String name = console.readLine("Book_Name: ");
+            if (name.isBlank()) throw new InvalidInputException("Book name can't be empty !");
             String inputAuthors = console.readLine("Authors (separated by space): ");
+            if (inputAuthors.isBlank()) throw new InvalidInputException("Every book needs at least 1 author !");
             List<String> authors = Arrays.stream(inputAuthors.split(" ")).toList();
             double price = Double.parseDouble(console.readLine("Price: "));
             String inputDate = console.readLine("Release_Date (dd-MM-yyyy G): "); //22-02-0300 BC
             Instant releaseDate = InstantFormatter.parse(inputDate);
             String inputTags = console.readLine("Tags (separated by space): ");
+            if (inputTags.isBlank()) throw new InvalidInputException("Every book needs at least 1 tag !");
             List<String> tags = Arrays.stream(inputTags.split(" ")).toList();
 
             long id = idGenerator.generateID();
             book = new Book(id, name, authors, price, releaseDate, tags);
 
-        }catch (Exception e) {
+            bookService.addBook(book);
+        }catch (DateTimeParseException e) {
+            System.err.println("Invalid Date !");
+        }catch (NumberFormatException e) {
+            System.err.println("Invalid input !");
+        }catch (InvalidInputException e){
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void deleteBook() {
+        try {
+            long bookID = Long.parseLong(console.readLine("Book_ID: "));
+            bookService.deleteBookByID(bookID);
+        }catch (NumberFormatException e) {
             System.err.println("Invalid input !");
         }
-        bookService.addBook(book);
+
     }
 
     private void searchBook() {
-        String by = console.readLine("By Name, Authors, Tags, Price_Range, Release_Date_Range: ");
+        String by = console.readLine("By Name, Authors, Tags, Price_Range, Release_Date_Range, See_All: ");
         switch (by.toLowerCase()){
             case "name" -> searchBookByName(console.readLine("Name: "));
             case "authors" -> searchBookByAuthors(console.readLine("Authors: "));
             case "tags" -> searchBookByTags(console.readLine("Tags: "));
             case "price_range" -> searchBookByPrice();
             case "release_date_range" -> searchBookByDate();
+            case "see_all" -> seeAllBooks();
+            default -> System.err.println("Invalid input !");
         }
 
+    }
+
+    private void seeAllBooks() {
+        bookService.getAllBooks().forEach(this::printBookDetails);
     }
 
     private void searchBookByDate() {
@@ -151,8 +158,8 @@ public final class TerminalUI {
             String min = console.readLine("Min date (dd-MM-yyyy G): ");
             String max = console.readLine("Max date (dd-MM-yyyy G): ");
             bookService.getBooksInDateRange(InstantFormatter.parse(min), InstantFormatter.parse(max)).forEach(this::printBookDetails);
-        }catch (Exception e){
-            System.err.println("Invalid Input !");
+        }catch (DateTimeParseException e){
+            System.err.println("Invalid date !");
         }
 
     }
@@ -162,7 +169,7 @@ public final class TerminalUI {
             double minPrice = Double.parseDouble(console.readLine("Min price: "));
             double maxPrice = Double.parseDouble(console.readLine("Max price: "));
             bookService.getBooksInPriceRange(minPrice, maxPrice).forEach(this::printBookDetails);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.err.println("Invalid Input !");
         }
     }
@@ -182,6 +189,7 @@ public final class TerminalUI {
     }
 
     private void printBookDetails(Book book) {
-        console.printf("id: %s, Name: %s, Authors: %s, Price: %s, Release_Date: %s, Tags: %s", book.id(), book.name(), book.authors(), book.price(), book.releaseDate(), book.tags());
+        console.printf("id: %s, Name: %s, Authors: %s, Price: %s, Release_Date: %s, Tags: %s", book.id(), book.name(), book.authors(), book.price(), InstantFormatter.serialize(book.releaseDate()), book.tags());
+        console.printf("\n");
     }
 }

@@ -1,5 +1,6 @@
 package gr.bookapp.services;
 import gr.bookapp.common.AuditContext;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.AuditRepository;
@@ -17,27 +18,33 @@ public final class BookService {
     private final AuditRepository auditRepository;
     private final AuditContext auditContext;
     private final Clock clock;
+    private final Logger logger;
 
-    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditRepository auditRepository, AuditContext auditContext, Clock clock) {
+    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditRepository auditRepository, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
         this.bookRepository = bookRepository;
         this.bookSalesRepository = bookSalesRepository;
         this.auditRepository = auditRepository;
         this.auditContext = auditContext;
         this.clock = clock;
+        logger = loggerFactory.create("Book_Service");
     }
 
     public void addBook(Book book){
         bookRepository.add(book);
         bookSalesRepository.add(new BookSales(book.id(), 0));
         auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s added".formatted(book.id()), clock.instant());
+        logger.log("Book added");
     }
 
     public void deleteBookByID(long bookID){
+        if (bookRepository.getBookByID(bookID) == null) logger.log("Book not found");
         bookRepository.deleteBookByID(bookID);
+        bookSalesRepository.delete(bookID);
         auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s deleted".formatted(bookID), clock.instant());
+        logger.log("Book deleted");
     }
 
-
+    // TODO: Add logs
     public Book getBookByID(long bookID)   {
         return bookRepository.getBookByID(bookID);
     }
@@ -62,4 +69,7 @@ public final class BookService {
         return bookRepository.findBooksInDateRange(from, to);
     }
 
+    public List<Book> getAllBooks(){
+        return bookRepository.getAllBooks();
+    }
 }
