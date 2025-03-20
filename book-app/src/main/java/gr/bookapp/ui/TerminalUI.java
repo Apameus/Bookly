@@ -9,7 +9,7 @@ import gr.bookapp.models.Employee;
 import gr.bookapp.services.AuthenticationService;
 import gr.bookapp.services.BookService;
 import gr.bookapp.services.EmployeeService;
-import gr.bookapp.storage.codec.InstantFormatter;
+import gr.bookapp.common.InstantFormatter;
 
 import java.io.Console;
 import java.time.Duration;

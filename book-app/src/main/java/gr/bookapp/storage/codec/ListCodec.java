@@ -25,6 +25,7 @@ public record ListCodec<T>(Codec<T> valueCodec, int maxEntries) implements Codec
 
     @Override
     public void write(RandomAccessFile accessFile, List<T> list) throws IOException {
+        if (list.size() > maxEntries) throw new IllegalStateException(String.format("The entries in the list (%s) are more than specified in the constructor (%s)", list.size(), maxEntries));
         accessFile.writeInt(list.size());
         for (T t : list) valueCodec.write(accessFile, t);
     }

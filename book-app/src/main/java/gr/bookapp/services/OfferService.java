@@ -7,7 +7,7 @@ import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
-import gr.bookapp.storage.codec.InstantFormatter;
+import gr.bookapp.common.InstantFormatter;
 
 import java.time.Clock;
 import java.time.Duration;

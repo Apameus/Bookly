@@ -45,9 +45,7 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
     @Override
     public V retrieve(K key) {return retrieveFromOffset(key, nodeStorage.rootOffset());}
     private V retrieveFromOffset(K key, long offset) {
-//        if ()
-//        if (nodeStorage.isNull(offset)) return retrieveFromOffset(key, offset += maxSizeOfEntry);
-        if (nodeStorage.isNull(offset)) return null; //TODO warning
+        if (nodeStorage.isNull(offset)) return null;
         var node = nodeStorage.readKeyNode(offset);
         int compare = comparator.compare(key, node.key());
         if (compare < 0) return retrieveFromOffset(key, node.leftPointer());
@@ -61,8 +59,8 @@ public final class BinarySearchTree<K, V> implements ObjectTable<K, V> {
 
     @Override
     public void delete(K key) {delete(key, nodeStorage.rootOffset(), 0, "");}
-    private void delete(K key, long offset, long parentOffset, String childSide) { //TODO: //WARNING: the successor isn't be deleted
-        if (nodeStorage.isNull(offset)) return; //TODO: warning (if the first entry is null ??)
+    private void delete(K key, long offset, long parentOffset, String childSide) {
+        if (nodeStorage.isNull(offset)) return;
         var node = nodeStorage.readKeyNode(offset);
         int compare = comparator.compare(key, node.key());
         if (compare < 0) delete(key, node.leftPointer(), offset, "L");

@@ -1,4 +1,4 @@
-package gr.bookapp.storage.codec;
+package gr.bookapp.common;
 
 import java.time.Instant;
 import java.time.LocalDate;
