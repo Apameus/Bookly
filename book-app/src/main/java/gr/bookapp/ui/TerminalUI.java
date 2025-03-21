@@ -6,6 +6,7 @@ import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Employee;
+import gr.bookapp.services.AdminService;
 import gr.bookapp.services.AuthenticationService;
 import gr.bookapp.services.BookService;
 import gr.bookapp.services.EmployeeService;
@@ -23,31 +24,29 @@ public final class TerminalUI {
     private final IdGenerator idGenerator;
     private final AuthenticationService authenticationService;
     private final EmployeeService employeeService;
+    private final AdminService adminService;
     private final BookService bookService;
 
-    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, EmployeeService employeeService, BookService bookService) {
+    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, EmployeeService employeeService, AdminService adminService, BookService bookService) {
         this.idGenerator = idGenerator;
         this.authenticationService = authenticationService;
         this.employeeService = employeeService;
+        this.adminService = adminService;
         this.bookService = bookService;
         this.console = System.console();
     }
 
     public void start(){
-//        setupLoop:
-//        while (true){
-//            String input = console.readLine("Create Employees (Un Ps): ");
-//            if (input.equalsIgnoreCase("exit")) break ;
-//            String[] ss = input.split(" ");
-//            employeeService.hireEmployee(ss[0], ss[1]);
-//        }
+
+
         AuditContextImpl.clear();
+        Employee employee;
         initialLoop:
         while (true){
             String username = console.readLine("Username: ");
             String password = console.readLine("Password: ");
             try {
-                Employee employee = authenticationService.authenticate(username, password);
+                employee = authenticationService.authenticate(username, password);
                 AuditContextImpl.set(employee.id());
             } catch (AuthenticationFailedException e) {
                 System.err.println("Authentication failed! Please try again.");
@@ -55,6 +54,17 @@ public final class TerminalUI {
             }
             employeeLoop:
             while (true) {
+                if (employee.isAdmin()){
+                    String adminAction = console.readLine("Hire_Employee, Fire_Employee, Search_By_Username, Exit :");
+                    switch (adminAction.toLowerCase()){
+                        case "hire_employee" -> hireEmployee();
+                        case "fire_employee" -> fireEmployee();
+                        case "search_by_username" -> searchEmployeeByUsername();
+                        case "exit" -> { break employeeLoop; }
+                        default -> System.err.println("Invalid Input !");
+                    }
+                    continue;
+                }
                 String action = console.readLine("Sell_Book, Search_Book, Add_Book, Delete_Book, Create_Offer, Exit: ");
                 switch (action.toLowerCase()) {
                     case "sell_book" -> sellBook();
@@ -66,6 +76,31 @@ public final class TerminalUI {
                     default -> System.err.println("Invalid Input !");
                 }
             }
+        }
+    }
+
+    private void searchEmployeeByUsername() {
+        String username = console.readLine("Username: ");
+        Employee employee = adminService.searchEmployeeByUsername(username);
+        System.out.printf("Employee_ID: %s, Username: %s, Password: %s%n", employee.id(), employee.username(), employee.password());
+    }
+
+    private void fireEmployee() {
+        try {
+            long employeeID = Long.parseLong(console.readLine("Employee_ID: "));
+            adminService.fireEmployee(employeeID);
+        }catch (NumberFormatException e) {
+            System.err.println("Invalid input !");
+        }
+    }
+
+    private void hireEmployee() {
+        String username = console.readLine("Username: ");
+        String password = console.readLine("Password: ");
+        try {
+            adminService.hireEmployee(username, password);
+        } catch (InvalidInputException e) {
+            System.err.println(e.getMessage());
         }
     }
 

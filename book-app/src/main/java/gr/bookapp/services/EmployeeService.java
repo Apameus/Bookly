@@ -6,6 +6,7 @@ import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Employee;
 import gr.bookapp.models.Offer;
+import gr.bookapp.models.Role;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.EmployeeRepository;
@@ -80,10 +81,8 @@ public final class EmployeeService {
         return bestOffer;
     }
 
-    public void hireEmployee(String username, String password){
-        logger.log("New employee hired");
-        employeeRepository.add(new Employee(System.currentTimeMillis(), username, password));
+
+    public void hireEmployee(String s, String s1) throws InvalidInputException {
+        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
     }
-
-
 }

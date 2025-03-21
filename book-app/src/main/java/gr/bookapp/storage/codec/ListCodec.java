@@ -15,11 +15,9 @@ public record ListCodec<T>(Codec<T> valueCodec, int maxEntries) implements Codec
 
     @Override
     public List<T> read(RandomAccessFile accessFile) throws IOException {
-        List<T> list = new ArrayList<>();
         int listSize = accessFile.readInt();
-        for (int i = 0; i < listSize; i++) {
-            list.add(valueCodec.read(accessFile));
-        }
+        List<T> list = new ArrayList<>(listSize);
+        for (int i = 0; i < listSize; i++) list.add(valueCodec.read(accessFile));
         return list;
     }
 

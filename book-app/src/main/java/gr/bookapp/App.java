@@ -1,9 +1,8 @@
 package gr.bookapp;
 
-import gr.bookapp.common.AuditContext;
-import gr.bookapp.common.AuditContextImpl;
-import gr.bookapp.common.IdGenerator;
+import gr.bookapp.common.*;
 import gr.bookapp.database.Database;
+import gr.bookapp.exceptions.ConfigurationFileLoadException;
 import gr.bookapp.log.CompositeLoggerFactory;
 import gr.bookapp.log.ConsoleLogger;
 import gr.bookapp.log.FileLogger;
@@ -16,19 +15,22 @@ import gr.bookapp.storage.file.BinarySearchTree;
 import gr.bookapp.storage.file.FileBasedNodeStorageTree;
 import gr.bookapp.storage.file.ObjectTable;
 import gr.bookapp.ui.TerminalUI;
-
-import java.io.Console;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.List;
+import java.util.Properties;
 
 public final class App {
-    public static void main(String[] args) throws IOException {
+
+
+    public static void main(String[] args) throws IOException, ConfigurationFileLoadException {
+        ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO
+        BooklyConfig booklyConfig = configLoader.get();
+
         AuditContext auditContext = new AuditContextImpl();
         Clock clock = Clock.systemUTC();
-        Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Log")));
+        Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.auditsPath()));
         IdGenerator idGenerator = new IdGenerator();
 
         LongCodec longCodec = new LongCodec();
@@ -43,23 +45,23 @@ public final class App {
         AuditCodec auditCodec = new AuditCodec(new StringCodec(100), instantCodec);
 
         //DBs
-        FileBasedNodeStorageTree<Long, Book> bookNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Books"), longCodec, bookCodec);
+        FileBasedNodeStorageTree<Long, Book> bookNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.bookSalesPath(), longCodec, bookCodec);
         ObjectTable<Long, Book> bookObjectTable = new BinarySearchTree<>(Long::compareTo, bookNodeStorage);
         Database<Long, Book> bookDataBase = new Database<>(bookObjectTable);
 
-        FileBasedNodeStorageTree<Long, BookSales> bookSalesNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/BookSales"), longCodec, bookSalesCodec);
+        FileBasedNodeStorageTree<Long, BookSales> bookSalesNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.bookSalesPath(), longCodec, bookSalesCodec);
         ObjectTable <Long, BookSales> bookSalesObjectTable = new BinarySearchTree<>(Long::compareTo, bookSalesNodeStorage);
         Database<Long, BookSales> bookSalesDataBase = new Database<>(bookSalesObjectTable);
 
-        FileBasedNodeStorageTree<Long, Employee> employeeNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Employees"), longCodec, employeeCodec);
+        FileBasedNodeStorageTree<Long, Employee> employeeNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.employeesPath(), longCodec, employeeCodec);
         ObjectTable <Long, Employee> employeeObjectTable = new BinarySearchTree<>(Long::compareTo, employeeNodeStorage);
         Database<Long, Employee> employeeDataBase = new Database<>(employeeObjectTable);
 
-        FileBasedNodeStorageTree<Long, Offer> offerNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Offers"), longCodec, offerCodec);
+        FileBasedNodeStorageTree<Long, Offer> offerNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.offersPath(), longCodec, offerCodec);
         ObjectTable <Long, Offer> offerObjectTable = new BinarySearchTree<>(Long::compareTo, offerNodeStorage);
         Database<Long, Offer> offerDataBase = new Database<>(offerObjectTable);
 
-        FileBasedNodeStorageTree<Instant, Audit> auditNodeStorage = new FileBasedNodeStorageTree<>(Path.of("/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Audits"), instantCodec, auditCodec);
+        FileBasedNodeStorageTree<Instant, Audit> auditNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.auditsPath(), instantCodec, auditCodec);
         ObjectTable <Instant, Audit> auditObjectTable = new BinarySearchTree<>(Instant::compareTo, auditNodeStorage);
         Database<Instant, Audit> auditDataBase = new Database<>(auditObjectTable);
 
@@ -76,11 +78,11 @@ public final class App {
         BookService bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
         OfferService offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
         EmployeeService employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        AdminService adminService = new AdminService(employeeRepository, idGenerator, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
 
-
         //UI
-        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, employeeService, bookService);
+        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, employeeService, adminService, bookService);
         terminalUI.start();
     }
 }
