@@ -1,0 +1,101 @@
+[Authentication_Service] Employee authenticated / Wed, 19 Mar 2025 14:42:20 +0100
+[Employee_Service] Offer exist with 15 percentage / Wed, 19 Mar 2025 14:44:10 +0100
+[BookSales_Service] BookSales updated: BookID: 1742319126205, Sales: 8 / Wed, 19 Mar 2025 14:44:10 +0100
+[Employee_Service] Book with name ff is sold / Wed, 19 Mar 2025 14:44:10 +0100
+[Employee_Service] Trial to create an offer.. / Wed, 19 Mar 2025 14:47:14 +0100
+[Offer_Service] Offer created / Wed, 19 Mar 2025 14:47:14 +0100
+[Authentication_Service] Employee authenticated / Wed, 19 Mar 2025 15:13:35 +0100
+[Book_Service] Book deleted / Wed, 19 Mar 2025 15:13:53 +0100
+[Book_Service] Book added / Wed, 19 Mar 2025 15:14:39 +0100
+[Employee_Service] Offer exist with 15 percentage / Wed, 19 Mar 2025 15:15:13 +0100
+[BookSales_Service] BookSales updated: BookID: 1742393679673, Sales: 1 / Wed, 19 Mar 2025 15:15:13 +0100
+[Employee_Service] Book with name ff is sold / Wed, 19 Mar 2025 15:15:13 +0100
+[Authentication_Service] Employee authenticated / Wed, 19 Mar 2025 19:23:57 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:09:39 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 12:09:53 +0100
+[Offer_Service] Offer created / Thu, 20 Mar 2025 12:09:53 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:10:31 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:14:04 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:42:57 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:44:14 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 12:46:39 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 12:47:44 +0100
+[Offer_Service] Offer created / Thu, 20 Mar 2025 12:47:44 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:50:48 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 12:53:09 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 12:54:36 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 12:54:51 +0100
+[Offer_Service] Offer created / Thu, 20 Mar 2025 12:54:51 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 13:39:10 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 13:39:57 +0100
+[Offer_Service] Offer creation failed due to invalid duration / Thu, 20 Mar 2025 13:39:57 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 13:41:02 +0100
+[Offer_Service] Offer created / Thu, 20 Mar 2025 13:41:02 +0100
+[Employee_Service] Offer exist with 100000 percentage / Thu, 20 Mar 2025 13:41:26 +0100
+[BookSales_Service] BookSales updated: BookID: 1742471676965, Sales: 1 / Thu, 20 Mar 2025 13:41:26 +0100
+[Employee_Service] Book with name gg is sold / Thu, 20 Mar 2025 13:41:26 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 13:42:30 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 13:42:41 +0100
+[Offer_Service] Offer creation failed due to invalid percentage / Thu, 20 Mar 2025 13:42:41 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 13:43:01 +0100
+[Offer_Service] Offer creation failed due to invalid duration / Thu, 20 Mar 2025 13:43:01 +0100
+[Employee_Service] Trial to create an offer.. / Thu, 20 Mar 2025 13:43:12 +0100
+[Offer_Service] Offer created / Thu, 20 Mar 2025 13:43:12 +0100
+[Employee_Service] Offer exist with 99 percentage / Thu, 20 Mar 2025 13:43:22 +0100
+[BookSales_Service] BookSales updated: BookID: 1742471676965, Sales: 2 / Thu, 20 Mar 2025 13:43:22 +0100
+[Employee_Service] Book with name gg is sold / Thu, 20 Mar 2025 13:43:22 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 14:05:30 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 14:06:16 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 14:08:01 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 14:12:16 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 14:14:04 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 14:15:23 +0100
+[Book_Service] Book not found / Thu, 20 Mar 2025 14:15:40 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 14:15:40 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 14:17:15 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 15:19:05 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 15:19:45 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 18:01:12 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 18:02:30 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 18:03:01 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 18:03:40 +0100
+[Book_Service] Book added / Thu, 20 Mar 2025 18:04:33 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 18:10:38 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 18:10:49 +0100
+[Authentication_Service] Authentication failed ! / Thu, 20 Mar 2025 18:13:49 +0100
+[Authentication_Service] Employee authenticated / Thu, 20 Mar 2025 18:13:53 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 18:14:11 +0100
+[Book_Service] Book deleted / Thu, 20 Mar 2025 18:14:39 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 09:35:00 +0100
+[Book_Service] Book added / Fri, 21 Mar 2025 09:36:07 +0100
+[BookSales_Service] BookSales updated: BookID: 1742546167237, Sales: 1 / Fri, 21 Mar 2025 09:37:03 +0100
+[Employee_Service] Book with name ff1 is sold / Fri, 21 Mar 2025 09:37:03 +0100
+[Employee_Service] Trial to create an offer.. / Fri, 21 Mar 2025 09:37:28 +0100
+[Offer_Service] Offer created / Fri, 21 Mar 2025 09:37:28 +0100
+[Employee_Service] Offer exist with 40 percentage / Fri, 21 Mar 2025 09:37:41 +0100
+[BookSales_Service] BookSales updated: BookID: 1742546167237, Sales: 2 / Fri, 21 Mar 2025 09:37:41 +0100
+[Employee_Service] Book with name ff1 is sold / Fri, 21 Mar 2025 09:37:41 +0100
+[Book_Service] Book deleted / Fri, 21 Mar 2025 09:37:54 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 11:53:34 +0100
+[Authentication_Service] Authentication failed ! / Fri, 21 Mar 2025 11:54:39 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 11:54:47 +0100
+[Admin_Service] Employee hired / Fri, 21 Mar 2025 11:55:01 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 11:56:44 +0100
+[Admin_Service] Employee hired / Fri, 21 Mar 2025 11:56:56 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 11:57:31 +0100
+[Authentication_Service] Employee authenticated / Fri, 21 Mar 2025 11:57:50 +0100
+[Admin_Service] Employee fired / Fri, 21 Mar 2025 11:58:08 +0100
+[Authentication_Service] Employee authenticated / Sun, 23 Mar 2025 16:47:21 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 16:49:23 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 16:52:19 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 16:52:19 +0100
+[Authentication_Service] Employee authenticated / Sun, 23 Mar 2025 16:55:54 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 16:56:49 +0100
+[Authentication_Service] Employee authenticated / Sun, 23 Mar 2025 16:59:51 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 17:00:51 +0100
+[Authentication_Service] Employee authenticated / Sun, 23 Mar 2025 17:01:04 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 17:01:16 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 17:01:16 +0100
+[Book_Service] Book added / Sun, 23 Mar 2025 17:01:16 +0100
+[Authentication_Service] Authentication failed ! / Sun, 23 Mar 2025 17:01:22 +0100
+[Authentication_Service] Employee authenticated / Sun, 23 Mar 2025 17:01:27 +0100
