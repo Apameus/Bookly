@@ -1,6 +1,7 @@
 package gr.bookapp.blackbox;
 
 import gr.bookapp.exceptions.AuthenticationFailedException;
+import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Employee;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,7 @@ public final class AuthenticationServiceBlackBoxTest extends AbstractBlackBoxTes
 
     @Test
     @DisplayName("Authentication test")
-    void authenticationTest() throws AuthenticationFailedException {
+    void authenticationTest() throws AuthenticationFailedException, InvalidInputException {
         Employee employee = Instancio.create(Employee.class);
         employeeRepository.add(employee);
 
@@ -24,7 +25,7 @@ public final class AuthenticationServiceBlackBoxTest extends AbstractBlackBoxTes
 
     @Test
     @DisplayName("Invalid credentials authentication test")
-    void invalidCredentialsAuthenticationTest() {
+    void invalidCredentialsAuthenticationTest() throws InvalidInputException {
         Employee employee = Instancio.create(Employee.class);
         employeeRepository.add(employee);
 

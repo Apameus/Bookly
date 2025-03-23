@@ -82,7 +82,7 @@ public final class EmployeeService {
     }
 
 
-    public void hireEmployee(String s, String s1) throws InvalidInputException {
-        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
-    }
+//    public void hireEmployee(String s, String s1) throws InvalidInputException {
+//        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
+//    }
 }

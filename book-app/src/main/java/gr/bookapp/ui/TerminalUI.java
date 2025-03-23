@@ -1,8 +1,10 @@
 package gr.bookapp.ui;
 
 import gr.bookapp.common.AuditContextImpl;
+import gr.bookapp.common.CsvParser;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.AuthenticationFailedException;
+import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Employee;
@@ -13,6 +15,9 @@ import gr.bookapp.services.EmployeeService;
 import gr.bookapp.common.InstantFormatter;
 
 import java.io.Console;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -26,13 +31,15 @@ public final class TerminalUI {
     private final EmployeeService employeeService;
     private final AdminService adminService;
     private final BookService bookService;
+    private final CsvParser csvParser;
 
-    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, EmployeeService employeeService, AdminService adminService, BookService bookService) {
+    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, EmployeeService employeeService, AdminService adminService, BookService bookService, CsvParser csvParser) {
         this.idGenerator = idGenerator;
         this.authenticationService = authenticationService;
         this.employeeService = employeeService;
         this.adminService = adminService;
         this.bookService = bookService;
+        this.csvParser = csvParser;
         this.console = System.console();
     }
 
@@ -55,11 +62,12 @@ public final class TerminalUI {
             employeeLoop:
             while (true) {
                 if (employee.isAdmin()){
-                    String adminAction = console.readLine("Hire_Employee, Fire_Employee, Search_By_Username, Exit :");
+                    String adminAction = console.readLine("Hire_Employee, Fire_Employee, Search_By_Username, Update_Data_From_Csv, Exit :");
                     switch (adminAction.toLowerCase()){
                         case "hire_employee" -> hireEmployee();
                         case "fire_employee" -> fireEmployee();
                         case "search_by_username" -> searchEmployeeByUsername();
+                        case "update_data_from_csv" -> updateDataWithCsv();
                         case "exit" -> { break employeeLoop; }
                         default -> System.err.println("Invalid Input !");
                     }
@@ -76,6 +84,59 @@ public final class TerminalUI {
                     default -> System.err.println("Invalid Input !");
                 }
             }
+        }
+    }
+
+    private void updateDataWithCsv() {
+        String typeOfUpdate = console.readLine("Update Books, BookSales, Employees, Offers: ");
+        switch (typeOfUpdate.toLowerCase()) { //todo refactor below methods
+            case "books" -> updateBooksWithCsv();
+            case "booksales" -> updateBookSalesWithCsv();
+            case "employees" -> updateEmployeesWithCsv();
+            case "offers" -> updateOffersWithCsv();
+            default -> System.err.println("Invalid input !");
+        }
+    }
+
+    private void updateOffersWithCsv() {
+        try {
+            String path = console.readLine("Path of Offers.csv: ");
+            List<String> lines = Files.readAllLines(Path.of(path));
+            csvParser.updateOffers(lines);
+        } catch (CsvFileLoadException | IOException e) {
+            System.err.println("Couldn't load the file !");
+        }
+    }
+
+    private void updateEmployeesWithCsv() {
+        try {
+            String path = console.readLine("Path of Employees.csv: ");
+            List<String> lines = Files.readAllLines(Path.of(path));
+            csvParser.updateEmployees(lines);
+        } catch (CsvFileLoadException | IOException e) {
+            System.err.println("Couldn't load the file !");
+        } catch (InvalidInputException e){
+            System.err.println("An employee username already exist !");
+        }
+    }
+
+    private void updateBookSalesWithCsv() {
+        try {
+            String path = console.readLine("Path of booksSales.csv: ");
+            List<String> lines = Files.readAllLines(Path.of(path));
+            csvParser.updateBookSales(lines);
+        } catch (CsvFileLoadException | IOException e) {
+            System.err.println("Couldn't load the file !");
+        }
+    }
+
+    private void updateBooksWithCsv() {
+        try {
+            String path = console.readLine("Path of books.csv: ");
+            List<String> lines = Files.readAllLines(Path.of(path));
+            csvParser.updateBooks(lines);
+        } catch (CsvFileLoadException | IOException e) {
+            System.err.println("Couldn't load the file !");
         }
     }
 
@@ -211,12 +272,12 @@ public final class TerminalUI {
 
     private void searchBookByTags(String input) {
         String[] tags = input.split(" ");
-        bookService.getBooksByTags(Arrays.stream(tags).toList()).forEach(this::printBookDetails);
+        bookService.getBooksByTags(Arrays.stream(tags).map(String::toLowerCase).toList()).forEach(this::printBookDetails);
     }
 
     private void searchBookByAuthors(String input) {
         String[] authors = input.split(" ");
-        bookService.getBooksByAuthors(Arrays.stream(authors).toList()).forEach(this::printBookDetails);
+        bookService.getBooksByAuthors(Arrays.stream(authors).map(String::toLowerCase).toList()).forEach(this::printBookDetails);
     }
 
     private void searchBookByName(String name) {

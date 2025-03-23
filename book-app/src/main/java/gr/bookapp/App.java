@@ -28,9 +28,11 @@ public final class App {
         ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO
         BooklyConfig booklyConfig = configLoader.get();
 
+
+
         AuditContext auditContext = new AuditContextImpl();
         Clock clock = Clock.systemUTC();
-        Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.auditsPath()));
+        Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.logsPath()));
         IdGenerator idGenerator = new IdGenerator();
 
         LongCodec longCodec = new LongCodec();
@@ -45,7 +47,7 @@ public final class App {
         AuditCodec auditCodec = new AuditCodec(new StringCodec(100), instantCodec);
 
         //DBs
-        FileBasedNodeStorageTree<Long, Book> bookNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.bookSalesPath(), longCodec, bookCodec);
+        FileBasedNodeStorageTree<Long, Book> bookNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.booksPath(), longCodec, bookCodec);
         ObjectTable<Long, Book> bookObjectTable = new BinarySearchTree<>(Long::compareTo, bookNodeStorage);
         Database<Long, Book> bookDataBase = new Database<>(bookObjectTable);
 
@@ -81,8 +83,10 @@ public final class App {
         AdminService adminService = new AdminService(employeeRepository, idGenerator, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
 
+        CsvParser csvParser = new CsvParser(bookService, bookSalesRepository, employeeRepository, offerRepository);
+
         //UI
-        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, employeeService, adminService, bookService);
+        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, employeeService, adminService, bookService, csvParser);
         terminalUI.start();
     }
 }

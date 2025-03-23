@@ -1,6 +1,7 @@
 package gr.bookapp.storage.codec;
 
 import gr.bookapp.models.Employee;
+import gr.bookapp.models.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class EmployeeCodecTest {
     @Test
     @DisplayName("Serialize-Parse test")
     void serializeParseTest() throws IOException {
-        Employee employee = new Employee(1555L, "ilias", "ilias123");
+        Employee employee = new Employee(1555L, "ilias", "ilias123", Role.EMPLOYEE);
         employeeCodec.write(accessFile, employee);
         accessFile.seek(0);
         assertThat(employeeCodec.read(accessFile)).isEqualTo(employee);
