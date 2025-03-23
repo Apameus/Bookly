@@ -36,7 +36,6 @@ public final class BookRepository {
         ArrayList<Book> books = new ArrayList<>();
         tags.forEach(tag -> books.addAll(bookDatabase.findAllByIndexWithKeys(tagIndex, tag)));
         return books;
-    }
 
     public List<Book> findBooksInPriceRange(double min, double max){ return bookDatabase.findAllInRange(priceRangeIndex, min, max); }
 

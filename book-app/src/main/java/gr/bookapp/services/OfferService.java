@@ -33,7 +33,6 @@ public final class OfferService {
         if (duration.isNegative()) throw new InvalidInputException("Invalid date");
         Instant now = Instant.now(clock);
         Instant untilDate = now.plus(duration);
-
         long id = idGenerator.generateID();
         Offer offer = new Offer(id, tags, percentage, untilDate);
         offerRepository.add(offer);

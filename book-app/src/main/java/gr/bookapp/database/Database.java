@@ -40,6 +40,7 @@ public final class Database<PM, T> {
         return list;
     }
 
+
     public <K> List<T> findAllInRange(RangeIndex<T, K> index, K min, K max){
         var result = new ArrayList<T>();
         for (var obj : objectTable) {

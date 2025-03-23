@@ -24,11 +24,13 @@ public final class BookService {
     public void addBook(Book book){
         bookRepository.add(book);
         auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s added".formatted(book.id()), clock.instant());
+
     }
 
     public void deleteBookByID(long bookID){
         bookRepository.deleteBookByID(bookID);
         auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s deleted".formatted(bookID), clock.instant());
+
     }
 
 

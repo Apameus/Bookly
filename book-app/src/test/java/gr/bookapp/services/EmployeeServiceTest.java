@@ -53,6 +53,7 @@ class EmployeeServiceTest {
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book);
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
         verify(auditRepository, times(1)).audit(999, "Book with id: 100 sold", clock.instant());
+
     }
 
     @Test

@@ -17,6 +17,8 @@ public final class BookSalesService {
         bookSalesRepository.add(bookSales.withSales(bookSales.sales() + quantity));
     }
 
+       
+   
     public void increaseSalesOfBook(long bookID) {
         try {
             increaseSalesOfBook(bookID, +1);

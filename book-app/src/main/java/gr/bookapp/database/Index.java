@@ -8,5 +8,7 @@ public interface Index<T, K> {
         return extractKey::apply;
     }
 
+
+
     K extractKey(T obj);
 }

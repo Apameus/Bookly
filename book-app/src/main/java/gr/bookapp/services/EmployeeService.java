@@ -39,6 +39,14 @@ public final class EmployeeService {
     }
 
 
+   
+    }
+
+    /**
+     *
+     * @param bookID
+     * @return Book
+     */
     public Book sellBook(long bookID) throws InvalidInputException {
         var book = bookRepository.getBookByID(bookID);
         if (book == null) throw new InvalidInputException("BookId doesn't exist");
@@ -73,4 +81,3 @@ public final class EmployeeService {
     }
 
 
-}

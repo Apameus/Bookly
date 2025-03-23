@@ -44,6 +44,7 @@ class OfferServiceUnitTest {
         Instant now = clock.instant();
         Instant untilDate = now.plus(duration);
 
+
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
@@ -66,10 +67,21 @@ class OfferServiceUnitTest {
 
         Instant now = clock.instant();
         Instant untilDate = now.plus(duration);
+
+    @DisplayName("Create offer with invalid inputs test")
+    void createOfferWithInvalidInputsTest() {
+        long offerId = 111L;
+        int percentage = 0;
+        long durationInDays = -3;
+        List<String> tags = List.of("");
+
+        Instant now = clock.instant();
+        Instant untilDate = now.plus(durationInDays, ChronoUnit.DAYS); 
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
         when(auditContext.getEmployeeID()).thenReturn(999L);
+      
         assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 
