@@ -19,12 +19,6 @@ public final class ConfigLoader {
             throw new RuntimeException("Something went wrong from loading the config file from specified path !");
         }
 
-//        if (!properties.contains("booksFile.path")) throw new ConfigurationFileLoadException("Missing \"booksFile.path\" from config file !");
-//        if (!properties.contains("bookSalesFile.path")) throw new ConfigurationFileLoadException("Missing \"bookSales.path\" from config file !");
-//        if (!properties.contains("employeesFile.path")) throw new ConfigurationFileLoadException("Missing \"employeesFile.path\" from config file !");
-//        if (!properties.contains("offersFile.path")) throw new ConfigurationFileLoadException("Missing \"offersFile.path\" from config file !");
-//        if (!properties.contains("auditsFile.path")) throw new ConfigurationFileLoadException("Missing \"auditsFile.path\" from config file !");
-//        if (!properties.contains("logsFile.path"  )) throw new ConfigurationFileLoadException("Missing \"logsFile.path\" from config file !");
         String books = properties.getProperty("booksFile.path");
         String bookSales = properties.getProperty("bookSalesFile.path");
         String employees = properties.getProperty("employeesFile.path");
@@ -43,34 +37,5 @@ public final class ConfigLoader {
 
     public BooklyConfig get() { return booklyConfig; }
 
-//    public  Path getBooksPath(){
-//        if (!properties.contains("booksFile.path")) throw new RuntimeException("Missing \"booksFile.path\" from config file !"); //todo
-//        String property = properties.getProperty("booksFile.path");
-//        return Path.of(property);
-//    }
-//
-//    public  Path getBookSalesPath(){
-//        String property = properties.getProperty("bookSalesFile.path");
-//        return Path.of(property);
-//    }
-//
-//    public  Path getEmployeesPath(){
-//        String property = properties.getProperty("employeesFile.path");
-//        return Path.of(property);
-//    }
-//
-//    public  Path getOffersPath(){
-//        String property = properties.getProperty("offersFile.path");
-//        return Path.of(property);
-//    }
-//
-//    public  Path getAuditsPath(){
-//        String property = properties.getProperty("auditsFile.path");
-//        return Path.of(property);
-//    }
-//
-//    public Path getLogsPath(){
-//        String property = properties.getProperty("logsFile.path");
-//        return Path.of(property);
-//    }
+
 }

@@ -1,0 +1,17 @@
+# Books file path
+booksFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Books
+
+# BookSales file path
+bookSalesFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/BookSales
+
+# Employees file path
+employeesFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Employees
+
+# Offers file path
+offersFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Offers
+
+# Audits file path
+auditsFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Audits
+
+# Logs file path
+logsFile.path=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/Log
