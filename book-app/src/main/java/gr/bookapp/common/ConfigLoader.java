@@ -2,6 +2,8 @@ package gr.bookapp.common;
 
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,8 +11,23 @@ import java.util.Properties;
 
 public final class ConfigLoader {
     private final BooklyConfig booklyConfig;
+    private final File dataDirectory;
 
     public ConfigLoader(String pathOfConfigFile) throws ConfigurationFileLoadException {
+        String directory = loadDirectory(pathOfConfigFile);
+        dataDirectory = new File(directory);
+
+        File books = getFile("Books");
+        File bookSales = getFile("BookSales");
+        File employees = getFile("Employees");
+        File offers = getFile("Offers");
+        File audits = getFile("Audits");
+        File logs = getFile("Logs");
+
+        booklyConfig = new BooklyConfig(books.toPath(), bookSales.toPath(), employees.toPath(), offers.toPath(), audits.toPath(), logs.toPath());
+    }
+
+    private static String loadDirectory(String pathOfConfigFile) throws ConfigurationFileLoadException {
         Properties properties = new Properties();
         try {
             FileInputStream fileInputStream = new FileInputStream(pathOfConfigFile);
@@ -19,20 +36,19 @@ public final class ConfigLoader {
             throw new RuntimeException("Something went wrong from loading the config file from specified path !");
         }
 
-        String books = properties.getProperty("booksFile.path");
-        String bookSales = properties.getProperty("bookSalesFile.path");
-        String employees = properties.getProperty("employeesFile.path");
-        String offers = properties.getProperty("offersFile.path");
-        String audits = properties.getProperty("auditsFile.path");
-        String logs = properties.getProperty("logsFile.path");
-        if (books == null) throw new ConfigurationFileLoadException("Missing \"booksFile.path\" from config file !");
-        if (bookSales == null) throw new ConfigurationFileLoadException("Missing \"bookSales.path\" from config file !");
-        if (employees == null) throw new ConfigurationFileLoadException("Missing \"employeesFile.path\" from config file !");
-        if (offers == null) throw new ConfigurationFileLoadException("Missing \"offersFile.path\" from config file !");
-        if (audits == null) throw new ConfigurationFileLoadException("Missing \"auditsFile.path\" from config file !");
-        if (logs == null) throw new ConfigurationFileLoadException("Missing \"logsFile.path\" from config file !");
+        String directory = properties.getProperty("data.directory");
+        if (directory == null || directory.isBlank()) throw new ConfigurationFileLoadException("Missing data.directory from config file !");
+        return directory;
+    }
 
-        booklyConfig = new BooklyConfig(Path.of(books), Path.of(bookSales), Path.of(employees), Path.of(offers), Path.of(audits), Path.of(logs));
+    private File getFile(String fileName) throws ConfigurationFileLoadException {
+        File file = new File(dataDirectory, fileName);
+        try {
+            if (!file.exists() && !file.createNewFile()) throw new ConfigurationFileLoadException("Failed create file: " + fileName);
+        } catch (IOException e) {
+            throw new ConfigurationFileLoadException("Error creating the file: " + fileName);
+        }
+        return file;
     }
 
     public BooklyConfig get() { return booklyConfig; }
