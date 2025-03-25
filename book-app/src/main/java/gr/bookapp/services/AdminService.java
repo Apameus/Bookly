@@ -1,41 +1,40 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
-import gr.bookapp.models.Employee;
+import gr.bookapp.models.User;
 import gr.bookapp.models.Role;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 
 public final class AdminService {
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final IdGenerator idGenerator;
     private final Logger logger;
 
 
-    public AdminService(EmployeeRepository employeeRepository, IdGenerator idGenerator, Logger.Factory loggerFactory) {
-        this.employeeRepository = employeeRepository;
+    public AdminService(UserRepository userRepository, IdGenerator idGenerator, Logger.Factory loggerFactory) {
+        this.userRepository = userRepository;
         this.idGenerator = idGenerator;
         logger = loggerFactory.create("Admin_Service");
     }
 
     public void hireEmployee(String username, String password) throws InvalidInputException {
-        Employee employee = new Employee(idGenerator.generateID(), username, password, Role.EMPLOYEE);
-        employeeRepository.add(employee);
+        User user = new User(idGenerator.generateID(), username, password, Role.EMPLOYEE);
+        userRepository.add(user);
         logger.log("Employee hired");
     }
 
     public void fireEmployee(long employeeID){
-        if (employeeRepository.getEmployeeByID(employeeID) == null) logger.log("Unable to find employee !");
+        if (userRepository.getUserByID(employeeID) == null) logger.log("Unable to find employee !");
         else {
-            employeeRepository.deleteEmployeeByID(employeeID);
+            userRepository.deleteEmployeeByID(employeeID);
             logger.log("Employee fired");
         }
     }
 
-    public Employee searchEmployeeByUsername(String username){
-        return employeeRepository.getEmployeeByUsername(username);
+    public User searchEmployeeByUsername(String username){
+        return userRepository.getUserByUsername(username);
     }
 
 }

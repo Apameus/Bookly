@@ -3,10 +3,8 @@ package gr.bookapp.common;
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Properties;
 
 public final class ConfigLoader {
@@ -19,12 +17,12 @@ public final class ConfigLoader {
 
         File books = getFile("Books");
         File bookSales = getFile("BookSales");
-        File employees = getFile("Employees");
+        File users = getFile("Users");
         File offers = getFile("Offers");
         File audits = getFile("Audits");
         File logs = getFile("Logs");
 
-        booklyConfig = new BooklyConfig(books.toPath(), bookSales.toPath(), employees.toPath(), offers.toPath(), audits.toPath(), logs.toPath());
+        booklyConfig = new BooklyConfig(books.toPath(), bookSales.toPath(), users.toPath(), offers.toPath(), audits.toPath(), logs.toPath());
     }
 
     private static String loadDirectory(String pathOfConfigFile) throws ConfigurationFileLoadException {
@@ -49,6 +47,10 @@ public final class ConfigLoader {
             throw new ConfigurationFileLoadException("Error creating the file: " + fileName);
         }
         return file;
+    }
+
+    public static void zeroSignedUsers(){
+
     }
 
     public BooklyConfig get() { return booklyConfig; }

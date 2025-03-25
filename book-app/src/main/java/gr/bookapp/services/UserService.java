@@ -4,22 +4,18 @@ import gr.bookapp.common.AuditContext;
 import gr.bookapp.exceptions.*;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
-import gr.bookapp.models.Employee;
 import gr.bookapp.models.Offer;
-import gr.bookapp.models.Role;
+import gr.bookapp.models.User;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-public final class EmployeeService {
-    private final EmployeeRepository employeeRepository;
+public final class UserService {
+    private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final AuditRepository auditRepository;
     private final BookSalesService bookSalesService;
@@ -28,10 +24,10 @@ public final class EmployeeService {
     private final Clock clock;
     private final Logger logger;
 
-    public EmployeeService(EmployeeRepository employeeRepository, BookRepository bookRepository, AuditRepository auditRepository, OfferService offerService, BookSalesService bookSalesService, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
+    public UserService(UserRepository userRepository, BookRepository bookRepository, AuditRepository auditRepository, OfferService offerService, BookSalesService bookSalesService, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
         this.auditRepository = auditRepository;
         this.bookSalesService = bookSalesService;
-        this.employeeRepository = employeeRepository;
+        this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.offerService = offerService;
         this.auditContext = auditContext;
@@ -81,8 +77,8 @@ public final class EmployeeService {
         return bestOffer;
     }
 
+    public boolean hasAdminAccount(){
+        return userRepository.getAll().stream().anyMatch(User::isAdmin);
+    }
 
-//    public void hireEmployee(String s, String s1) throws InvalidInputException {
-//        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
-//    }
 }
