@@ -26,8 +26,6 @@ public final class App {
         ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO
         BooklyConfig booklyConfig = configLoader.get();
 
-
-
         AuditContext auditContext = new AuditContextImpl();
         Clock clock = Clock.systemUTC();
         Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.logsPath()));

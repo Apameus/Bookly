@@ -62,7 +62,8 @@ public final class TerminalUI {
                 if (user.isAdmin()){
                     if (showAdminPanel()) break userPanelLoop;
                 }
-                else if (showEmployeePanel()) break userPanelLoop;
+                else
+                    if (showEmployeePanel()) break userPanelLoop;
             }
         }
     }
@@ -75,9 +76,7 @@ public final class TerminalUI {
             case "add_book" -> addBook();
             case "delete_book" -> deleteBook();
             case "create_offer" -> createOffer();
-            case "exit" -> {
-                return true;
-            }
+            case "exit" -> {return true;}
             default -> System.err.println("Invalid Input !");
         }
         return false;
@@ -90,16 +89,14 @@ public final class TerminalUI {
             case "fire_employee" -> fireEmployee();
             case "search_by_username" -> searchEmployeeByUsername();
             case "update_data_from_csv" -> updateDataWithCsv();
-            case "exit" -> {
-                return true;
-            }
+            case "exit" -> {return true;}
             default -> System.err.println("Invalid Input !");
         }
         return false;
     }
 
     private void checkAndCreateAdmin() {
-        while (!userService.hasAdminAccount()){
+        if (!userService.hasAdminAccount()){
             console.printf("⚠ First-time setup: Create an admin account. \n");
 
             String username = console.readLine("Enter admin username: ");
@@ -110,9 +107,9 @@ public final class TerminalUI {
                 userRepository.add(admin);
             } catch (InvalidInputException e) {
                 System.err.println("Username already exist !");
+                checkAndCreateAdmin();
             }
             System.out.println("✅ Admin account created successfully.");
-            break;
         }
     }
 
@@ -133,15 +130,15 @@ public final class TerminalUI {
     private void updateDataWithCsv() {
         String typeOfUpdate = console.readLine("Update Books, BookSales, Users, Offers: ");
         switch (typeOfUpdate.toLowerCase()) { //todo refactor below methods
-            case "books" -> updateBooksWithCsv();
-            case "booksales" -> updateBookSalesWithCsv();
-            case "employees" -> updateEmployeesWithCsv();
-            case "offers" -> updateOffersWithCsv();
+            case "books" -> updateBooksFromCsv();
+            case "booksales" -> updateBookSalesFromCsv();
+            case "users" -> updateUsersFromCsv();
+            case "offers" -> updateOffersFromCsv();
             default -> System.err.println("Invalid input !");
         }
     }
 
-    private void updateOffersWithCsv() {
+    private void updateOffersFromCsv() {
         try {
             String path = console.readLine("Path of Offers.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -151,7 +148,7 @@ public final class TerminalUI {
         }
     }
 
-    private void updateEmployeesWithCsv() {
+    private void updateUsersFromCsv() {
         try {
             String path = console.readLine("Path of Users.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -163,7 +160,7 @@ public final class TerminalUI {
         }
     }
 
-    private void updateBookSalesWithCsv() {
+    private void updateBookSalesFromCsv() {
         try {
             String path = console.readLine("Path of booksSales.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -173,7 +170,7 @@ public final class TerminalUI {
         }
     }
 
-    private void updateBooksWithCsv() {
+    private void updateBooksFromCsv() {
         try {
             String path = console.readLine("Path of books.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
