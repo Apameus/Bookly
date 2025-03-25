@@ -1,6 +1,8 @@
 package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
+import gr.bookapp.exceptions.BookNotFoundException;
+import gr.bookapp.exceptions.InvalidQuantityException;
 import gr.bookapp.models.BookSales;
 
 public final class BookSalesRepository {
