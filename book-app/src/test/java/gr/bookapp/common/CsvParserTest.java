@@ -4,27 +4,21 @@ import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.BookSalesRepository;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.services.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class CsvParserTest {
     BookService bookService = Mockito.mock(BookService.class);
     BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
-    EmployeeRepository employeeRepository = Mockito.mock(EmployeeRepository.class);
+    UserRepository employeeRepository = Mockito.mock(UserRepository.class);
     OfferRepository offerRepository = Mockito.mock(OfferRepository.class);
     CsvParser csvParser;
 
