@@ -76,10 +76,11 @@ public final class App {
         OfferRepository offerRepository = new OfferRepository(offerDataBase);
 
         //Services
+        AuditService auditService = new AuditService(auditRepository, auditContext);
         BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
-        BookService bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
-        OfferService offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
-        UserService userService = new UserService(userRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        BookService bookService = new BookService(bookRepository, bookSalesRepository, auditService, loggerFactory);
+        OfferService offerService = new OfferService(offerRepository, idGenerator, auditService, loggerFactory);
+        UserService userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, auditService, loggerFactory);
         AdminService adminService = new AdminService(userRepository, idGenerator, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(userRepository, loggerFactory);
 
