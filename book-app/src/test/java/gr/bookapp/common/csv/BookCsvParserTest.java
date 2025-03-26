@@ -1,31 +1,21 @@
-package gr.bookapp.common;
+package gr.bookapp.common.csv;
 
+import gr.bookapp.common.InstantFormatter;
 import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.models.Book;
-import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.BookSalesRepository;
 import gr.bookapp.repositories.UserRepository;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.services.BookService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.util.List;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 
-class CsvParserTest {
-    BookService bookService = Mockito.mock(BookService.class);
-    BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
-    UserRepository employeeRepository = Mockito.mock(UserRepository.class);
-    OfferRepository offerRepository = Mockito.mock(OfferRepository.class);
-    CsvParser csvParser;
+class BookCsvParserTest {
+    CsvParser<Book> bookCsvParser = new BookCsvParser();
 
-    @BeforeEach
-    void setup(){
-        csvParser = new CsvParser(bookService, bookSalesRepository, employeeRepository, offerRepository);
-    }
 
     @Test
     @DisplayName("Parse books test")
@@ -39,18 +29,10 @@ class CsvParserTest {
                 1234,Doom,2,Nightmare,Darkness,666,06-06-0666 BC,1,Adventure
                 """;
         String[] lines = csv.split("\n");
-        csvParser.updateBooks(List.of(lines));
 
-        verify(bookService, times(1)).addBook(odyssey);
-        verify(bookService, times(1)).addBook(iliada);
-        verify(bookService, times(1)).addBook(doom);
+        assertThat(bookCsvParser.parse(lines[0])).isEqualTo(odyssey);
+        assertThat(bookCsvParser.parse(lines[1])).isEqualTo(iliada);
+        assertThat(bookCsvParser.parse(lines[2])).isEqualTo(doom);
     }
 
-    @Test
-    @DisplayName("Parse bookSales test")
-    void parseBookSalesTest() {
-        BookSales odysseySales = new BookSales(1111, 22);
-        BookSales iliadaSales = new BookSales(5454, 0);
-        BookSales bookNonExistingInDbSales = new BookSales(999999, 43);
-    }
 }

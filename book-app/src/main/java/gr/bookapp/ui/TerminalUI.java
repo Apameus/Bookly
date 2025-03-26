@@ -1,8 +1,9 @@
 package gr.bookapp.ui;
 
 import gr.bookapp.common.AuditContextImpl;
-import gr.bookapp.common.CsvParser;
+import gr.bookapp.common.csv.CsvParser;
 import gr.bookapp.common.IdGenerator;
+import gr.bookapp.common.csv.CsvService;
 import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -34,16 +35,17 @@ public final class TerminalUI {
     private final UserRepository userRepository; //Should this be here ?
     private final AdminService adminService;
     private final BookService bookService;
-    private final CsvParser csvParser;
+//    private final CsvParser csvParser;
+    private final CsvService csvService;
 
-    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, UserService userService, UserRepository userRepository, AdminService adminService, BookService bookService, CsvParser csvParser) {
+    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, UserService userService, UserRepository userRepository, AdminService adminService, BookService bookService, CsvService csvService) {
         this.idGenerator = idGenerator;
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.userRepository = userRepository;
         this.adminService = adminService;
         this.bookService = bookService;
-        this.csvParser = csvParser;
+        this.csvService = csvService;
         this.console = System.console();
     }
 
@@ -129,56 +131,35 @@ public final class TerminalUI {
 
     private void updateDataWithCsv() {
         String typeOfUpdate = console.readLine("Update Books, BookSales, Users, Offers: ");
-        switch (typeOfUpdate.toLowerCase()) { //todo refactor below methods
-            case "books" -> updateBooksFromCsv();
-            case "booksales" -> updateBookSalesFromCsv();
-            case "users" -> updateUsersFromCsv();
-            case "offers" -> updateOffersFromCsv();
+        switch (typeOfUpdate.toLowerCase()) {
+            case "books" -> {
+                try {
+                    csvService.updateBooks(console.readLine("Path of Books.csv: "));
+                } catch (CsvFileLoadException e) { System.err.println(e.getMessage()); }
+            }
+            case "booksales" -> {
+                try {
+                    csvService.updateBookSales(console.readLine("Path of BookSales.csv: "));
+                } catch (CsvFileLoadException e) { System.err.println(e.getMessage()); }
+            }
+            case "users" -> {
+                try {
+                    csvService.updateUsers(console.readLine("Path of Users.csv: "));
+                } catch (InvalidInputException e) { System.err.println("A Username already exist ! (Update failed)");
+                } catch (CsvFileLoadException e) { System.err.println(e.getMessage()); }
+            }
+            case "offers" -> {
+                try {
+                    csvService.updateOffers(console.readLine("Path of Offers.csv: "));
+                } catch (CsvFileLoadException e) { System.err.println(e.getMessage()); }
+            }
             default -> System.err.println("Invalid input !");
         }
     }
 
-    private void updateOffersFromCsv() {
-        try {
-            String path = console.readLine("Path of Offers.csv: ");
-            List<String> lines = Files.readAllLines(Path.of(path));
-            csvParser.updateOffers(lines);
-        } catch (CsvFileLoadException | IOException e) {
-            System.err.println("Couldn't load the file !");
-        }
-    }
 
-    private void updateUsersFromCsv() {
-        try {
-            String path = console.readLine("Path of Users.csv: ");
-            List<String> lines = Files.readAllLines(Path.of(path));
-            csvParser.updateEmployees(lines);
-        } catch (CsvFileLoadException | IOException e) {
-            System.err.println("Couldn't load the file !");
-        } catch (InvalidInputException e){
-            System.err.println("An employee username already exist !");
-        }
-    }
 
-    private void updateBookSalesFromCsv() {
-        try {
-            String path = console.readLine("Path of booksSales.csv: ");
-            List<String> lines = Files.readAllLines(Path.of(path));
-            csvParser.updateBookSales(lines);
-        } catch (CsvFileLoadException | IOException e) {
-            System.err.println("Couldn't load the file !");
-        }
-    }
 
-    private void updateBooksFromCsv() {
-        try {
-            String path = console.readLine("Path of books.csv: ");
-            List<String> lines = Files.readAllLines(Path.of(path));
-            csvParser.updateBooks(lines);
-        } catch (CsvFileLoadException | IOException e) {
-            System.err.println("Couldn't load the file !");
-        }
-    }
 
     private void searchEmployeeByUsername() {
         String username = console.readLine("Username: ");
