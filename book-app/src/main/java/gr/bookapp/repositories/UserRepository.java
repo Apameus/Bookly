@@ -30,6 +30,11 @@ public final class UserRepository {
         return userDatabase.retrieve(employeeID);
     }
 
+    /**
+     *
+     * @param username of the user
+     * @return the user or null if the username doesn't exist
+     */
     public User getUserByUsername(String username) {
         return userDatabase.findAllByIndex(usernameIndex, username).stream().findFirst().orElse(null);
     }

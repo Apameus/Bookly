@@ -183,6 +183,10 @@ public final class TerminalUI {
     private void searchEmployeeByUsername() {
         String username = console.readLine("Username: ");
         User user = adminService.searchEmployeeByUsername(username);
+        if (user == null) {
+            System.err.println("Employee not found");
+            return;
+        }
         System.out.printf("Employee_ID: %s, Username: %s, Password: %s%n", user.id(), user.username(), user.password());
     }
 

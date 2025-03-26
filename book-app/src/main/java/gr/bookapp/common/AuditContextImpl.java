@@ -16,13 +16,9 @@ public final class AuditContextImpl implements AuditContext{
     }
 
     @Override
-    public Long getEmployeeID() {
+    public Long getUserID() {
         return get();
     }
 
-//    @Override
-//    public void setEmployeeID(Long employeeID) {
-//        add(employeeID);
-//    }
 }
 

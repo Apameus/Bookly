@@ -50,7 +50,7 @@ class EmployeeServiceTest {
         Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(authors)).thenReturn(new ArrayList<>());
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
 
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book);
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
@@ -69,7 +69,7 @@ class EmployeeServiceTest {
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(tags)).thenReturn(List.of(offer));
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * 15 / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
         verify(auditRepository, times(1)).audit(999, "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer.percentage(), offer.offerID()), clock.instant());
@@ -91,7 +91,7 @@ class EmployeeServiceTest {
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(tags)).thenReturn(offers);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * offer2.percentage() / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
         verify(auditRepository, times(1)).audit(999, "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer2.percentage(), offer2.offerID()), clock.instant());

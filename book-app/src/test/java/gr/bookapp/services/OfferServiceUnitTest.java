@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import static org.mockito.Mockito.*;
 
@@ -49,7 +48,7 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         offerService.createOffer(tags, percentage, duration);
 
         verify(offerRepository, times(1)).add(offer);
@@ -71,7 +70,7 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 
@@ -88,7 +87,7 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 }

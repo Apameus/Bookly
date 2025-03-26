@@ -2,56 +2,55 @@ package gr.bookapp.common;
 
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public final class ConfigLoader {
     private final BooklyConfig booklyConfig;
-    private final File dataDirectory;
 
     public ConfigLoader(String pathOfConfigFile) throws ConfigurationFileLoadException {
-        String directory = loadDirectory(pathOfConfigFile);
-        dataDirectory = new File(directory);
 
-        File books = getFile("Books");
-        File bookSales = getFile("BookSales");
-        File users = getFile("Users");
-        File offers = getFile("Offers");
-        File audits = getFile("Audits");
-        File logs = getFile("Logs");
+        Path dataDirectory = loadDataDirectory(pathOfConfigFile);
 
-        booklyConfig = new BooklyConfig(books.toPath(), bookSales.toPath(), users.toPath(), offers.toPath(), audits.toPath(), logs.toPath());
+        Path books = dataDirectory.resolve("Books");
+        Path bookSales = dataDirectory.resolve("BookSales");
+        Path users = dataDirectory.resolve("Users");
+        Path offers = dataDirectory.resolve("Offers");
+        Path audits = dataDirectory.resolve("Audits");
+        Path logs = dataDirectory.resolve("Logs");
+        ensureExistenceOfFiles(books, bookSales, users, offers, audits, logs);
+
+        booklyConfig = new BooklyConfig(books, bookSales, users, offers, audits, logs);
     }
 
-    private static String loadDirectory(String pathOfConfigFile) throws ConfigurationFileLoadException {
+    private static Path loadDataDirectory(String pathOfConfigFile) throws ConfigurationFileLoadException {
+        Path configPath = Path.of(pathOfConfigFile);
+        if (Files.notExists(configPath)) throw new ConfigurationFileLoadException("Failed to find config file from specified path");
         Properties properties = new Properties();
         try {
-            FileInputStream fileInputStream = new FileInputStream(pathOfConfigFile);
-            properties.load(fileInputStream);
+            properties.load(Files.newBufferedReader(configPath));
         } catch (IOException e) {
-            throw new RuntimeException("Something went wrong from loading the config file from specified path !");
+            throw new ConfigurationFileLoadException("Failed to load the directory path from config file !");
         }
-
-        String directory = properties.getProperty("data.directory");
-        if (directory == null || directory.isBlank()) throw new ConfigurationFileLoadException("Missing data.directory from config file !");
-        return directory;
+        String dataDirPath = properties.getProperty("data.directory");
+        return Paths.get(dataDirPath);
     }
 
-    private File getFile(String fileName) throws ConfigurationFileLoadException {
-        File file = new File(dataDirectory, fileName);
-        try {
-            if (!file.exists() && !file.createNewFile()) throw new ConfigurationFileLoadException("Failed create file: " + fileName);
-        } catch (IOException e) {
-            throw new ConfigurationFileLoadException("Error creating the file: " + fileName);
+    private static void ensureExistenceOfFiles(Path... files) throws ConfigurationFileLoadException {
+        for (Path file : files) {
+            if (Files.notExists(file)) {
+                try {
+                    Files.createFile(file);
+                } catch (IOException e) {
+                    throw new ConfigurationFileLoadException("Failed to create file: %s".formatted(file.getFileName().toString()));
+                }
+            }
         }
-        return file;
     }
 
-    public static void zeroSignedUsers(){
-
-    }
 
     public BooklyConfig get() { return booklyConfig; }
 

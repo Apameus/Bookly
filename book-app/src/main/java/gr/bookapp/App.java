@@ -23,6 +23,7 @@ public final class App {
 
 
     public static void main(String[] args) throws IOException, ConfigurationFileLoadException {
+        if (args.length == 0) throw new IllegalStateException("You need to specify the config file path !");
         ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO
         BooklyConfig booklyConfig = configLoader.get();
 

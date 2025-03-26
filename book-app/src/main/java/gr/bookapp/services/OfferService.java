@@ -56,7 +56,7 @@ public final class OfferService {
         String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s"
                 .formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
 
-        auditRepository.audit(auditContext.getEmployeeID(), action, now);
+        auditRepository.audit(auditContext.getUserID(), action, now);
 
         logger.log("Offer created");
     }

@@ -56,7 +56,7 @@ public final class UserService {
         String auditMsg;
         if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
         else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
-        auditRepository.audit(auditContext.getEmployeeID(), auditMsg, clock.instant());
+        auditRepository.audit(auditContext.getUserID(), auditMsg, clock.instant());
 
         logger.log("Book with name %s is sold", book.name());
         return book;
