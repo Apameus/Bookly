@@ -39,7 +39,7 @@ public final class OfferService {
             logger.log("Offer creation failed due to invalid duration");
             throw new InvalidInputException("Invalid date");
         }
-        Instant now = Instant.now(Clock.systemUTC());
+        Instant now = Instant.now(Clock.systemUTC()); //TODO: not testable !
         Instant untilDate = now.plus(duration);
 
         long id = idGenerator.generateID();
