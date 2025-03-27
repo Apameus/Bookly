@@ -32,7 +32,7 @@ public final class BookService {
     public void addBook(Book book){
         bookRepository.add(book);
         bookSalesRepository.add(new BookSales(book.id(), 0));
-        auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s added".formatted(book.id()), clock.instant());
+        auditRepository.audit(auditContext.getUserID(), "Book with id %s added".formatted(book.id()), clock.instant());
         logger.log("Book added");
     }
 
@@ -40,7 +40,7 @@ public final class BookService {
         if (bookRepository.getBookByID(bookID) == null) logger.log("Book not found");
         bookRepository.deleteBookByID(bookID);
         bookSalesRepository.delete(bookID);
-        auditRepository.audit(auditContext.getEmployeeID(), "Book with id %s deleted".formatted(bookID), clock.instant());
+        auditRepository.audit(auditContext.getUserID(), "Book with id %s deleted".formatted(bookID), clock.instant());
         logger.log("Book deleted");
     }
 

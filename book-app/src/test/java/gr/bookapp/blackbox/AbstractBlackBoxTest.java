@@ -51,9 +51,9 @@ public abstract class AbstractBlackBoxTest {
     ObjectTable <Long, BookSales> bookSalesObjectTable;
     Database<Long, BookSales> bookSalesDataBase;
 
-    FileBasedNodeStorageTree<Long, Employee> employeeNodeStorage;
-    ObjectTable <Long, Employee> employeeObjectTable;
-    Database<Long, Employee> employeeDataBase;
+    FileBasedNodeStorageTree<Long, User> employeeNodeStorage;
+    ObjectTable <Long, User> employeeObjectTable;
+    Database<Long, User> employeeDataBase;
 
     FileBasedNodeStorageTree<Long, Offer> offerNodeStorage;
     ObjectTable <Long, Offer> offerObjectTable;
@@ -68,13 +68,13 @@ public abstract class AbstractBlackBoxTest {
     BookRepository bookRepository;
     BookSalesRepository bookSalesRepository;
     AuditRepository auditRepository;
-    EmployeeRepository employeeRepository;
+    UserRepository employeeRepository;
     OfferRepository offerRepository;
 
     //Services
     protected   BookService bookService;
     protected   OfferService offerService;
-    protected   EmployeeService employeeService;
+    protected UserService employeeService;
     protected   BookSalesService bookSalesService;
     protected   AuthenticationService authenticationService;
 
@@ -105,7 +105,7 @@ public abstract class AbstractBlackBoxTest {
         bookSalesObjectTable = new BinarySearchTree<>(Long::compareTo, bookSalesNodeStorage);
         bookSalesDataBase = new Database<>(bookSalesObjectTable);
 
-        employeeNodeStorage = new FileBasedNodeStorageTree<>(dir.resolve("Employees"), longCodec, employeeCodec);
+        employeeNodeStorage = new FileBasedNodeStorageTree<>(dir.resolve("Users"), longCodec, employeeCodec);
         employeeObjectTable = new BinarySearchTree<>(Long::compareTo, employeeNodeStorage);
         employeeDataBase = new Database<>(employeeObjectTable);
 
@@ -122,14 +122,14 @@ public abstract class AbstractBlackBoxTest {
         bookRepository = new BookRepository(bookDataBase);
         bookSalesRepository = new BookSalesRepository(bookSalesDataBase);
         auditRepository = new AuditRepository(auditDataBase);
-        employeeRepository = new EmployeeRepository(employeeDataBase);
+        employeeRepository = new UserRepository(employeeDataBase);
         offerRepository = new OfferRepository(offerDataBase);
 
         //Services
         bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
         bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
         offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
-        employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        employeeService = new UserService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
         authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
     }
 

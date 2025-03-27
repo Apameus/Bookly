@@ -7,11 +7,13 @@ import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Book;
-import gr.bookapp.models.Employee;
+import gr.bookapp.models.Role;
+import gr.bookapp.models.User;
+import gr.bookapp.repositories.UserRepository;
 import gr.bookapp.services.AdminService;
 import gr.bookapp.services.AuthenticationService;
 import gr.bookapp.services.BookService;
-import gr.bookapp.services.EmployeeService;
+import gr.bookapp.services.UserService;
 import gr.bookapp.common.InstantFormatter;
 
 import java.io.Console;
@@ -28,15 +30,17 @@ public final class TerminalUI {
     private final Console console ;
     private final IdGenerator idGenerator;
     private final AuthenticationService authenticationService;
-    private final EmployeeService employeeService;
+    private final UserService userService;
+    private final UserRepository userRepository; //Should this be here ?
     private final AdminService adminService;
     private final BookService bookService;
     private final CsvParser csvParser;
 
-    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, EmployeeService employeeService, AdminService adminService, BookService bookService, CsvParser csvParser) {
+    public TerminalUI(IdGenerator idGenerator, AuthenticationService authenticationService, UserService userService, UserRepository userRepository, AdminService adminService, BookService bookService, CsvParser csvParser) {
         this.idGenerator = idGenerator;
         this.authenticationService = authenticationService;
-        this.employeeService = employeeService;
+        this.userService = userService;
+        this.userRepository = userRepository;
         this.adminService = adminService;
         this.bookService = bookService;
         this.csvParser = csvParser;
@@ -44,61 +48,97 @@ public final class TerminalUI {
     }
 
     public void start(){
-
+        checkAndCreateAdmin();
 
         AuditContextImpl.clear();
-        Employee employee;
-        initialLoop:
+
+        loginLoop:
         while (true){
-            String username = console.readLine("Username: ");
-            String password = console.readLine("Password: ");
-            try {
-                employee = authenticationService.authenticate(username, password);
-                AuditContextImpl.set(employee.id());
-            } catch (AuthenticationFailedException e) {
-                System.err.println("Authentication failed! Please try again.");
-                continue initialLoop;
-            }
-            employeeLoop:
+            User user = login();
+            if (user == null) continue loginLoop;
+
+            userPanelLoop:
             while (true) {
-                if (employee.isAdmin()){
-                    String adminAction = console.readLine("Hire_Employee, Fire_Employee, Search_By_Username, Update_Data_From_Csv, Exit :");
-                    switch (adminAction.toLowerCase()){
-                        case "hire_employee" -> hireEmployee();
-                        case "fire_employee" -> fireEmployee();
-                        case "search_by_username" -> searchEmployeeByUsername();
-                        case "update_data_from_csv" -> updateDataWithCsv();
-                        case "exit" -> { break employeeLoop; }
-                        default -> System.err.println("Invalid Input !");
-                    }
-                    continue;
+                if (user.isAdmin()){
+                    if (showAdminPanel()) break userPanelLoop;
                 }
-                String action = console.readLine("Sell_Book, Search_Book, Add_Book, Delete_Book, Create_Offer, Exit: ");
-                switch (action.toLowerCase()) {
-                    case "sell_book" -> sellBook();
-                    case "search_book" -> searchBook();
-                    case "add_book" -> addBook();
-                    case "delete_book" -> deleteBook();
-                    case "create_offer" -> createOffer();
-                    case "exit" -> { break employeeLoop; }
-                    default -> System.err.println("Invalid Input !");
-                }
+                else
+                    if (showEmployeePanel()) break userPanelLoop;
             }
         }
     }
 
+    private boolean showEmployeePanel() {
+        String action = console.readLine("Sell_Book, Search_Book, Add_Book, Delete_Book, Create_Offer, Exit: ");
+        switch (action.toLowerCase()) {
+            case "sell_book" -> sellBook();
+            case "search_book" -> searchBook();
+            case "add_book" -> addBook();
+            case "delete_book" -> deleteBook();
+            case "create_offer" -> createOffer();
+            case "exit" -> {return true;}
+            default -> System.err.println("Invalid Input !");
+        }
+        return false;
+    }
+
+    private boolean showAdminPanel() {
+        String adminAction = console.readLine("Hire_Employee, Fire_Employee, Search_By_Username, Update_Data_From_Csv, Exit :");
+        switch (adminAction.toLowerCase()){
+            case "hire_employee" -> hireEmployee();
+            case "fire_employee" -> fireEmployee();
+            case "search_by_username" -> searchEmployeeByUsername();
+            case "update_data_from_csv" -> updateDataWithCsv();
+            case "exit" -> {return true;}
+            default -> System.err.println("Invalid Input !");
+        }
+        return false;
+    }
+
+    private void checkAndCreateAdmin() {
+        if (!userService.hasAdminAccount()){
+            console.printf("⚠ First-time setup: Create an admin account. \n");
+
+            String username = console.readLine("Enter admin username: ");
+            String password = console.readLine("Enter admin password: ");
+
+            User admin = new User(idGenerator.generateID(), username, password, Role.ADMIN);
+            try {
+                userRepository.add(admin);
+            } catch (InvalidInputException e) {
+                System.err.println("Username already exist !");
+                checkAndCreateAdmin();
+            }
+            System.out.println("✅ Admin account created successfully.");
+        }
+    }
+
+    private User login() {
+        User user;
+        String username = console.readLine("Username: ");
+        String password = console.readLine("Password: ");
+        try {
+            user = authenticationService.authenticate(username, password);
+            AuditContextImpl.set(user.id());
+        } catch (AuthenticationFailedException e) {
+            System.err.println("Authentication failed! Please try again.");
+            return null;
+        }
+        return user;
+    }
+
     private void updateDataWithCsv() {
-        String typeOfUpdate = console.readLine("Update Books, BookSales, Employees, Offers: ");
+        String typeOfUpdate = console.readLine("Update Books, BookSales, Users, Offers: ");
         switch (typeOfUpdate.toLowerCase()) { //todo refactor below methods
-            case "books" -> updateBooksWithCsv();
-            case "booksales" -> updateBookSalesWithCsv();
-            case "employees" -> updateEmployeesWithCsv();
-            case "offers" -> updateOffersWithCsv();
+            case "books" -> updateBooksFromCsv();
+            case "booksales" -> updateBookSalesFromCsv();
+            case "users" -> updateUsersFromCsv();
+            case "offers" -> updateOffersFromCsv();
             default -> System.err.println("Invalid input !");
         }
     }
 
-    private void updateOffersWithCsv() {
+    private void updateOffersFromCsv() {
         try {
             String path = console.readLine("Path of Offers.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -108,9 +148,9 @@ public final class TerminalUI {
         }
     }
 
-    private void updateEmployeesWithCsv() {
+    private void updateUsersFromCsv() {
         try {
-            String path = console.readLine("Path of Employees.csv: ");
+            String path = console.readLine("Path of Users.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
             csvParser.updateEmployees(lines);
         } catch (CsvFileLoadException | IOException e) {
@@ -120,7 +160,7 @@ public final class TerminalUI {
         }
     }
 
-    private void updateBookSalesWithCsv() {
+    private void updateBookSalesFromCsv() {
         try {
             String path = console.readLine("Path of booksSales.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -130,7 +170,7 @@ public final class TerminalUI {
         }
     }
 
-    private void updateBooksWithCsv() {
+    private void updateBooksFromCsv() {
         try {
             String path = console.readLine("Path of books.csv: ");
             List<String> lines = Files.readAllLines(Path.of(path));
@@ -142,8 +182,12 @@ public final class TerminalUI {
 
     private void searchEmployeeByUsername() {
         String username = console.readLine("Username: ");
-        Employee employee = adminService.searchEmployeeByUsername(username);
-        System.out.printf("Employee_ID: %s, Username: %s, Password: %s%n", employee.id(), employee.username(), employee.password());
+        User user = adminService.searchEmployeeByUsername(username);
+        if (user == null) {
+            System.err.println("Employee not found");
+            return;
+        }
+        System.out.printf("Employee_ID: %s, Username: %s, Password: %s%n", user.id(), user.username(), user.password());
     }
 
     private void fireEmployee() {
@@ -170,7 +214,7 @@ public final class TerminalUI {
         String input = console.readLine("Book_ID: ");
         try {
             bookID = Long.parseLong(input);
-            Book book = employeeService.sellBook(bookID);
+            Book book = userService.sellBook(bookID);
             printBookDetails(book);
         } catch (NumberFormatException e) {
             System.err.println("Invalid input !");
@@ -187,7 +231,7 @@ public final class TerminalUI {
             int percentage = Integer.parseInt(console.readLine("Percentage: "));
             Long inputDuration = Long.valueOf(console.readLine("Duration in days: "));
             Duration duration = Duration.ofDays(inputDuration);
-            employeeService.createOffer(tags, percentage, duration);
+            userService.createOffer(tags, percentage, duration);
         } catch (Exception e) {
             System.err.println("Invalid input:  " + e.getMessage());
         }

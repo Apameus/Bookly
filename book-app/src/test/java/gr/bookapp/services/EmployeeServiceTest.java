@@ -7,11 +7,10 @@ import gr.bookapp.models.Book;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.mockito.Mockito;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class EmployeeServiceTest {
-    EmployeeRepository employeeRepository = Mockito.mock(EmployeeRepository.class);
+    UserRepository employeeRepository = Mockito.mock(UserRepository.class);
     BookRepository bookRepository = Mockito.mock(BookRepository.class);
     AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
     BookSalesService bookSalesService = Mockito.mock(BookSalesService.class);
@@ -33,12 +32,12 @@ class EmployeeServiceTest {
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
-    EmployeeService employeeService;
+    UserService employeeService;
 
     @BeforeEach
     void initialize(){
         when(clock.instant()).thenReturn(Clock.systemUTC().instant());
-        employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, logger);
+        employeeService = new UserService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, logger);
     }
 
     @Test
@@ -51,7 +50,7 @@ class EmployeeServiceTest {
         Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(authors)).thenReturn(new ArrayList<>());
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
 
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book);
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
@@ -70,7 +69,7 @@ class EmployeeServiceTest {
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(tags)).thenReturn(List.of(offer));
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * 15 / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
         verify(auditRepository, times(1)).audit(999, "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer.percentage(), offer.offerID()), clock.instant());
@@ -92,7 +91,7 @@ class EmployeeServiceTest {
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(tags)).thenReturn(offers);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThat(employeeService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * offer2.percentage() / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
         verify(auditRepository, times(1)).audit(999, "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer2.percentage(), offer2.offerID()), clock.instant());

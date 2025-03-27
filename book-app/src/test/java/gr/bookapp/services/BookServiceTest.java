@@ -47,7 +47,7 @@ class BookServiceTest {
     void deleteBookTest() {
         bookService.deleteBookByID(1);
         verify(bookRepository, times(1)).deleteBookByID(1);
-        verify(auditRepository, times(1)).audit(auditContext.getEmployeeID(), "Book with id 1 deleted", clock.instant());
+        verify(auditRepository, times(1)).audit(auditContext.getUserID(), "Book with id 1 deleted", clock.instant());
     }
 
 

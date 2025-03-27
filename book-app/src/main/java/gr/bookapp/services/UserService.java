@@ -60,7 +60,7 @@ public final class EmployeeService {
         String auditMsg;
         if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
         else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
-        auditRepository.audit(auditContext.getEmployeeID(), auditMsg, clock.instant());
+        auditRepository.audit(auditContext.getUserID(), auditMsg, clock.instant());
 
         logger.log("Book with name %s is sold", book.name());
         return book;
@@ -79,6 +79,11 @@ public final class EmployeeService {
         if (bestOffer == null) logger.log("No offer exist");
         else logger.log("Offer exist with %s percentage",bestOffer.percentage());
         return bestOffer;
+    }
+
+    public void hireEmployee(String username, String password){
+        logger.log("New employee hired");
+        employeeRepository.add(new Employee(System.currentTimeMillis(), username, password));
     }
 
 
