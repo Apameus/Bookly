@@ -1,6 +1,6 @@
 package gr.bookapp.storage.codec;
 
-import gr.bookapp.models.Employee;
+import gr.bookapp.models.User;
 import gr.bookapp.models.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +11,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EmployeeCodecTest {
+class UserCodecTest {
     @TempDir Path dir;
     RandomAccessFile accessFile;
     EmployeeCodec employeeCodec;
@@ -26,10 +26,10 @@ class EmployeeCodecTest {
     @Test
     @DisplayName("Serialize-Parse test")
     void serializeParseTest() throws IOException {
-        Employee employee = new Employee(1555L, "ilias", "ilias123", Role.EMPLOYEE);
-        employeeCodec.write(accessFile, employee);
+        User user = new User(1555L, "ilias", "ilias123", Role.EMPLOYEE);
+        employeeCodec.write(accessFile, user);
         accessFile.seek(0);
-        assertThat(employeeCodec.read(accessFile)).isEqualTo(employee);
+        assertThat(employeeCodec.read(accessFile)).isEqualTo(user);
     }
 
 }

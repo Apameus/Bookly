@@ -4,12 +4,10 @@ import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.*;
 import gr.bookapp.repositories.BookSalesRepository;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.services.BookService;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +15,10 @@ import java.util.List;
 public final class CsvParser {
     private final BookService bookService;
     private final BookSalesRepository bookSalesRepository;
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository employeeRepository;
     private final OfferRepository offerRepository;
 
-    public CsvParser(BookService bookService, BookSalesRepository bookSalesRepository, EmployeeRepository employeeRepository, OfferRepository offerRepository) {
+    public CsvParser(BookService bookService, BookSalesRepository bookSalesRepository, UserRepository employeeRepository, OfferRepository offerRepository) {
         this.bookService = bookService;
         this.bookSalesRepository = bookSalesRepository;
         this.employeeRepository = employeeRepository;
@@ -59,8 +57,8 @@ public final class CsvParser {
      */
     public void updateEmployees(List<String> lines) throws InvalidInputException, CsvFileLoadException {
         for (String line : lines) {
-            Employee employee = parseEmployee(line);
-            employeeRepository.add(employee);
+            User user = parseEmployee(line);
+            employeeRepository.add(user);
         }
     }
 
@@ -104,16 +102,16 @@ public final class CsvParser {
         } catch (Exception e) { throw new CsvFileLoadException("BookSales.csv is incompatible"); }
     }
 
-    private Employee parseEmployee(String line) throws CsvFileLoadException {
+    private User parseEmployee(String line) throws CsvFileLoadException {
         try {
             String[] values = line.split(",");
             long id = Long.parseLong(values[0]);
             String username = values[1];
             String password = values[2];
             Role role = Role.valueOf(values[3]);
-            return new Employee(id, username, password, role);
+            return new User(id, username, password, role);
         } catch (Exception e) {
-            throw new CsvFileLoadException("Employees.csv is incompatible !");
+            throw new CsvFileLoadException("Users.csv is incompatible !");
         }
     }
 

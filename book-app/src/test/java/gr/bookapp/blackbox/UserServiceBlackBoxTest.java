@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.field;
 
-public final class EmployeeServiceBlackBoxTest extends AbstractBlackBoxTest {
+public final class UserServiceBlackBoxTest extends AbstractBlackBoxTest {
 
     @Test
     @DisplayName("Sell Book Test")

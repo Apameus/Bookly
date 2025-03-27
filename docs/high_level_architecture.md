@@ -24,7 +24,7 @@ flowchart LR
 ```mermaid
 
 sequenceDiagram
-    Service ->> AuditService: note( employee, method )
+    Service ->> AuditService: note( user, method )
     AuditService ->> AuditRepo: ..
     AuditRepo ->> AuditDB: ..
 ```

@@ -16,10 +16,8 @@ import gr.bookapp.storage.file.FileBasedNodeStorageTree;
 import gr.bookapp.storage.file.ObjectTable;
 import gr.bookapp.ui.TerminalUI;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Properties;
 
 public final class App {
 
@@ -27,8 +25,6 @@ public final class App {
     public static void main(String[] args) throws IOException, ConfigurationFileLoadException {
         ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO
         BooklyConfig booklyConfig = configLoader.get();
-
-
 
         AuditContext auditContext = new AuditContextImpl();
         Clock clock = Clock.systemUTC();
@@ -55,9 +51,9 @@ public final class App {
         ObjectTable <Long, BookSales> bookSalesObjectTable = new BinarySearchTree<>(Long::compareTo, bookSalesNodeStorage);
         Database<Long, BookSales> bookSalesDataBase = new Database<>(bookSalesObjectTable);
 
-        FileBasedNodeStorageTree<Long, Employee> employeeNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.employeesPath(), longCodec, employeeCodec);
-        ObjectTable <Long, Employee> employeeObjectTable = new BinarySearchTree<>(Long::compareTo, employeeNodeStorage);
-        Database<Long, Employee> employeeDataBase = new Database<>(employeeObjectTable);
+        FileBasedNodeStorageTree<Long, User> employeeNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.employeesPath(), longCodec, employeeCodec);
+        ObjectTable <Long, User> employeeObjectTable = new BinarySearchTree<>(Long::compareTo, employeeNodeStorage);
+        Database<Long, User> employeeDataBase = new Database<>(employeeObjectTable);
 
         FileBasedNodeStorageTree<Long, Offer> offerNodeStorage = new FileBasedNodeStorageTree<>(booklyConfig.offersPath(), longCodec, offerCodec);
         ObjectTable <Long, Offer> offerObjectTable = new BinarySearchTree<>(Long::compareTo, offerNodeStorage);
@@ -72,21 +68,21 @@ public final class App {
         BookRepository bookRepository = new BookRepository(bookDataBase);
         BookSalesRepository bookSalesRepository = new BookSalesRepository(bookSalesDataBase);
         AuditRepository auditRepository = new AuditRepository(auditDataBase);
-        EmployeeRepository employeeRepository = new EmployeeRepository(employeeDataBase);
+        UserRepository userRepository = new UserRepository(employeeDataBase);
         OfferRepository offerRepository = new OfferRepository(offerDataBase);
 
         //Services
         BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
         BookService bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
         OfferService offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
-        EmployeeService employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
-        AdminService adminService = new AdminService(employeeRepository, idGenerator, loggerFactory);
-        AuthenticationService authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
+        UserService userService = new UserService(userRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        AdminService adminService = new AdminService(userRepository, idGenerator, loggerFactory);
+        AuthenticationService authenticationService = new AuthenticationService(userRepository, loggerFactory);
 
-        CsvParser csvParser = new CsvParser(bookService, bookSalesRepository, employeeRepository, offerRepository);
+        CsvParser csvParser = new CsvParser(bookService, bookSalesRepository, userRepository, offerRepository);
 
         //UI
-        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, employeeService, adminService, bookService, csvParser);
+        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, userService, userRepository, adminService, bookService, csvParser);
         terminalUI.start();
     }
 }
