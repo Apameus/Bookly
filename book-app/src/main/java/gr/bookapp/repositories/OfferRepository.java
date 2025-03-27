@@ -10,18 +10,15 @@ import java.util.List;
 public final class OfferRepository {
 
     private final Database<Long , Offer> offerDatabase;
-    private final Index<Offer, String> tagIndex;
+    private final Index<Offer, List<String>> tagIndex = Offer::tags;
 
-    public OfferRepository(Database<Long, Offer> offerDatabase, Index<Offer, String> tagIndex) {
+    public OfferRepository(Database<Long, Offer> offerDatabase) {
         this.offerDatabase = offerDatabase;
-        this.tagIndex = tagIndex;
     }
 
     public List<Offer> getOffersByTags(List<String> tags){
         ArrayList<Offer> offers = new ArrayList<>();
-        for (String tag : tags) {
-            offers.addAll(offerDatabase.findAllByIndex(tagIndex, tag));
-        }
+        tags.forEach(tag -> offers.addAll(offerDatabase.findAllByIndexWithKeys(tagIndex, tag)));
         return offers;
     }
 

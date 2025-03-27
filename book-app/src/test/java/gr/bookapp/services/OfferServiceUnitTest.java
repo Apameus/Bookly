@@ -3,6 +3,7 @@ package gr.bookapp.services;
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
@@ -23,6 +24,7 @@ class OfferServiceUnitTest {
     AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
+    Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     OfferService offerService;
 
     @BeforeEach
@@ -31,7 +33,7 @@ class OfferServiceUnitTest {
         ZoneId zone = ZoneId.of("UTC");
         when(clock.instant()).thenReturn(fixedInstant);
         when(clock.getZone()).thenReturn(zone);
-        offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock);
+        offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, logger);
     }
 
     @Test

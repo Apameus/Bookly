@@ -2,6 +2,8 @@ package gr.bookapp.repositories;
 
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
+import gr.bookapp.exceptions.AuthenticationFailedException;
+import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Employee;
 
 public final class EmployeeRepository {
@@ -13,7 +15,9 @@ public final class EmployeeRepository {
         this.employeeDatabase = employeeDatabase;
     }
 
-    public void add(Employee employee){
+    public void add(Employee employee) throws InvalidInputException {
+        if (getEmployeeByUsername(employee.username()) != null)
+            throw new InvalidInputException("Username already exist !");
         employeeDatabase.insert(employee.id(), employee);
     }
 
@@ -25,8 +29,8 @@ public final class EmployeeRepository {
         return employeeDatabase.retrieve(employeeID);
     }
 
-    public Employee getEmployeeByUsername(String username){
-        return employeeDatabase.findAllByIndex(usernameIndex, username).getFirst();
+    public Employee getEmployeeByUsername(String username) {
+        return employeeDatabase.findAllByIndex(usernameIndex, username).stream().findFirst().orElse(null);
     }
 
 }

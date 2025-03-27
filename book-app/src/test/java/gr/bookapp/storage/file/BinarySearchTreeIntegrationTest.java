@@ -89,6 +89,20 @@ class BinarySearchTreeIntegrationTest {
         assertThat(binarySearchTree.retrieve(keyB)).isNull();
     }
 
+    @Test
+    @DisplayName("Delete node with chain")
+    void deleteNodeWithChain() {
+        String keyA = "A1";
+        String valueA = "A";
+        String keyB = "B2";
+        String valueB = "B";
+        binarySearchTree.insert(keyA, valueA);
+        binarySearchTree.insert(keyB, valueB);
+        binarySearchTree.delete(keyA);
+        assertThat(binarySearchTree.retrieve(keyA)).isNull();
+        assertThat(binarySearchTree.retrieve(keyB)).isEqualTo(valueB);
+    }
+
 
     @Test
     @DisplayName("Overload acceding insertion-deletion test")

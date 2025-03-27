@@ -2,8 +2,11 @@ package gr.bookapp.services;
 
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.exceptions.*;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
+import gr.bookapp.models.Employee;
 import gr.bookapp.models.Offer;
+import gr.bookapp.models.Role;
 import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.EmployeeRepository;
@@ -23,8 +26,9 @@ public final class EmployeeService {
     private final OfferService offerService;
     private final AuditContext auditContext;
     private final Clock clock;
+    private final Logger logger;
 
-    public EmployeeService(EmployeeRepository employeeRepository, BookRepository bookRepository, AuditRepository auditRepository, OfferService offerService, BookSalesService bookSalesService, AuditContext auditContext, Clock clock) {
+    public EmployeeService(EmployeeRepository employeeRepository, BookRepository bookRepository, AuditRepository auditRepository, OfferService offerService, BookSalesService bookSalesService, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
         this.auditRepository = auditRepository;
         this.bookSalesService = bookSalesService;
         this.employeeRepository = employeeRepository;
@@ -32,9 +36,11 @@ public final class EmployeeService {
         this.offerService = offerService;
         this.auditContext = auditContext;
         this.clock = clock;
+        logger = loggerFactory.create("Employee_Service");
     }
 
     public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
+        logger.log("Trial to create an offer..");
         offerService.createOffer(tags, percentage, duration);
     }
 
@@ -55,6 +61,8 @@ public final class EmployeeService {
         if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
         else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
         auditRepository.audit(auditContext.getEmployeeID(), auditMsg, clock.instant());
+
+        logger.log("Book with name %s is sold", book.name());
         return book;
     }
 
@@ -68,9 +76,13 @@ public final class EmployeeService {
             }
             if (offer.percentage() > bestOffer.percentage()) bestOffer = offer;
         }
-
+        if (bestOffer == null) logger.log("No offer exist");
+        else logger.log("Offer exist with %s percentage",bestOffer.percentage());
         return bestOffer;
     }
 
 
+//    public void hireEmployee(String s, String s1) throws InvalidInputException {
+//        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
+//    }
 }

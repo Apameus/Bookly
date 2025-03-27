@@ -3,7 +3,7 @@ package gr.bookapp.common;
 public final class AuditContextImpl implements AuditContext{
     private static final ThreadLocal<Long> CURRENT_EMPLOYEE_ID = new ThreadLocal<>();
 
-    public static void add(long employeeID){
+    public static void set(long employeeID){
         CURRENT_EMPLOYEE_ID.set(employeeID);
     }
 
@@ -19,5 +19,10 @@ public final class AuditContextImpl implements AuditContext{
     public Long getEmployeeID() {
         return get();
     }
+
+//    @Override
+//    public void setEmployeeID(Long employeeID) {
+//        add(employeeID);
+//    }
 }
 

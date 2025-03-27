@@ -24,7 +24,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     private final int maxSizeOfEntry;
 
     int storedEntries;
-    int availableEntries;
+    int maxAvailableEntries;
 
     public FileBasedNodeStorageTree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
@@ -34,13 +34,13 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
 
         maxSizeOfEntry = FLAG_SIZE + treeCodec.maxByteSize();
         if (accessFile.length() == 0) {
-            availableEntries = 16;
-            accessFile.setLength((long) maxSizeOfEntry * availableEntries + STORED_ENTRIES_SIZE);
+            maxAvailableEntries = 16;
+            accessFile.setLength((long) maxSizeOfEntry * maxAvailableEntries + STORED_ENTRIES_SIZE);
         }
         else {
             accessFile.seek(0);
             storedEntries = accessFile.readInt();
-            availableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
+            maxAvailableEntries = (int) ( (accessFile.length() - STORED_ENTRIES_SIZE) / maxSizeOfEntry);
         }
     }
 
@@ -142,7 +142,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     public Iterator<Map.Entry<K, V>> entriesIterator() {
         return new Iterator<Map.Entry<K, V>>() {
             long offset = rootOffset();
-            int remainingSlots = availableEntries;
+            int remainingSlots = maxAvailableEntries;
             Map.Entry<K,V> next = findNext();
 
             @Override
@@ -158,7 +158,7 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
             }
 
             private Map.Entry<K, V> findNext() {
-                if (remainingSlots == 0) return null;
+                if (remainingSlots == 0 || storedEntries == 0) return null;
                 if (isNull(offset)){
                     offset += maxSizeOfEntry;
                     remainingSlots--;
@@ -197,13 +197,13 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
 
 
     public boolean isFull() {
-        return storedEntries == availableEntries;
+        return storedEntries == maxAvailableEntries;
     }
 
     public void resize() {
-        availableEntries *= 2;
+        maxAvailableEntries *= 2;
         try {
-            accessFile.setLength((long) availableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE);
+            accessFile.setLength((long) maxAvailableEntries * maxSizeOfEntry + STORED_ENTRIES_SIZE);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

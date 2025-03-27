@@ -2,6 +2,7 @@ package gr.bookapp.services;
 
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.exceptions.InvalidInputException;
+import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.AuditRepository;
@@ -10,6 +11,7 @@ import gr.bookapp.repositories.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.mockito.Mockito;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -30,12 +32,13 @@ class EmployeeServiceTest {
     OfferService offerService = Mockito.mock(OfferService.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
+    Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     EmployeeService employeeService;
 
     @BeforeEach
     void initialize(){
         when(clock.instant()).thenReturn(Clock.systemUTC().instant());
-        employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock);
+        employeeService = new EmployeeService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, logger);
     }
 
     @Test
