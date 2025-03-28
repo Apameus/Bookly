@@ -1,6 +1,5 @@
 package gr.bookapp.repositories;
 
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
 import gr.bookapp.database.RangeIndex;

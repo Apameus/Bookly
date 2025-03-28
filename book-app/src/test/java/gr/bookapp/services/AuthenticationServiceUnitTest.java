@@ -22,6 +22,7 @@ class AuthenticationServiceUnitTest {
 
     @BeforeEach
     void initialise(){
+        when(logger.create("Authentication_Service")).thenReturn(Mockito.mock(Logger.class));
         authenticationService = new AuthenticationService(userRepository, logger);
     }
 

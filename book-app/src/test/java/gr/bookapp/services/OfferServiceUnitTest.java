@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 class OfferServiceUnitTest {
     OfferRepository offerRepository = Mockito.mock(OfferRepository.class);
     IdGenerator idGenerator = Mockito.mock(IdGenerator.class);
-    AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
+    AuditService auditService = Mockito.mock(AuditService.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
@@ -29,10 +29,10 @@ class OfferServiceUnitTest {
     @BeforeEach
     void initialize(){
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
-        ZoneId zone = ZoneId.of("UTC");
         when(clock.instant()).thenReturn(fixedInstant);
-        when(clock.getZone()).thenReturn(zone);
-        offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, logger);
+//        when(Clock.systemUTC()).thenReturn(fixedInstant);
+        when(logger.create("Offer_Service")).thenReturn(Mockito.mock(Logger.class));
+        offerService = new OfferService(offerRepository, idGenerator, auditService, logger);
     }
 
     @Test
@@ -42,7 +42,7 @@ class OfferServiceUnitTest {
         int percentage = 15;
         Duration duration = Duration.ofDays(30);
         List<String> tags = List.of("Comedy");
-        Instant now = clock.instant();
+        Instant now = clock.instant(); //todo fixed instant here but not in the impl
         Instant untilDate = now.plus(duration);
 
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
@@ -54,7 +54,7 @@ class OfferServiceUnitTest {
         verify(offerRepository, times(1)).add(offer);
 
         String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), offer.untilDate());
-        verify(auditRepository, times(1)).audit(999, action, now);
+        verify(auditService, times(1)).audit(action);
     }
 
     @Test

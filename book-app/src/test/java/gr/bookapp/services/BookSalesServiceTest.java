@@ -4,6 +4,7 @@ import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.BookSales;
 import gr.bookapp.repositories.BookSalesRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,7 +15,13 @@ import static org.mockito.Mockito.*;
 class BookSalesServiceTest {
     BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
-    BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, logger);
+    BookSalesService bookSalesService;
+
+    @BeforeEach
+    void setup(){
+        when(logger.create("BookSales_Service")).thenReturn(Mockito.mock(Logger.class));
+        bookSalesService = new BookSalesService(bookSalesRepository, logger);
+    }
 
     @Test
     @DisplayName("Increase sales of book test")

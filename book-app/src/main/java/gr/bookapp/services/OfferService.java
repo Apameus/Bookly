@@ -1,14 +1,11 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.common.InstantFormatter;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -17,17 +14,13 @@ import java.util.List;
 public final class OfferService {
     private final OfferRepository offerRepository;
     private final IdGenerator idGenerator;
-    private final AuditRepository auditRepository;
-    private final AuditContext auditContext;
-    private final Clock clock;
+    private final AuditService auditService;
     private final Logger logger;
 
-    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditRepository auditRepository, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
+    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditService auditService, Logger.Factory loggerFactory) {
         this.offerRepository = offerRepository;
         this.idGenerator = idGenerator;
-        this.auditContext = auditContext;
-        this.auditRepository = auditRepository;
-        this.clock = clock;
+        this.auditService = auditService;
         logger = loggerFactory.create("Offer_Service");
     }
 
@@ -46,7 +39,7 @@ public final class OfferService {
             logger.log("Offer creation failed due to invalid duration");
             throw new InvalidInputException("Invalid date");
         }
-        Instant now = Instant.now(clock);
+        Instant now = Instant.now(Clock.systemUTC()); //TODO: not testable !
         Instant untilDate = now.plus(duration);
 
         long id = idGenerator.generateID();
@@ -56,8 +49,7 @@ public final class OfferService {
         String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s"
                 .formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
 
-        auditRepository.audit(auditContext.getUserID(), action, now);
-
+        auditService.audit(action);
         logger.log("Offer created");
     }
 

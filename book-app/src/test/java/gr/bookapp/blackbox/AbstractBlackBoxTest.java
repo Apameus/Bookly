@@ -126,10 +126,11 @@ public abstract class AbstractBlackBoxTest {
         offerRepository = new OfferRepository(offerDataBase);
 
         //Services
+        AuditService auditService = new AuditService(auditRepository, auditContext);
         bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
-        bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, loggerFactory);
-        offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, loggerFactory);
-        employeeService = new UserService(employeeRepository, bookRepository, auditRepository, offerService, bookSalesService, auditContext, clock, loggerFactory);
+        bookService = new BookService(bookRepository, bookSalesRepository, auditService, loggerFactory);
+        offerService = new OfferService(offerRepository, idGenerator, auditService, loggerFactory);
+        employeeService = new UserService(employeeRepository, bookRepository, offerService, bookSalesService, auditService, loggerFactory);
         authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
     }
 

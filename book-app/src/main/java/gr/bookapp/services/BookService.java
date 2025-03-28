@@ -1,13 +1,9 @@
 package gr.bookapp.services;
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.BookSales;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.BookSalesRepository;
-
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
@@ -15,24 +11,20 @@ public final class BookService {
 
     private final BookRepository bookRepository;
     private final BookSalesRepository bookSalesRepository;
-    private final AuditRepository auditRepository;
-    private final AuditContext auditContext;
-    private final Clock clock;
+    private final AuditService auditService;
     private final Logger logger;
 
-    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditRepository auditRepository, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
+    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditService auditService, Logger.Factory loggerFactory) {
         this.bookRepository = bookRepository;
         this.bookSalesRepository = bookSalesRepository;
-        this.auditRepository = auditRepository;
-        this.auditContext = auditContext;
-        this.clock = clock;
+        this.auditService = auditService;
         logger = loggerFactory.create("Book_Service");
     }
 
     public void addBook(Book book){
         bookRepository.add(book);
         bookSalesRepository.add(new BookSales(book.id(), 0));
-        auditRepository.audit(auditContext.getUserID(), "Book with id %s added".formatted(book.id()), clock.instant());
+        auditService.audit("Book with id %s added".formatted(book.id()));
         logger.log("Book added");
     }
 
@@ -40,7 +32,7 @@ public final class BookService {
         if (bookRepository.getBookByID(bookID) == null) logger.log("Book not found");
         bookRepository.deleteBookByID(bookID);
         bookSalesRepository.delete(bookID);
-        auditRepository.audit(auditContext.getUserID(), "Book with id %s deleted".formatted(bookID), clock.instant());
+        auditService.audit("Book with id %s deleted".formatted(bookID));
         logger.log("Book deleted");
     }
 
