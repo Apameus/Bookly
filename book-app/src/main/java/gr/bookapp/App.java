@@ -1,6 +1,9 @@
 package gr.bookapp;
 
 import gr.bookapp.common.*;
+import gr.bookapp.common.csv.CsvLoader;
+import gr.bookapp.common.csv.CsvParser;
+import gr.bookapp.common.csv.CsvService;
 import gr.bookapp.database.Database;
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 import gr.bookapp.log.CompositeLoggerFactory;
@@ -80,10 +83,10 @@ public final class App {
         AdminService adminService = new AdminService(userRepository, idGenerator, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(userRepository, loggerFactory);
 
-        CsvParser csvParser = new CsvParser(bookService, bookSalesRepository, userRepository, offerRepository);
+        CsvService csvService = new CsvService(new CsvLoader(), bookService, bookSalesRepository, userRepository, offerRepository);
 
         //UI
-        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, userService, userRepository, adminService, bookService, csvParser);
+        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, userService, userRepository, adminService, bookService, csvService);
         terminalUI.start();
     }
 }
