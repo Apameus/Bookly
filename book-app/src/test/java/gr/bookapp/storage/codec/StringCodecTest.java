@@ -21,7 +21,7 @@ class StringCodecTest {
     @BeforeEach
     void initialize(@TempDir Path dir) throws IOException {
         stringCodec = new StringCodec();
-        accessFile = new RandomAccessFile(dir.resolve("stringCodec.data").toFile(), "rw");
+        accessFile = new RandomAccessFile(dir.resolve("longCodec.data").toFile(), "rw");
         accessFile.setLength(1000);
     }
 

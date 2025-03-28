@@ -25,8 +25,7 @@ class OfferCodecTest {
 
     @BeforeEach
     void initialize() throws IOException {
-        StringCodec stringCodec = new StringCodec();
-        offerCodec = new OfferCodec(new ListCodec<>(stringCodec), new InstantCodec(stringCodec));
+        offerCodec = new OfferCodec(new ListCodec<>(new StringCodec()), new InstantCodec(new LongCodec()));
         accessFile = new RandomAccessFile(dir.resolve("EmployeeCodec.data").toFile(), "rw");
         accessFile.setLength(1000);
     }

@@ -24,7 +24,7 @@ class AuditCodecTest {
     @BeforeEach
     void initialize() throws IOException {
         StringCodec stringCodec = new StringCodec(100);
-        auditCodec = new AuditCodec(stringCodec, new InstantCodec(stringCodec));
+        auditCodec = new AuditCodec(stringCodec, new InstantCodec(new LongCodec()));
         accessFile = new RandomAccessFile(dir.resolve("EmployeeCodec.data").toFile(), "rw");
         accessFile.setLength(1000);
     }

@@ -1,6 +1,5 @@
 package gr.bookapp.storage.codec;
 
-import gr.bookapp.common.InstantFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,11 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-
 import static gr.bookapp.common.InstantFormatter.parse;
-import static java.time.LocalDate.ofInstant;
-import static java.time.ZoneOffset.UTC;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -23,12 +18,14 @@ class InstantCodecTest {
     @TempDir Path dir;
     RandomAccessFile accessFile;
     StringCodec stringCodec;
+    LongCodec longCodec;
     InstantCodec instantCodec;
 
     @BeforeEach
     void initialize() throws FileNotFoundException {
+        longCodec = new LongCodec();
         stringCodec = new StringCodec();
-        instantCodec = new InstantCodec(stringCodec);
+        instantCodec = new InstantCodec(longCodec);
         accessFile = new RandomAccessFile(dir.resolve("InstantCodec.data").toFile(), "rw");
     }
 
@@ -39,7 +36,7 @@ class InstantCodecTest {
         Instant instant = parse(date);
         instantCodec.write(accessFile, instant);
         accessFile.seek(0);
-        assertThat(ofInstant(instantCodec.read(accessFile), UTC).format(ofPattern("dd-MM-yyyy G"))).isEqualTo("22-02-0300 BC");
+        assertThat(instantCodec.read(accessFile)).isEqualTo(instant);
     }
 
     @Test
@@ -49,7 +46,7 @@ class InstantCodecTest {
         Instant instant = parse(date);
         instantCodec.write(accessFile, instant);
         accessFile.seek(0);
-        assertThat(instantCodec.read(accessFile)).isEqualTo(parse(date));
+        assertThat(instantCodec.read(accessFile)).isEqualTo(instant);
     }
 
     @Test

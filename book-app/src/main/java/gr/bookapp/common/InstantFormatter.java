@@ -10,13 +10,19 @@ public class InstantFormatter {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy G");
 
     public static String serialize(Instant instant){
-        LocalDate localDate = instant.atZone(ZoneOffset.UTC).toLocalDate();
-        return FORMATTER.format(localDate);
+        return FORMATTER.format(instant.atZone(ZoneOffset.UTC));
+    }
+
+    public static Long serializeLong(Instant instant){
+        return instant.getEpochSecond();
     }
 
     public static Instant parse(String dateString) throws DateTimeParseException {
-        LocalDate localDate = LocalDate.parse(dateString, FORMATTER);
-        return localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        return LocalDate.parse(dateString, FORMATTER).atStartOfDay(ZoneOffset.UTC).toInstant();
+    }
+
+    public static Instant parseLong(Long epochSeconds){
+        return Instant.ofEpochSecond(epochSeconds);
     }
 
 }

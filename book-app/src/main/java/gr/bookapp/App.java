@@ -17,6 +17,9 @@ import gr.bookapp.storage.codec.*;
 import gr.bookapp.storage.file.BinarySearchTree;
 import gr.bookapp.storage.file.FileBasedNodeStorageTree;
 import gr.bookapp.storage.file.ObjectTable;
+import gr.bookapp.ui.AdminPanelUI;
+import gr.bookapp.ui.EmployeePanel;
+import gr.bookapp.ui.LoginPanelUI;
 import gr.bookapp.ui.TerminalUI;
 import java.io.IOException;
 import java.time.Clock;
@@ -39,7 +42,7 @@ public final class App {
         StringCodec stringCodec = new StringCodec();
         ListCodec<String> listCodec = new ListCodec<>(stringCodec);
         DoubleCodec doubleCodec = new DoubleCodec();
-        InstantCodec instantCodec = new InstantCodec(stringCodec);
+        InstantCodec instantCodec = new InstantCodec(longCodec);
         BookCodec bookCodec = new BookCodec(stringCodec, listCodec, instantCodec);
         BookSalesCodec bookSalesCodec = new BookSalesCodec();
         EmployeeCodec employeeCodec = new EmployeeCodec(stringCodec);
@@ -87,7 +90,10 @@ public final class App {
         CsvService csvService = new CsvService(new CsvLoader(), bookService, bookSalesRepository, userRepository, offerRepository);
 
         //UI
-        TerminalUI terminalUI = new TerminalUI(idGenerator, authenticationService, userService, userRepository, adminService, bookService, csvService);
+        LoginPanelUI loginPanelUI = new LoginPanelUI(authenticationService, userService, userRepository, idGenerator);
+        AdminPanelUI adminPanelUI = new AdminPanelUI(csvService, adminService);
+        EmployeePanel employeePanel = new EmployeePanel(userService, bookService, idGenerator);
+        TerminalUI terminalUI = new TerminalUI(loginPanelUI, adminPanelUI, employeePanel);
         terminalUI.start();
     }
 }

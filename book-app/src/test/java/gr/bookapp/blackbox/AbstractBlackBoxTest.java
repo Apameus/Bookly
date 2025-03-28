@@ -89,7 +89,7 @@ public abstract class AbstractBlackBoxTest {
         stringCodec = new StringCodec();
         listCodec = new ListCodec<>(stringCodec);
         doubleCodec = new DoubleCodec();
-        instantCodec = new InstantCodec(stringCodec);
+        instantCodec = new InstantCodec(longCodec);
         bookCodec = new BookCodec(stringCodec, listCodec, instantCodec);
         bookSalesCodec = new BookSalesCodec();
         employeeCodec = new EmployeeCodec(stringCodec);

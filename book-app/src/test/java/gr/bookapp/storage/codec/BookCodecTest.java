@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookCodecTest {
     StringCodec stringCodec = new StringCodec();
     ListCodec<String> listCodec = new ListCodec<>(stringCodec);
-    InstantCodec instantCodec = new InstantCodec(stringCodec);
+    InstantCodec instantCodec = new InstantCodec(new LongCodec());
     BookCodec bookCodec = new BookCodec(stringCodec, listCodec, instantCodec);
     RandomAccessFile accessFile;
     @TempDir Path dir;
