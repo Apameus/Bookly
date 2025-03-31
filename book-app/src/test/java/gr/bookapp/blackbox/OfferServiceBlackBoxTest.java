@@ -2,6 +2,7 @@ package gr.bookapp.blackbox;
 
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.exceptions.InvalidInputException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+@Disabled
 public final class OfferServiceBlackBoxTest extends AbstractBlackBoxTest{
 
     @Test

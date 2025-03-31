@@ -1,6 +1,6 @@
 package gr.bookapp.ui;
 
-import gr.bookapp.common.csv.CsvService;
+import gr.bookapp.services.CsvService;
 import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.User;

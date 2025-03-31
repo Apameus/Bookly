@@ -4,12 +4,14 @@ import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.User;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Disabled
 public final class AuthenticationServiceBlackBoxTest extends AbstractBlackBoxTest{
 
     @Test

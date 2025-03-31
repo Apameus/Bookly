@@ -6,6 +6,7 @@ import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.common.InstantFormatter;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -16,12 +17,14 @@ public final class OfferService {
     private final IdGenerator idGenerator;
     private final AuditService auditService;
     private final Logger logger;
+    private final Clock clock;
 
-    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditService auditService, Logger.Factory loggerFactory) {
+    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditService auditService, Clock clock, Logger.Factory loggerFactory) {
         this.offerRepository = offerRepository;
         this.idGenerator = idGenerator;
         this.auditService = auditService;
         logger = loggerFactory.create("Offer_Service");
+        this.clock = clock;
     }
 
     public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
@@ -39,7 +42,7 @@ public final class OfferService {
             logger.log("Offer creation failed due to invalid duration");
             throw new InvalidInputException("Invalid date");
         }
-        Instant now = Instant.now(Clock.systemUTC()); //TODO: not testable !
+        Instant now = clock.instant();
         Instant untilDate = now.plus(duration);
 
         long id = idGenerator.generateID();

@@ -1,42 +1,32 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.AuditContext;
-import gr.bookapp.exceptions.*;
+import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
-import gr.bookapp.models.Employee;
 import gr.bookapp.models.Offer;
-import gr.bookapp.models.Role;
-import gr.bookapp.repositories.AuditRepository;
+import gr.bookapp.models.User;
 import gr.bookapp.repositories.BookRepository;
-import gr.bookapp.repositories.EmployeeRepository;
+import gr.bookapp.repositories.UserRepository;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-public final class EmployeeService {
-    private final EmployeeRepository employeeRepository;
+public final class UserService {
+    private final UserRepository userRepository;
     private final BookRepository bookRepository;
-    private final AuditRepository auditRepository;
     private final BookSalesService bookSalesService;
     private final OfferService offerService;
-    private final AuditContext auditContext;
-    private final Clock clock;
+    private final AuditService auditService;
     private final Logger logger;
 
-    public EmployeeService(EmployeeRepository employeeRepository, BookRepository bookRepository, AuditRepository auditRepository, OfferService offerService, BookSalesService bookSalesService, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
-        this.auditRepository = auditRepository;
+    public UserService(UserRepository userRepository, BookRepository bookRepository, OfferService offerService, BookSalesService bookSalesService, AuditService auditService, Logger.Factory loggerFactory) {
+        this.userRepository = userRepository;
         this.bookSalesService = bookSalesService;
-        this.employeeRepository = employeeRepository;
         this.bookRepository = bookRepository;
         this.offerService = offerService;
-        this.auditContext = auditContext;
-        this.clock = clock;
-        logger = loggerFactory.create("Employee_Service");
+        this.auditService = auditService;
+        logger = loggerFactory.create("User_Service");
     }
 
     public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
@@ -60,7 +50,7 @@ public final class EmployeeService {
         String auditMsg;
         if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
         else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
-        auditRepository.audit(auditContext.getUserID(), auditMsg, clock.instant());
+        auditService.audit(auditMsg);
 
         logger.log("Book with name %s is sold", book.name());
         return book;
@@ -69,7 +59,7 @@ public final class EmployeeService {
     private Offer bestOffer(List<Offer> offers) {
         Offer bestOffer = null;
         for (Offer offer : offers) {
-            if (offer.untilDate().isBefore(clock.instant())) continue;
+            if (offer.untilDate().isBefore(Instant.now())) continue; //TODO: Not testable ?!
             if (bestOffer == null){
                 bestOffer = offer;
                 continue;
@@ -81,13 +71,8 @@ public final class EmployeeService {
         return bestOffer;
     }
 
-    public void hireEmployee(String username, String password){
-        logger.log("New employee hired");
-        employeeRepository.add(new Employee(System.currentTimeMillis(), username, password));
+    public boolean hasAdminAccount() {
+        return userRepository.getAll().stream().anyMatch(User::isAdmin);
     }
 
-
-//    public void hireEmployee(String s, String s1) throws InvalidInputException {
-//        employeeRepository.add(new Employee(System.currentTimeMillis(), s, s1, Role.ADMIN));
-//    }
 }

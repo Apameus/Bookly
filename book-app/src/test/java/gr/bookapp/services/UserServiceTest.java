@@ -6,7 +6,6 @@ import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.Offer;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

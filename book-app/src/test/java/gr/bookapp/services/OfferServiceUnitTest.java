@@ -2,10 +2,10 @@ package gr.bookapp.services;
 
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
+import gr.bookapp.common.InstantFormatter;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,9 +30,8 @@ class OfferServiceUnitTest {
     void initialize(){
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
         when(clock.instant()).thenReturn(fixedInstant);
-//        when(Clock.systemUTC()).thenReturn(fixedInstant);
         when(logger.create("Offer_Service")).thenReturn(Mockito.mock(Logger.class));
-        offerService = new OfferService(offerRepository, idGenerator, auditService, logger);
+        offerService = new OfferService(offerRepository, idGenerator, auditService, clock, logger);
     }
 
     @Test
@@ -42,7 +41,7 @@ class OfferServiceUnitTest {
         int percentage = 15;
         Duration duration = Duration.ofDays(30);
         List<String> tags = List.of("Comedy");
-        Instant now = clock.instant(); //todo fixed instant here but not in the impl
+        Instant now = clock.instant();
         Instant untilDate = now.plus(duration);
 
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
@@ -53,7 +52,7 @@ class OfferServiceUnitTest {
 
         verify(offerRepository, times(1)).add(offer);
 
-        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), offer.untilDate());
+        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
         verify(auditService, times(1)).audit(action);
     }
 
