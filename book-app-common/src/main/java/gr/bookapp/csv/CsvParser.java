@@ -1,4 +1,4 @@
-package gr.bookapp.common.csv;
+package gr.bookapp.csv;
 
 import gr.bookapp.exceptions.CsvFileLoadException;
 

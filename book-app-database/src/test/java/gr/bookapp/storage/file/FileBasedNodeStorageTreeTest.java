@@ -84,6 +84,7 @@ class FileBasedNodeStorageTreeTest {
     void entryIteratorTest() {
         for (int i = 0; i < 5; i++) {
             fileBasedNodeStorage.writeNode(new TreeNodeDual<>(String.valueOf(i), String.valueOf(i)), entry(i));
+            fileBasedNodeStorage.updateStoredEntries(1);
         }
         Iterator<Map.Entry<String, String>> entryIterator = fileBasedNodeStorage.entriesIterator();
         for (int i = 0; i < 5; i++) {

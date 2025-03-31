@@ -1,7 +1,7 @@
 package gr.bookapp;
 
 import gr.bookapp.common.*;
-import gr.bookapp.common.csv.CsvLoader;
+import gr.bookapp.csv.CsvLoader;
 import gr.bookapp.services.CsvService;
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 import gr.bookapp.log.CompositeLoggerFactory;
