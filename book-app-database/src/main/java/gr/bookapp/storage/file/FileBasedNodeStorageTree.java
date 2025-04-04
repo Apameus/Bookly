@@ -1,6 +1,6 @@
 package gr.bookapp.storage.file;
 
-import gr.bookapp.storage.codec.Codec;
+import gr.bookapp.protocol.codec.StreamCodec;
 import gr.bookapp.storage.codec.TreeCodec;
 import gr.bookapp.storage.codec.TreeNode;
 import gr.bookapp.storage.codec.TreeNodeDual;
@@ -13,8 +13,8 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
 
     private final RandomAccessFile accessFile;
     private final TreeCodec<K,V> treeCodec;
-    private final Codec<K> keyCodec;
-    private final Codec<V> valueCodec;
+    private final StreamCodec<K> keyCodec;
+    private final StreamCodec<V> valueCodec;
 
     private static final byte FLAG_SIZE = 1;
     private static final byte EXIST_FLAG = 1;
@@ -26,10 +26,10 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     int storedEntries;
     int maxAvailableEntries;
 
-    public FileBasedNodeStorageTree(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
+    public FileBasedNodeStorageTree(Path path, StreamCodec<K> keyFileCodec, StreamCodec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
-        treeCodec = new TreeCodec<K,V>(keyCodec, valueCodec);
-        this.keyCodec = keyCodec;
+        treeCodec = new TreeCodec<K,V>(keyFileCodec, valueCodec);
+        this.keyCodec = keyFileCodec;
         this.valueCodec = valueCodec;
 
         maxSizeOfEntry = FLAG_SIZE + treeCodec.maxByteSize();
@@ -81,14 +81,6 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
     }
 
     @Override
-    public V readValue(long nodeOffset){
-        try {
-            accessFile.seek(nodeOffset + FLAG_SIZE + treeCodec.keyByteSize());
-            return valueCodec.read(accessFile);
-        } catch (IOException e) {throw new RuntimeException(e);}
-    }
-
-    @Override
     public void writeNode(TreeNodeDual<K, V> node, long offset) {
         try {
             if (isFull()) resize();
@@ -103,8 +95,10 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
         try {
             accessFile.seek(offset + FLAG_SIZE);
             keyCodec.write(accessFile, key);
-            accessFile.skipBytes(CHILD_REFERENCE_SIZE * 2);
+            accessFile.seek(offset + FLAG_SIZE + keyCodec.maxByteSize() + CHILD_REFERENCE_SIZE * 2);
+//            accessFile.skipBytes(CHILD_REFERENCE_SIZE * 2);
             valueCodec.write(accessFile, value);
+            accessFile.seek(offset + FLAG_SIZE + keyCodec.maxByteSize() + CHILD_REFERENCE_SIZE * 2 + valueCodec.maxByteSize());
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
@@ -184,6 +178,14 @@ public final class FileBasedNodeStorageTree<K, V> implements NodeStorageTree<K, 
         try {
             accessFile.seek(nodeOffset + FLAG_SIZE);
             return keyCodec.read(accessFile);
+        } catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    @Override
+    public V readValue(long nodeOffset){
+        try {
+            accessFile.seek(nodeOffset + FLAG_SIZE + treeCodec.keyByteSize());
+            return valueCodec.read(accessFile);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 

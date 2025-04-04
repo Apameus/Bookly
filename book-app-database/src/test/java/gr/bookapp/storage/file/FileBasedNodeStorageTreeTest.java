@@ -1,6 +1,6 @@
 package gr.bookapp.storage.file;
 
-import gr.bookapp.storage.codec.StringCodec;
+import gr.bookapp.protocol.codec.StringCodec;
 import gr.bookapp.storage.codec.TreeNodeDual;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,6 +84,7 @@ class FileBasedNodeStorageTreeTest {
     void entryIteratorTest() {
         for (int i = 0; i < 5; i++) {
             fileBasedNodeStorage.writeNode(new TreeNodeDual<>(String.valueOf(i), String.valueOf(i)), entry(i));
+            fileBasedNodeStorage.updateStoredEntries(1);
         }
         Iterator<Map.Entry<String, String>> entryIterator = fileBasedNodeStorage.entriesIterator();
         for (int i = 0; i < 5; i++) {

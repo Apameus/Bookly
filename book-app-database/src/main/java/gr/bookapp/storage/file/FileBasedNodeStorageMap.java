@@ -1,6 +1,7 @@
 package gr.bookapp.storage.file;
 
-import gr.bookapp.storage.codec.Codec;
+import gr.bookapp.protocol.codec.StreamCodec;
+import gr.bookapp.storage.codec.FileCodec;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,25 +12,25 @@ import java.util.Map;
 
 public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
     private final RandomAccessFile accessFile;
-    private final Codec<K> keyCodec;
-    private final Codec<V> valueCodec;
+    private final StreamCodec<K> keyCodec;
+    private final StreamCodec<V> valueCodec;
 
     public static final byte EXIST_FLAG = 1;
     public static final byte NULL_FLAG = 0;
     public static final byte FLAG_SIZE = 1;
     public static final byte NEXT_OFFSET_SIZE = 8;
-    public static final byte CHILD_REFERENCE_SIZE = 8;
+//    public static final byte CHILD_REFERENCE_SIZE = 8;
     public static final byte STORED_ENTRIES_SIZE = 4;
 
     private final int maxSizeOfEntry;
     private int maxAvailableEntries;
     private int storedEntries;
 
-    public FileBasedNodeStorageMap(Path path, Codec<K> keyCodec, Codec<V> valueCodec) throws IOException {
+    public FileBasedNodeStorageMap(Path path, StreamCodec<K> keyCodec, StreamCodec<V> valueCodec) throws IOException {
         accessFile = new RandomAccessFile(path.toFile(), "rw");
         this.keyCodec = keyCodec;
         this.valueCodec = valueCodec;
-        maxSizeOfEntry = FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() + valueCodec.maxByteSize() + CHILD_REFERENCE_SIZE * 2;
+        maxSizeOfEntry = FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() + valueCodec.maxByteSize();
         if (accessFile.length() == 0){
             maxAvailableEntries = 16;
             accessFile.setLength((long) maxSizeOfEntry * maxAvailableEntries + STORED_ENTRIES_SIZE);
@@ -102,7 +103,9 @@ public final class FileBasedNodeStorageMap<K,V> implements NodeStorageMap<K,V> {
             accessFile.write(EXIST_FLAG);
             accessFile.skipBytes(NEXT_OFFSET_SIZE);
             keyCodec.write(accessFile, key);
+            accessFile.seek(offset + FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize());
             valueCodec.write(accessFile, value);
+            accessFile.seek(offset + FLAG_SIZE + NEXT_OFFSET_SIZE + keyCodec.maxByteSize() +  valueCodec.maxByteSize()  );
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
