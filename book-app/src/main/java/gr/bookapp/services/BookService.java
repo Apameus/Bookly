@@ -11,28 +11,24 @@ public final class BookService {
 
     private final BookRepository bookRepository;
     private final BookSalesRepository bookSalesRepository;
-    private final AuditService auditService;
     private final Logger logger;
 
-    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, AuditService auditService, Logger.Factory loggerFactory) {
+    public BookService(BookRepository bookRepository, BookSalesRepository bookSalesRepository, Logger.Factory loggerFactory) {
         this.bookRepository = bookRepository;
         this.bookSalesRepository = bookSalesRepository;
-        this.auditService = auditService;
         logger = loggerFactory.create("Book_Service");
     }
 
     public void addBook(Book book){
         bookRepository.add(book);
-        bookSalesRepository.add(new BookSales(book.id(), 0));
-        auditService.audit("Book with id %s added".formatted(book.id()));
+        bookSalesRepository.add(new BookSales(book.id(), 0)); //TODO: This is work of the DB
         logger.log("Book added");
     }
 
     public void deleteBookByID(long bookID){
-        if (bookRepository.getBookByID(bookID) == null) logger.log("Book not found");
+//        if (bookRepository.getBookByID(bookID) == null) logger.log("Book not found");
         bookRepository.deleteBookByID(bookID);
-        bookSalesRepository.delete(bookID);
-        auditService.audit("Book with id %s deleted".formatted(bookID));
+        bookSalesRepository.delete(bookID);//TODO: This is work of the DB
         logger.log("Book deleted");
     }
 

@@ -27,6 +27,6 @@ public record OfferCodec(ListCodec<String> listCodec, InstantCodec instantCodec)
         dataOutput.writeLong(obj.offerID());
         listCodec.write(dataOutput, obj.tags());
         dataOutput.writeInt(obj.percentage());
-        instantCodec.write(dataOutput, obj.untilDate());
+        instantCodec.write(dataOutput, obj.expirationDate());
     }
 }

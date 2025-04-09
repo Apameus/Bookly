@@ -1,6 +1,6 @@
 package gr.bookapp.repositories;
 
-import gr.bookapp.models.Audit;
+import gr.bookapp.Audit;
 
 import java.time.Instant;
 import java.util.List;

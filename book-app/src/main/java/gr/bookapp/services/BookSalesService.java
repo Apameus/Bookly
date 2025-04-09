@@ -16,9 +16,8 @@ public final class BookSalesService {
 
     public void increaseSalesOfBook(long bookID, int quantity) throws InvalidInputException {
         if (quantity <= 0) throw new InvalidInputException("Quantity must be greater than 0");
-        BookSales bookSales = bookSalesRepository.getBookSalesByBookID(bookID);
-        bookSalesRepository.add(bookSales.withSales(bookSales.sales() + quantity));
-        logger.log("BookSales updated: BookID: %s, Sales: %s",bookID, bookSales.sales() + quantity);
+        bookSalesRepository.increaseSalesOfBook(bookID, quantity);
+        logger.log("BookSales updated: BookID: %s, Extra sales: %s", bookID, quantity);
     }
 
     public void increaseSalesOfBook(long bookID) {

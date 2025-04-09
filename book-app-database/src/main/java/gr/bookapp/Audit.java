@@ -1,4 +1,4 @@
-package gr.bookapp.models;
+package gr.bookapp;
 
 import java.time.Instant;
 

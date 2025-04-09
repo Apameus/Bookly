@@ -17,15 +17,13 @@ public final class UserService {
     private final BookRepository bookRepository;
     private final BookSalesService bookSalesService;
     private final OfferService offerService;
-    private final AuditService auditService;
     private final Logger logger;
 
-    public UserService(UserRepository userRepository, BookRepository bookRepository, OfferService offerService, BookSalesService bookSalesService, AuditService auditService, Logger.Factory loggerFactory) {
+    public UserService(UserRepository userRepository, BookRepository bookRepository, OfferService offerService, BookSalesService bookSalesService, Logger.Factory loggerFactory) {
         this.userRepository = userRepository;
         this.bookSalesService = bookSalesService;
         this.bookRepository = bookRepository;
         this.offerService = offerService;
-        this.auditService = auditService;
         logger = loggerFactory.create("User_Service");
     }
 
@@ -47,11 +45,6 @@ public final class UserService {
         }
         bookSalesService.increaseSalesOfBook(bookID);
 
-        String auditMsg;
-        if (bestOffer == null) auditMsg = "Book with id: %s sold".formatted(bookID);
-        else auditMsg = "Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, bestOffer.percentage(), bestOffer.offerID());
-        auditService.audit(auditMsg);
-
         logger.log("Book with name %s is sold", book.name());
         return book;
     }
@@ -59,7 +52,7 @@ public final class UserService {
     private Offer bestOffer(List<Offer> offers) {
         Offer bestOffer = null;
         for (Offer offer : offers) {
-            if (offer.untilDate().isBefore(Instant.now())) continue; //TODO: Not testable ?!
+            if (offer.expirationDate().isBefore(Instant.now())) continue; //TODO: Not testable ?!
             if (bestOffer == null){
                 bestOffer = offer;
                 continue;

@@ -5,7 +5,7 @@ import gr.bookapp.models.User;
 
 import java.io.*;
 
-public record EmployeeCodec(StringCodec stringCodec) implements StreamCodec<User> {
+public record UserCodec(StringCodec stringCodec) implements StreamCodec<User> {
     @Override
     public int maxByteSize() {
         return Long.BYTES + stringCodec.maxByteSize() * 3;

@@ -1,6 +1,6 @@
 package gr.bookapp.storage.codec;
 
-import gr.bookapp.models.Audit;
+import gr.bookapp.Audit;
 import gr.bookapp.protocol.codec.InstantCodec;
 import gr.bookapp.protocol.codec.LongCodec;
 import gr.bookapp.protocol.codec.StringCodec;

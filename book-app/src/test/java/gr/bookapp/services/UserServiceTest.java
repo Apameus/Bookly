@@ -30,7 +30,6 @@ class UserServiceTest {
     OfferService offerService = Mockito.mock(OfferService.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
-    AuditService auditService = Mockito.mock(AuditService.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     UserService userService;
 
@@ -39,7 +38,7 @@ class UserServiceTest {
         when(clock.instant()).thenReturn(Clock.systemUTC().instant());
 
         when(logger.create("User_Service")).thenReturn(Mockito.mock(Logger.class));
-        userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, auditService, logger);
+        userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, logger);
     }
 
     @Test
@@ -73,7 +72,6 @@ class UserServiceTest {
         when(auditContext.getUserID()).thenReturn(999L);
         assertThat(userService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * 15 / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
-        verify(auditService, times(1)).audit("Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer.percentage(), offer.offerID(), InstantFormatter.serialize(clock.instant())));
     }
 
     @Test
@@ -96,7 +94,6 @@ class UserServiceTest {
         assertThat(userService.sellBook(bookID)).isEqualTo(book.withPrice(book.price() - (book.price() * offer2.percentage() / 100.0)));
         verify(bookSalesService, times(1)).increaseSalesOfBook(bookID);
 
-        verify(auditService, times(1)).audit("Book with id: %s sold with extra offer of: %s from offer with id: %s".formatted(bookID, offer2.percentage(), offer2.offerID(), InstantFormatter.serialize(clock.instant())));
     }
 
     @Test

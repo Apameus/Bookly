@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserRepository {
     void add(User user) throws InvalidInputException;
 
-    void deleteEmployeeByID(long employeeID);
+    void deleteUserByID(long employeeID);
 
     User getUserByID(long employeeID);
 

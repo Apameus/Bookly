@@ -1,6 +1,5 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.csv.*;
 import gr.bookapp.csv.*;
 import gr.bookapp.exceptions.CsvFileLoadException;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -25,7 +24,7 @@ public final class CsvService {
     private final CsvParser<User> userCsvParser;
     private final CsvParser<Offer> offerCsvParser;
 
-    //TODO: If the book already exists, which one should we choose??
+    //TODO: If an element already exists, which one should we choose??
     public CsvService(CsvLoader csvLoader, BookService bookService, BookSalesRepository bookSalesRepository, UserRepository userRepository, OfferRepository offerRepository) {
         this.csvLoader = csvLoader;
         this.bookService = bookService;
@@ -40,10 +39,10 @@ public final class CsvService {
 
     public void updateBooks(String pathToCsv) throws CsvFileLoadException {
         List<Book> books = csvLoader.load(Path.of(pathToCsv), bookCsvParser);
-        books.forEach(bookService::addBook);
+        books.forEach(bookService::addBook); //ToDo: What about bookSales ??
     }
 
-    public void updateBookSales(String pathToCsv) throws CsvFileLoadException {
+    public void updateBookSales(String pathToCsv) throws CsvFileLoadException { //ToDo: Should this override the bookSales in the DB ??
         List<BookSales> bookSales = csvLoader.load(Path.of(pathToCsv), bookSalesCsvParser);
         bookSales.forEach(bookSalesRepository::add);
     }

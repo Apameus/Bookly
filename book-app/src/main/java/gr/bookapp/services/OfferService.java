@@ -14,15 +14,12 @@ import java.util.List;
 
 public final class OfferService {
     private final OfferRepository offerRepository;
-    private final IdGenerator idGenerator;
-    private final AuditService auditService;
     private final Logger logger;
     private final Clock clock;
 
-    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditService auditService, Clock clock, Logger.Factory loggerFactory) {
+    public OfferService(OfferRepository offerRepository, Clock clock, Logger.Factory loggerFactory) {
         this.offerRepository = offerRepository;
-        this.idGenerator = idGenerator;
-        this.auditService = auditService;
+
         logger = loggerFactory.create("Offer_Service");
         this.clock = clock;
     }
@@ -43,16 +40,11 @@ public final class OfferService {
             throw new InvalidInputException("Invalid date");
         }
         Instant now = clock.instant();
-        Instant untilDate = now.plus(duration);
+        Instant expirationDate = now.plus(duration); //TODO: Should we set the expirationDate here?
 
-        long id = idGenerator.generateID();
-        Offer offer = new Offer(id, tags, percentage, untilDate);
+        Offer offer = new Offer(tags, percentage, expirationDate);
         offerRepository.add(offer);
 
-        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s"
-                .formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
-
-        auditService.audit(action);
         logger.log("Offer created");
     }
 

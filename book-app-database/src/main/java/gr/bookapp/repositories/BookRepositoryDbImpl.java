@@ -1,5 +1,6 @@
 package gr.bookapp.repositories;
 
+import gr.bookapp.common.IdGenerator;
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
 import gr.bookapp.database.RangeIndex;
@@ -15,9 +16,11 @@ public final class BookRepositoryDbImpl implements BookRepository {
     private final Index<Book, List<String>> authorIndex = Book::authors;
     private final Index<Book, List<String>> tagIndex = Book::tags;
     private final RangeIndex<Book, Double> priceRangeIndex = RangeIndex.of(Book::price, Double::compareTo);
+    private final IdGenerator idGenerator;
 
-    public BookRepositoryDbImpl(Database<Long, Book> bookDatabase) {
+    public BookRepositoryDbImpl(Database<Long, Book> bookDatabase, IdGenerator idGenerator) {
         this.bookDatabase = bookDatabase;
+        this.idGenerator = idGenerator;
     }
 
     private final RangeIndex<Book, Instant> releaseDateRangeIndex = RangeIndex.of(Book::releaseDate, Instant::compareTo);
@@ -53,7 +56,10 @@ public final class BookRepositoryDbImpl implements BookRepository {
     }
 
     @Override
-    public void add(Book book){bookDatabase.insert(book.id(), book);}
+    public void add(Book book){
+        book = book.withID(idGenerator.generateID(), book);
+        bookDatabase.insert(book.id(), book);
+    }
 
     @Override
     public void deleteBookByID(long bookID){

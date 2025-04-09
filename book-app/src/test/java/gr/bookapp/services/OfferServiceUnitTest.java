@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 class OfferServiceUnitTest {
     OfferRepository offerRepository = Mockito.mock(OfferRepository.class);
     IdGenerator idGenerator = Mockito.mock(IdGenerator.class);
-    AuditService auditService = Mockito.mock(AuditService.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
@@ -31,7 +30,7 @@ class OfferServiceUnitTest {
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
         when(clock.instant()).thenReturn(fixedInstant);
         when(logger.create("Offer_Service")).thenReturn(Mockito.mock(Logger.class));
-        offerService = new OfferService(offerRepository, idGenerator, auditService, clock, logger);
+        offerService = new OfferService(offerRepository, idGenerator, clock, logger);
     }
 
     @Test
@@ -52,8 +51,6 @@ class OfferServiceUnitTest {
 
         verify(offerRepository, times(1)).add(offer);
 
-        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
-        verify(auditService, times(1)).audit(action);
     }
 
     @Test

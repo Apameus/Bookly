@@ -7,7 +7,6 @@ import gr.bookapp.log.CompositeLoggerFactory;
 import gr.bookapp.log.ConsoleLogger;
 import gr.bookapp.log.FileLogger;
 import gr.bookapp.log.Logger;
-import gr.bookapp.models.*;
 import gr.bookapp.repositories.*;
 import gr.bookapp.services.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -64,7 +62,6 @@ public abstract class AbstractBlackBoxTest {
     //Repos
     BookRepository bookRepository;
     BookSalesRepository bookSalesRepository;
-    AuditRepository auditRepository;
     UserRepository employeeRepository;
     OfferRepository offerRepository;
 
@@ -123,10 +120,9 @@ public abstract class AbstractBlackBoxTest {
 //        offerRepository = new OfferRepository(offerDataBase);
 
         //Services
-        AuditService auditService = new AuditService(auditRepository, auditContext);
         bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
-        bookService = new BookService(bookRepository, bookSalesRepository, auditService, loggerFactory);
-        offerService = new OfferService(offerRepository, idGenerator, auditService, clock, loggerFactory);
+        bookService = new BookService(bookRepository, bookSalesRepository, loggerFactory);
+        offerService = new OfferService(offerRepository, idGenerator, clock, loggerFactory);
 //        userService = new UserService(employeeRepository, bookRepository, offerService, bookSalesService, auditService, loggerFactory);
         authenticationService = new AuthenticationService(employeeRepository, loggerFactory);
     }

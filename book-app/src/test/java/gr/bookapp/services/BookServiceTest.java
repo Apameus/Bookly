@@ -14,7 +14,6 @@ import static org.mockito.Mockito.*;
 class BookServiceTest {
     BookRepository bookRepository = Mockito.mock(BookRepository.class);
     BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
-    AuditService auditService = Mockito.mock(AuditService.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     BookService bookService;
@@ -22,7 +21,7 @@ class BookServiceTest {
     @BeforeEach
     void initialize(){
         when(logger.create("Book_Service")).thenReturn(Mockito.mock(Logger.class));
-        bookService = new BookService(bookRepository, bookSalesRepository, auditService, logger);
+        bookService = new BookService(bookRepository, bookSalesRepository, logger);
     }
 
     @Test
@@ -42,7 +41,6 @@ class BookServiceTest {
     void deleteBookTest() {
         bookService.deleteBookByID(1);
         verify(bookRepository, times(1)).deleteBookByID(1);
-        verify(auditService, times(1)).audit("Book with id 1 deleted");
     }
 
 

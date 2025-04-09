@@ -1,7 +1,6 @@
-package gr.bookapp.services;
+package gr.bookapp;
 
 import gr.bookapp.common.AuditContext;
-import gr.bookapp.models.Audit;
 import gr.bookapp.repositories.AuditRepository;
 
 import java.time.Clock;

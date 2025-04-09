@@ -66,17 +66,15 @@ public final class AppClient {
         //Repos
         BookRepository bookRepository = null;
         BookSalesRepository bookSalesRepository = null;
-        AuditRepository auditRepository = null;
         UserRepository userRepository = null;
         OfferRepository offerRepository = null;
 
         //Services
-        AuditService auditService = new AuditService(auditRepository, auditContext);
         BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
-        BookService bookService = new BookService(bookRepository, bookSalesRepository, auditService, loggerFactory);
-        OfferService offerService = new OfferService(offerRepository, idGenerator, auditService, Clock.systemUTC(), loggerFactory);
-        UserService userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, auditService, loggerFactory);
-        AdminService adminService = new AdminService(userRepository, auditService, idGenerator, loggerFactory);
+        BookService bookService = new BookService(bookRepository, bookSalesRepository, loggerFactory);
+        OfferService offerService = new OfferService(offerRepository, idGenerator, Clock.systemUTC(), loggerFactory);
+        UserService userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, loggerFactory);
+        AdminService adminService = new AdminService(userRepository, idGenerator, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(userRepository, loggerFactory);
 
         CsvService csvService = new CsvService(new CsvLoader(), bookService, bookSalesRepository, userRepository, offerRepository);

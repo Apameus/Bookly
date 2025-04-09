@@ -1,5 +1,6 @@
 package gr.bookapp.repositories;
 
+import gr.bookapp.common.IdGenerator;
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -11,20 +12,23 @@ public final class UserRepositoryDbImpl implements UserRepository {
 
     private final Database<Long, User> userDatabase;
     private final Index<User, String> usernameIndex = User::username;
+    private final IdGenerator idGenerator;
 
-    public UserRepositoryDbImpl(Database<Long, User> userDatabase) {
+    public UserRepositoryDbImpl(Database<Long, User> userDatabase, IdGenerator idGenerator) {
         this.userDatabase = userDatabase;
+        this.idGenerator = idGenerator;
     }
 
     @Override
-    public void add(User user) throws InvalidInputException {
+    public void add(User user) throws InvalidInputException { //TODO change the exception
         if (getUserByUsername(user.username()) != null)
             throw new InvalidInputException("Username already exist !");
+        user = user.withID(idGenerator.generateID(), user);
         userDatabase.insert(user.id(), user);
     }
 
     @Override
-    public void deleteEmployeeByID(long employeeID){
+    public void deleteUserByID(long employeeID){
         userDatabase.delete(employeeID);
     }
 

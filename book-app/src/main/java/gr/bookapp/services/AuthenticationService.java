@@ -9,8 +9,8 @@ public final class AuthenticationService {
     private final UserRepository employeeRepository;
     private final Logger logger;
 
-    public AuthenticationService(UserRepository employeeRepository, Logger.Factory loggerFactory) {
-        this.employeeRepository = employeeRepository;
+    public AuthenticationService(UserRepository userRepository, Logger.Factory loggerFactory) {
+        this.employeeRepository = userRepository;
         logger = loggerFactory.create("Authentication_Service");
     }
 
