@@ -38,6 +38,9 @@ public sealed interface Request {
         record GetAllBooksRequest() implements Request.Book {
             public static final byte TYPE = 22;
         }
+        record GetBookByIdRequest(long bookID) implements Request.Book {
+            public static final byte TYPE = 28;
+        }
         record GetBooksByNameRequest(String name) implements Request.Book{
             public static final byte TYPE = 23;
         }
@@ -52,9 +55,6 @@ public sealed interface Request {
         }
         record GetBooksInDateRangeRequest(Instant min, Instant max) implements Request.Book{
             public static final byte TYPE = 27;
-        }
-        record GetBookByIdRequest(long bookID) implements Request.Book {
-            public static final byte TYPE = 28;
         }
     }
 
@@ -77,14 +77,14 @@ public sealed interface Request {
         record DeleteOfferRequest(long offerID) implements Request.Offer {
             public static final byte TYPE = 33;
         }
+        record GetOfferByIdRequest(long offerID) implements Request.Offer {
+            public static final byte TYPE = 36;
+        }
         record GetAllOffersRequest() implements Request.Offer {
             public static final byte TYPE = 34;
         }
         record GetOffersByTagsRequest(List<String> tags) implements Request.Offer {
             public static final byte TYPE = 35;
-        }
-        record GetOfferByIdRequest(long offerID) implements Request.Offer {
-            public static final byte TYPE = 36;
         }
     }
 }

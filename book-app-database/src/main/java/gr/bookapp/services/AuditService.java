@@ -1,5 +1,6 @@
-package gr.bookapp;
+package gr.bookapp.services;
 
+import gr.bookapp.Audit;
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.repositories.AuditRepository;
 
