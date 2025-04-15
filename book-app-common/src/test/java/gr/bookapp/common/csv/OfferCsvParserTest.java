@@ -19,9 +19,9 @@ class OfferCsvParserTest {
     @Test
     @DisplayName("Parse offers test")
     void parseOffersTest() throws CsvFileLoadException {
-        Offer offerA = new Offer(11, List.of("Philosophy"), 20, InstantFormatter.parse("20-06-2025 AD"));
-        Offer offerB = new Offer(22, List.of("Adventure"), 10, InstantFormatter.parse("26-04-2025 AD"));
-        Offer offerC = new Offer(33, List.of("Philosophy", "Adventure", "Politics"), 5, InstantFormatter.parse("30-04-2025 AD"));
+        Offer offerA = new Offer(11L, List.of("Philosophy"), 20, InstantFormatter.parse("20-06-2025 AD"));
+        Offer offerB = new Offer(22L, List.of("Adventure"), 10, InstantFormatter.parse("26-04-2025 AD"));
+        Offer offerC = new Offer(33L, List.of("Philosophy", "Adventure", "Politics"), 5, InstantFormatter.parse("30-04-2025 AD"));
         String csv = """
                 11,1,Philosophy,20,20-06-2025 AD
                 22,1,Adventure,10,26-04-2025 AD

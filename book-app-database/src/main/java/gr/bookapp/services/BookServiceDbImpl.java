@@ -31,7 +31,7 @@ public final class BookServiceDbImpl {
     }
     public List<Book> getAllBooks() throws InvalidInputException {
         List<Book> books = bookRepository.getAllBooks();
-        if (books.isEmpty()) throw new InvalidInputException("No book are registered!");
+        if (books.isEmpty()) throw new InvalidInputException("No books are registered!");
         return books;
     }
     public List<Book> getBooksByName(String name) throws InvalidInputException {
@@ -51,12 +51,12 @@ public final class BookServiceDbImpl {
     }
     public List<Book> getBooksInPriceRange(double min, double max) throws InvalidInputException {
         List<Book> books = bookRepository.findBooksInPriceRange(min, max);
-        if (books.isEmpty()) throw new InvalidInputException("No books with specified price-range registered!");
+        if (books.isEmpty()) throw new InvalidInputException("No books in specified price-range registered!");
         return books;
     }
     public List<Book> getBooksInDateRange(Instant from, Instant to) throws InvalidInputException {
         List<Book> books = bookRepository.findBooksInDateRange(from, to);
-        if (books.isEmpty()) throw new InvalidInputException("No books with specified authors registered!");
+        if (books.isEmpty()) throw new InvalidInputException("No books in specified date-range registered!");
         return books;
     }
 }

@@ -16,9 +16,9 @@ class UserCsvParserTest {
     @Test
     @DisplayName("Parse users from csv")
     void parseUsersFromCsv() throws CsvFileLoadException {
-        User userA = new User(11,"makis","makis123", Role.EMPLOYEE);
-        User userB = new User(22, "admin", "admin123", Role.ADMIN);
-        User userC = new User(33, "fanis", "fanis123", Role.EMPLOYEE);
+        User userA = new User(11L,"makis","makis123", Role.EMPLOYEE);
+        User userB = new User(22L, "admin", "admin123", Role.ADMIN);
+        User userC = new User(33L, "fanis", "fanis123", Role.EMPLOYEE);
         String csv = """
                 11,makis,makis123,EMPLOYEE
                 22,admin,admin123,ADMIN

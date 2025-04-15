@@ -31,7 +31,7 @@ class OfferCodecTest {
     @Test
     @DisplayName("Write-Read Offer test")
     void writeReadOfferTest() throws IOException {
-        Offer offer = new Offer(9999, List.of("Adventure", "Philosophy"), 15, LocalDate.now().plusDays(2).atStartOfDay().toInstant(ZoneOffset.UTC));
+        Offer offer = new Offer(9999L, List.of("Adventure", "Philosophy"), 15, LocalDate.now().plusDays(2).atStartOfDay().toInstant(ZoneOffset.UTC));
         offerCodec.write(accessFile, offer);
         accessFile.seek(0);
         assertThat(offerCodec.read(accessFile)).isEqualTo(offer);
