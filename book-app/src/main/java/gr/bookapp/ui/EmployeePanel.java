@@ -87,7 +87,7 @@ public final class EmployeePanel {
             if (inputTags.isBlank()) throw new InvalidInputException("Every book needs at least 1 tag !");
             List<String> tags = Arrays.stream(inputTags.split(" ")).toList();
 
-            long id = idGenerator.generateID();
+            long id = idGenerator.generateID(); //TODO: Remove
             book = new Book(id, name, authors, price, releaseDate, tags);
 
             bookService.addBook(book);
