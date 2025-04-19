@@ -1,4 +1,4 @@
-package gr.bookapp.blackbox;
+package client;
 
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.field;
 
 @Disabled
-public final class UserServiceBlackBoxTest extends AbstractBlackBoxTest {
+public final class UserServiceBlackBoxTest extends ClientAbstractBlackBoxTest {
 
     @Test
     @DisplayName("Sell Book Test")
@@ -46,7 +46,7 @@ public final class UserServiceBlackBoxTest extends AbstractBlackBoxTest {
         bookService.addBook(book);
 
         //Offer
-        Offer offer = new Offer(333, book.tags(), 40, clock.instant());
+        Offer offer = new Offer(333L, book.tags(), 40, clock.instant());
         offerRepository.add(offer);
 
         //Returned value
@@ -67,11 +67,11 @@ public final class UserServiceBlackBoxTest extends AbstractBlackBoxTest {
         bookService.addBook(book);
 
         //Offer
-        Offer offer1 = new Offer(333, book.tags(), 15, clock.instant());
-        Offer offer2 = new Offer(444, book.tags(), 40, clock.instant());
-        Offer bestValidOffer = new Offer(666, book.tags(), 80, clock.instant());
-        Offer expiredOffer = new Offer(777, book.tags(), 90, clock.instant().minus(2, ChronoUnit.DAYS));
-        Offer offerForOtherTags = new Offer(555, List.of("somethingElse"), 90, clock.instant());
+        Offer offer1 = new Offer(333L, book.tags(), 15, clock.instant());
+        Offer offer2 = new Offer(444L, book.tags(), 40, clock.instant());
+        Offer bestValidOffer = new Offer(666L, book.tags(), 80, clock.instant());
+        Offer expiredOffer = new Offer(777L, book.tags(), 90, clock.instant().minus(2, ChronoUnit.DAYS));
+        Offer offerForOtherTags = new Offer(555L, List.of("somethingElse"), 90, clock.instant());
         offerRepository.add(offer1);
         offerRepository.add(offer2);
         offerRepository.add(bestValidOffer);

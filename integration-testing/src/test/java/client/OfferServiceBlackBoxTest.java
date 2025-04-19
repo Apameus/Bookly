@@ -1,4 +1,4 @@
-package gr.bookapp.blackbox;
+package client;
 
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @Disabled
-public final class OfferServiceBlackBoxTest extends AbstractBlackBoxTest{
+public final class OfferServiceBlackBoxTest extends ClientAbstractBlackBoxTest {
 
     @Test
     @DisplayName("Create an offer test")

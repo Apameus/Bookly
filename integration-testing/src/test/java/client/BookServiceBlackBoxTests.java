@@ -1,4 +1,4 @@
-package gr.bookapp.blackbox;
+package client;
 
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.instancio.Select.field;
 
 @Disabled
-public final class BookRepositoryDbImplBlackBoxTests extends AbstractBlackBoxTest {
+public final class BookServiceBlackBoxTests extends ClientAbstractBlackBoxTest {
 
     @Test
     @DisplayName("Add book")

@@ -1,4 +1,4 @@
-package gr.bookapp.blackbox;
+package client;
 
 import gr.bookapp.exceptions.AuthenticationFailedException;
 import gr.bookapp.exceptions.InvalidInputException;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Disabled
-public final class AuthenticationServiceBlackBoxTest extends AbstractBlackBoxTest{
+public final class AuthenticationServiceBlackBoxTestClient extends ClientAbstractBlackBoxTest {
 
     @Test
     @DisplayName("Authentication test")

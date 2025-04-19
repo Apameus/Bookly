@@ -1,4 +1,4 @@
-package gr.bookapp.blackbox;
+package client;
 
 import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.models.Book;
@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled
-public final class BookSalesServiceBlackBoxTest extends AbstractBlackBoxTest{
+public final class BookSalesServiceBlackBoxTest extends ClientAbstractBlackBoxTest {
 
     @BeforeEach
-    void setup(){
+    void setEmployeeID(){
         AuditContextImpl.set(7);
     }
 

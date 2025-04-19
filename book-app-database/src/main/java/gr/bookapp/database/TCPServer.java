@@ -5,13 +5,12 @@ import gr.bookapp.protocol.packages.Request;
 import gr.bookapp.protocol.packages.RequestStreamCodec;
 import gr.bookapp.protocol.packages.Response;
 import gr.bookapp.protocol.packages.ResponseStreamCodec;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 
-public final class TCPServer {
+public final class TCPServer implements AutoCloseable {
     private final Controller controller;
     private final ServerSocket serverSocket;
     private final RequestStreamCodec requestStreamCodec;
@@ -50,5 +49,10 @@ public final class TCPServer {
                 logger.log("Sending response: " + response);
             }
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        serverSocket.close();
     }
 }
