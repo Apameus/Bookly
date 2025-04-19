@@ -30,7 +30,7 @@ class OfferServiceUnitTest {
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
         when(clock.instant()).thenReturn(fixedInstant);
         when(logger.create("Offer_Service")).thenReturn(Mockito.mock(Logger.class));
-        offerService = new OfferService(offerRepository, idGenerator, clock, logger);
+        offerService = new OfferService(offerRepository, clock, logger);
     }
 
     @Test

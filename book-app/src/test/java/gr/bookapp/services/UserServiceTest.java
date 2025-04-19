@@ -65,7 +65,7 @@ class UserServiceTest {
         List<String> authors = List.of("Omiros");
         List<String> tags = List.of("Philosophy", "Adventure");
         Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
-        Offer offer = new Offer(700, tags,15, clock.instant().plus(5, ChronoUnit.DAYS));
+        Offer offer = new Offer(700L, tags,15, clock.instant().plus(5, ChronoUnit.DAYS));
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);
         when(offerService.getOffers(tags)).thenReturn(List.of(offer));
@@ -83,9 +83,9 @@ class UserServiceTest {
         List<String> tags = List.of("Philosophy", "Adventure");
         Book book = new Book(bookID, "Odyssey", authors, 100, zonedDateTime.toInstant(), tags);
 
-        Offer offer1 = new Offer(700, List.of("Philosophy"),15, clock.instant().plus(5, ChronoUnit.DAYS));
-        Offer offer2 = new Offer(800, List.of("Adventure"), 35, clock.instant().plus(9, ChronoUnit.DAYS));
-        Offer expiredOffer = new Offer(900, List.of("Adventure"), 70, clock.instant().minus(1, ChronoUnit.DAYS));
+        Offer offer1 = new Offer(700L, List.of("Philosophy"),15, clock.instant().plus(5, ChronoUnit.DAYS));
+        Offer offer2 = new Offer(800L, List.of("Adventure"), 35, clock.instant().plus(9, ChronoUnit.DAYS));
+        Offer expiredOffer = new Offer(900L, List.of("Adventure"), 70, clock.instant().minus(1, ChronoUnit.DAYS));
         List<Offer> offers = List.of(offer1, offer2, expiredOffer);
 
         when(bookRepository.getBookByID(bookID)).thenReturn(book);

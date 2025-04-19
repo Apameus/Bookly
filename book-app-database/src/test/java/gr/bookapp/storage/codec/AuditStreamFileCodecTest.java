@@ -2,7 +2,6 @@ package gr.bookapp.storage.codec;
 
 import gr.bookapp.Audit;
 import gr.bookapp.protocol.codec.InstantCodec;
-import gr.bookapp.protocol.codec.LongCodec;
 import gr.bookapp.protocol.codec.StringCodec;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,16 +16,16 @@ import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AuditStreamFileCOdecTest {
+class AuditStreamFileCodecTest {
     @TempDir
     Path dir;
     RandomAccessFile accessFile;
-    AuditFileCodec auditCodec;
+    AuditCodec auditCodec;
 
     @BeforeEach
     void initialize() throws IOException {
         StringCodec stringCodec = new StringCodec(100);
-        auditCodec = new AuditFileCodec(stringCodec, new InstantCodec());
+        auditCodec = new AuditCodec(stringCodec, new InstantCodec());
         accessFile = new RandomAccessFile(dir.resolve("EmployeeCodec.data").toFile(), "rw");
         accessFile.setLength(1000);
     }

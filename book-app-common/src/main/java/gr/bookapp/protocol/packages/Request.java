@@ -7,7 +7,7 @@ import java.util.List;
 
 public sealed interface Request {
 
-    sealed interface User extends Request{ // CHANGE TYPE TO BYTE
+    sealed interface User extends Request{
         record AuthenticateRequest(String username, String password) implements Request.User{
             public static final byte TYPE = 11;
         }

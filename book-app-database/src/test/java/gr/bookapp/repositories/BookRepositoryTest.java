@@ -32,7 +32,7 @@ class BookRepositoryTest { //TODO: TESTS MISSING
     @Test
     @DisplayName("Find all books with specified name")
     void findAllBooksWithSpecifiedName() {
-        Index<Book, String> nameIndex = Book::name;
+        Index<Book, String> nameIndex = Book::name; //todo: this nameIndex is not the same instance with the nameIndex of the impl
         when(bookDatabase.findAllByIndex(nameIndex, book1.name())).thenReturn(List.of(book1));
         List<Book> books = bookRepositoryDbImpl.findBooksWithName(book1.name());
         assertThat(books).contains(book1);

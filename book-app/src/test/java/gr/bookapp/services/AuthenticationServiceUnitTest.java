@@ -29,7 +29,7 @@ class AuthenticationServiceUnitTest {
     @Test
     @DisplayName("Authentication test")
     void authenticationTest() throws AuthenticationFailedException {
-        User user = new User(007, "Manolis", "123", Role.EMPLOYEE);
+        User user = new User(007L, "Manolis", "123", Role.EMPLOYEE);
         when(userRepository.getUserByUsername("Manolis")).thenReturn(user);
         assertThat(authenticationService.authenticate(user.username(), user.password())).isEqualTo(user);
     }
@@ -37,7 +37,7 @@ class AuthenticationServiceUnitTest {
     @Test
     @DisplayName("Failed authentication test")
     void failedAuthenticationTest() throws AuthenticationFailedException {
-        User user = new User(007, "Manolis", "123", Role.EMPLOYEE);
+        User user = new User(007L, "Manolis", "123", Role.EMPLOYEE);
         when(userRepository.getUserByUsername("Manolis")).thenReturn(user);
         assertThrows(AuthenticationFailedException.class, () -> authenticationService.authenticate(user.username(), ""));
     }

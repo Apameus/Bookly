@@ -6,17 +6,13 @@ import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Role;
 import gr.bookapp.models.User;
 import gr.bookapp.repositories.UserRepository;
-import gr.bookapp.repositories.UserRepositoryDbImpl;
-
 import java.util.List;
 
 public final class UserServiceDbImpl {
     private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
 
-    public UserServiceDbImpl(UserRepository userRepository, IdGenerator idGenerator) {
+    public UserServiceDbImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
     }
 
     public void authenticate(String username, String password) throws AuthenticationFailedException{
@@ -26,7 +22,7 @@ public final class UserServiceDbImpl {
 
     public void addUser(String username, String password, Role role) throws InvalidInputException {
         if (userRepository.getUserByUsername(username) != null) throw new InvalidInputException("Username already exist!");
-        userRepository.add(new User(idGenerator.generateID(), username, password, role));
+        userRepository.add(new User(username, password, role));
     }
 
     public void deleteUser(long userID) throws InvalidInputException {
