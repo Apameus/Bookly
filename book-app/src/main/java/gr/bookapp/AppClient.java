@@ -2,7 +2,8 @@ package gr.bookapp;
 
 import gr.bookapp.client.Client;
 import gr.bookapp.client.ClientImpl;
-import gr.bookapp.common.*;
+import gr.bookapp.config.BooklyClientConfig;
+import gr.bookapp.config.ClientConfigLoader;
 import gr.bookapp.csv.CsvLoader;
 import gr.bookapp.protocol.codec.*;
 import gr.bookapp.protocol.packages.RequestStreamCodec;
@@ -27,12 +28,10 @@ public final class AppClient {
 
 
     public static void main(String[] args) throws IOException, ConfigurationFileLoadException {
-        if (args.length == 0) throw new IllegalStateException("You need to specify the config file path !");
-        ConfigLoader configLoader = new ConfigLoader(args[0]); //TODO: Only load the Address
-        BooklyConfig booklyConfig = configLoader.get(); //TODO: Remove
+        ClientConfigLoader configLoader = new ClientConfigLoader();
+        BooklyClientConfig booklyConfig = configLoader.get(); //TODO: Remove
 
         Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.logsPath()));
-        IdGenerator idGenerator = new IdGenerator(); //TODO: Remove
 
         StringCodec stringCodec = new StringCodec();
         ListCodec<String> listCodec = new ListCodec<>(stringCodec);
@@ -59,15 +58,15 @@ public final class AppClient {
         BookService bookService = new BookService(bookRepository, bookSalesRepository, loggerFactory);
         OfferService offerService = new OfferService(offerRepository, Clock.systemUTC(), loggerFactory);
         UserService userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, loggerFactory);
-        AdminService adminService = new AdminService(userRepository, idGenerator, loggerFactory);
+        AdminService adminService = new AdminService(userRepository, loggerFactory);
         AuthenticationService authenticationService = new AuthenticationService(userRepository, loggerFactory);
 
         CsvService csvService = new CsvService(new CsvLoader(), bookService, bookSalesRepository, userRepository, offerRepository);
 
         //UI
-        LoginPanelUI loginPanelUI = new LoginPanelUI(authenticationService, userService, userRepository, idGenerator);
+        LoginPanelUI loginPanelUI = new LoginPanelUI(authenticationService, userService, userRepository);
         AdminPanelUI adminPanelUI = new AdminPanelUI(csvService, adminService);
-        EmployeePanel employeePanel = new EmployeePanel(userService, bookService, idGenerator);
+        EmployeePanel employeePanel = new EmployeePanel(userService, bookService);
         TerminalUI terminalUI = new TerminalUI(loginPanelUI, adminPanelUI, employeePanel);
         terminalUI.start();
     }

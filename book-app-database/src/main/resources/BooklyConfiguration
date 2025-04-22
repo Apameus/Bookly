@@ -1,2 +1,10 @@
-# Path to files
-data.directory=/home/zeus/Dev/MainProjects/bookly/book-app/src/main/resources/
+# PATH FILES
+books.path=
+bookSales.path=
+users.path=
+offers.path=
+audits.path=
+logs.path=
+# SOCKET ADDRESS & PORT
+socket.address=localhost
+socket.port=8080
