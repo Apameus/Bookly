@@ -17,10 +17,7 @@ import gr.bookapp.models.User;
 import gr.bookapp.protocol.codec.*;
 import gr.bookapp.protocol.packages.RequestStreamCodec;
 import gr.bookapp.protocol.packages.ResponseStreamCodec;
-import gr.bookapp.repositories.BookRepository;
-import gr.bookapp.repositories.BookSalesRepository;
-import gr.bookapp.repositories.OfferRepository;
-import gr.bookapp.repositories.UserRepository;
+import gr.bookapp.repositories.*;
 import gr.bookapp.services.BookSalesServiceDbImpl;
 import gr.bookapp.services.BookServiceDbImpl;
 import gr.bookapp.services.OfferServiceDbImpl;
@@ -56,7 +53,7 @@ public abstract class E2EAbstractTest {
 
     static FileBasedNodeStorageTree<Long, User> employeeNodeStorage;
     static ObjectTable<Long, User> employeeObjectTable;
-    static Database<Long, User> employeeDataBase;
+    static Database<Long, User> userDataBase;
 
     static FileBasedNodeStorageTree<Long, Offer> offerNodeStorage;
     static ObjectTable <Long, Offer> offerObjectTable;
@@ -100,6 +97,12 @@ public abstract class E2EAbstractTest {
 
     @BeforeAll
     static void setup() throws IOException {
+        IdGenerator idGenerator = new IdGenerator();
+        // Repositories
+        userRepository = new UserRepositoryDbImpl(userDataBase, idGenerator);
+        bookRepository = new BookRepositoryDbImpl(bookDataBase, idGenerator);
+        bookSalesRepository = new BookSalesRepositoryDbImpl(bookSalesDataBase);
+        offerRepository = new OfferRepositoryDbImpl(offerDataBase, idGenerator);
         // Services
         userServiceDb = new UserServiceDbImpl(userRepository);
         bookServiceDb = new BookServiceDbImpl(bookRepository);
@@ -148,7 +151,7 @@ public abstract class E2EAbstractTest {
 
         employeeNodeStorage = new FileBasedNodeStorageTree<>(dir.resolve("Users"), longCodec, userCodec);
         employeeObjectTable = new BinarySearchTree<>(Long::compareTo, employeeNodeStorage);
-        employeeDataBase = new Database<>(employeeObjectTable);
+        userDataBase = new Database<>(employeeObjectTable);
 
         offerNodeStorage = new FileBasedNodeStorageTree<>(dir.resolve("Offers"), longCodec, offerCodec);
         offerObjectTable = new BinarySearchTree<>(Long::compareTo, offerNodeStorage);

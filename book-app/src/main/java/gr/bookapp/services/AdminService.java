@@ -10,18 +10,16 @@ import gr.bookapp.repositories.UserRepository;
 
 public final class AdminService {
     private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
     private final Logger logger;
 
 
-    public AdminService(UserRepository userRepository, IdGenerator idGenerator, Logger.Factory loggerFactory) {
+    public AdminService(UserRepository userRepository, Logger.Factory loggerFactory) {
         this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
         logger = loggerFactory.create("Admin_Service");
     }
 
     public void hireEmployee(String username, String password) throws InvalidInputException {
-        User user = new User(idGenerator.generateID(), username, password, Role.EMPLOYEE);
+        User user = new User(username, password, Role.EMPLOYEE);
         userRepository.add(user);
         logger.log("Employee hired from admin with id: " + AuditContextImpl.get());
     }

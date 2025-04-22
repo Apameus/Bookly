@@ -19,13 +19,11 @@ public final class EmployeePanel {
     private final Console console = System.console();
     private final UserService userService;
     private final BookService bookService;
-    private final IdGenerator idGenerator;
     private final boolean EXIT_COMMAND = false;
 
-    public EmployeePanel(UserService userService, BookService bookService, IdGenerator idGenerator) {
+    public EmployeePanel(UserService userService, BookService bookService) {
         this.userService = userService;
         this.bookService = bookService;
-        this.idGenerator = idGenerator;
     }
 
     public boolean handleEmployeeActions() {
@@ -87,8 +85,7 @@ public final class EmployeePanel {
             if (inputTags.isBlank()) throw new InvalidInputException("Every book needs at least 1 tag !");
             List<String> tags = Arrays.stream(inputTags.split(" ")).toList();
 
-            long id = idGenerator.generateID(); //TODO: Remove
-            book = new Book(id, name, authors, price, releaseDate, tags);
+            book = new Book(name, authors, price, releaseDate, tags);
 
             bookService.addBook(book);
         }catch (DateTimeParseException e) {

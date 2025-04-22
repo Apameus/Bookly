@@ -17,14 +17,12 @@ public final class LoginPanelUI {
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
 
 
-    public LoginPanelUI(AuthenticationService authenticationService, UserService userService, UserRepository userRepository, IdGenerator idGenerator) {
+    public LoginPanelUI(AuthenticationService authenticationService, UserService userService, UserRepository userRepository) {
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
     }
 
     public User login() {
@@ -48,7 +46,7 @@ public final class LoginPanelUI {
             String username = console.readLine("Enter admin username: ");
             String password = console.readLine("Enter admin password: ");
 
-            User admin = new User(idGenerator.generateID(), username, password, Role.ADMIN);
+            User admin = new User(username, password, Role.ADMIN);
             try {
                 userRepository.add(admin);
             } catch (InvalidInputException e) {

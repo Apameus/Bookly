@@ -1,6 +1,5 @@
 package gr.bookapp.database;
 
-import gr.bookapp.common.IdGenerator;
 import gr.bookapp.common.InstantFormatter;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.BookSales;
@@ -52,7 +51,7 @@ class ControllerTest {
 
     @BeforeEach
     void setup(){
-        userServiceDb = new UserServiceDbImpl(userRepository, Mockito.mock(IdGenerator.class));
+        userServiceDb = new UserServiceDbImpl(userRepository);
         bookServiceDb = new BookServiceDbImpl(bookRepository);
         bookSalesServiceDb = new BookSalesServiceDbImpl(bookSalesRepository);
         offerServiceDb = new OfferServiceDbImpl(offerRepository);
@@ -192,7 +191,7 @@ class ControllerTest {
     @Test
     @DisplayName("Handle AddBookRequest")
     void handleAddBookRequest() {
-        Book book = new Book(1, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
+        Book book = new Book(1L, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
 
         AddBookRequest addBookRequest = new AddBookRequest(book);
         Response response = controller.handleRequest(addBookRequest);
@@ -204,7 +203,7 @@ class ControllerTest {
     @Test
     @DisplayName("Handle DeleteBookRequest")
     void handleDeleteBookRequest() {
-        Book book = new Book(1, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
+        Book book = new Book(1L, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
         when(bookRepository.getBookByID(1)).thenReturn(book);
 
         DeleteBookRequest deleteBookRequest = new DeleteBookRequest(1);
@@ -227,8 +226,8 @@ class ControllerTest {
     @Test
     @DisplayName("Handle GetAllBooksRequest")
     void handleGetAllBooksRequest() {
-        Book bookA = new Book(1, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
-        Book bookB = new Book(1, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
+        Book bookA = new Book(1L, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
+        Book bookB = new Book(1L, "Odyssey", List.of("Omiros"), 100, InstantFormatter.parse("01-02-2000 AD"), List.of("Philosophy", "Advanture"));
         when(bookRepository.getAllBooks()).thenReturn(List.of(bookA, bookB));
 
         GetAllBooksRequest getAllBooksRequest = new GetAllBooksRequest();
