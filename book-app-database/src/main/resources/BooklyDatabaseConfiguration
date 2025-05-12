@@ -1,0 +1,10 @@
+# PATH FILES
+#books.path=
+#bookSales.path=
+#users.path=
+#offers.path=
+#audits.path=
+#logs.path=
+# SOCKET ADDRESS & PORT
+socket.address=localhost
+socket.port=8080

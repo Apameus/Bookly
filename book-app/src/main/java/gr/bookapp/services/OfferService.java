@@ -1,11 +1,9 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
 import gr.bookapp.common.InstantFormatter;
 
@@ -16,19 +14,14 @@ import java.util.List;
 
 public final class OfferService {
     private final OfferRepository offerRepository;
-    private final IdGenerator idGenerator;
-    private final AuditRepository auditRepository;
-    private final AuditContext auditContext;
-    private final Clock clock;
     private final Logger logger;
+    private final Clock clock;
 
-    public OfferService(OfferRepository offerRepository, IdGenerator idGenerator, AuditRepository auditRepository, AuditContext auditContext, Clock clock, Logger.Factory loggerFactory) {
+    public OfferService(OfferRepository offerRepository, Clock clock, Logger.Factory loggerFactory) {
         this.offerRepository = offerRepository;
-        this.idGenerator = idGenerator;
-        this.auditContext = auditContext;
-        this.auditRepository = auditRepository;
-        this.clock = clock;
+
         logger = loggerFactory.create("Offer_Service");
+        this.clock = clock;
     }
 
     public void createOffer(List<String> tags, int percentage, Duration duration) throws InvalidInputException {
@@ -46,17 +39,11 @@ public final class OfferService {
             logger.log("Offer creation failed due to invalid duration");
             throw new InvalidInputException("Invalid date");
         }
-        Instant now = Instant.now(clock);
-        Instant untilDate = now.plus(duration);
+        Instant now = clock.instant();
+        Instant expirationDate = now.plus(duration); //TODO: Should we set the expirationDate here?
 
-        long id = idGenerator.generateID();
-        Offer offer = new Offer(id, tags, percentage, untilDate);
+        Offer offer = new Offer(tags, percentage, expirationDate);
         offerRepository.add(offer);
-
-        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s"
-                .formatted(offer.offerID(), offer.tags(), offer.percentage(), InstantFormatter.serialize(offer.untilDate()));
-
-        auditRepository.audit(auditContext.getEmployeeID(), action, now);
 
         logger.log("Offer created");
     }

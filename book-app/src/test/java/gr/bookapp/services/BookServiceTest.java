@@ -1,9 +1,7 @@
 package gr.bookapp.services;
 
-import gr.bookapp.common.AuditContext;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Book;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.BookRepository;
 import gr.bookapp.repositories.BookSalesRepository;
 import org.junit.jupiter.api.*;
@@ -16,24 +14,20 @@ import static org.mockito.Mockito.*;
 class BookServiceTest {
     BookRepository bookRepository = Mockito.mock(BookRepository.class);
     BookSalesRepository bookSalesRepository = Mockito.mock(BookSalesRepository.class);
-    AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
-    AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
     BookService bookService;
 
     @BeforeEach
     void initialize(){
-        bookService = new BookService(bookRepository, bookSalesRepository, auditRepository, auditContext, clock, logger);
+        when(logger.create("Book_Service")).thenReturn(Mockito.mock(Logger.class));
+        bookService = new BookService(bookRepository, bookSalesRepository, logger);
     }
 
     @Test
     @Order(0)
     @DisplayName("Add book test")
     void addBookTest() {
-        Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
-        when(clock.instant()).thenReturn(fixedInstant);
-
         ZonedDateTime zonedDateTime = LocalDate.of(-300, 1, 1).atStartOfDay(ZoneId.of("UTC"));
         Book book = new Book(1, "Odyssea", List.of("Omiros"), 100, zonedDateTime.toInstant(), List.of("Philosophy", "Adventure"));
 
@@ -47,7 +41,6 @@ class BookServiceTest {
     void deleteBookTest() {
         bookService.deleteBookByID(1);
         verify(bookRepository, times(1)).deleteBookByID(1);
-        verify(auditRepository, times(1)).audit(auditContext.getEmployeeID(), "Book with id 1 deleted", clock.instant());
     }
 
 

@@ -1,5 +1,6 @@
 package gr.bookapp.services;
 
+import gr.bookapp.common.AuditContextImpl;
 import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
@@ -9,27 +10,25 @@ import gr.bookapp.repositories.UserRepository;
 
 public final class AdminService {
     private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
     private final Logger logger;
 
 
-    public AdminService(UserRepository userRepository, IdGenerator idGenerator, Logger.Factory loggerFactory) {
+    public AdminService(UserRepository userRepository, Logger.Factory loggerFactory) {
         this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
         logger = loggerFactory.create("Admin_Service");
     }
 
     public void hireEmployee(String username, String password) throws InvalidInputException {
-        User user = new User(idGenerator.generateID(), username, password, Role.EMPLOYEE);
+        User user = new User(username, password, Role.EMPLOYEE);
         userRepository.add(user);
-        logger.log("Employee hired");
+        logger.log("Employee hired from admin with id: " + AuditContextImpl.get());
     }
 
     public void fireEmployee(long employeeID){
         if (userRepository.getUserByID(employeeID) == null) logger.log("Unable to find employee !");
         else {
-            userRepository.deleteEmployeeByID(employeeID);
-            logger.log("Employee fired");
+            userRepository.deleteUserByID(employeeID);
+            logger.log("Employee fired from admin with id: " + AuditContextImpl.get());
         }
     }
 

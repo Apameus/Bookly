@@ -2,10 +2,10 @@ package gr.bookapp.services;
 
 import gr.bookapp.common.AuditContext;
 import gr.bookapp.common.IdGenerator;
+import gr.bookapp.common.InstantFormatter;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.log.Logger;
 import gr.bookapp.models.Offer;
-import gr.bookapp.repositories.AuditRepository;
 import gr.bookapp.repositories.OfferRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,14 +14,12 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import static org.mockito.Mockito.*;
 
 class OfferServiceUnitTest {
     OfferRepository offerRepository = Mockito.mock(OfferRepository.class);
     IdGenerator idGenerator = Mockito.mock(IdGenerator.class);
-    AuditRepository auditRepository = Mockito.mock(AuditRepository.class);
     AuditContext auditContext = Mockito.mock(AuditContext.class);
     Clock clock = Mockito.mock(Clock.class);
     Logger.Factory logger = Mockito.mock(Logger.Factory.class);
@@ -30,10 +28,9 @@ class OfferServiceUnitTest {
     @BeforeEach
     void initialize(){
         Instant fixedInstant = Instant.parse("2030-01-01T00:00:00Z");
-        ZoneId zone = ZoneId.of("UTC");
         when(clock.instant()).thenReturn(fixedInstant);
-        when(clock.getZone()).thenReturn(zone);
-        offerService = new OfferService(offerRepository, idGenerator, auditRepository, auditContext, clock, logger);
+        when(logger.create("Offer_Service")).thenReturn(Mockito.mock(Logger.class));
+        offerService = new OfferService(offerRepository, clock, logger);
     }
 
     @Test
@@ -49,13 +46,11 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         offerService.createOffer(tags, percentage, duration);
 
         verify(offerRepository, times(1)).add(offer);
 
-        String action = "Offer created with ID: %s TAGS: %s PERCENTAGE: %s UNTIL: %s".formatted(offer.offerID(), offer.tags(), offer.percentage(), offer.untilDate());
-        verify(auditRepository, times(1)).audit(999, action, now);
     }
 
     @Test
@@ -71,7 +66,7 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 
@@ -88,7 +83,7 @@ class OfferServiceUnitTest {
         Offer offer = new Offer(offerId , tags, percentage, untilDate);
 
         when(idGenerator.generateID()).thenReturn(offerId);
-        when(auditContext.getEmployeeID()).thenReturn(999L);
+        when(auditContext.getUserID()).thenReturn(999L);
         assertThrows(InvalidInputException.class, () -> offerService.createOffer(tags, percentage, duration));
     }
 }
