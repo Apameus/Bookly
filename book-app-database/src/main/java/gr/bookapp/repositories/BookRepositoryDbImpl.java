@@ -57,7 +57,7 @@ public final class BookRepositoryDbImpl implements BookRepository {
 
     @Override
     public void add(Book book){
-        book = book.withID(idGenerator.generateID(), book);
+        book = book.withID(idGenerator.generateID());
         bookDatabase.insert(book.id(), book);
     }
 

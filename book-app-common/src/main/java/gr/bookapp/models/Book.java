@@ -6,7 +6,7 @@ import java.util.List;
 public record Book(Long id, String name, List<String> authors, double price, Instant releaseDate, List<String> tags) {
 
     public Book(String name, List<String> authors, double price, Instant releaseDate, List<String> tags){
-        this(null, name, authors, price, releaseDate, tags);
+        this(0L, name, authors, price, releaseDate, tags);
     }
 
     public Book withPrice(double updatedPrice) {

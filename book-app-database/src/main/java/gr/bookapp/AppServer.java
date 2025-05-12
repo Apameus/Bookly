@@ -77,7 +77,7 @@ public final class AppServer {
 
         // Services
         UserServiceDbImpl userServiceDb = new UserServiceDbImpl(userRepository);
-        BookServiceDbImpl bookServiceDb = new BookServiceDbImpl(bookRepositoryDb, bookSalesRepositoryDb);
+        BookServiceDbImpl bookServiceDb = new BookServiceDbImpl(bookRepositoryDb, bookSalesRepositoryDb, idGenerator);
         BookSalesServiceDbImpl bookSalesServiceDb = new BookSalesServiceDbImpl(bookSalesRepositoryDb);
         OfferServiceDbImpl offerServiceDb = new OfferServiceDbImpl(offerRepositoryDb);
 
