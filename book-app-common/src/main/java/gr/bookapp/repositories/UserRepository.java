@@ -15,4 +15,6 @@ public interface UserRepository {
     User getUserByUsername(String username);
 
     List<User> getAll();
+
+    boolean adminExist();
 }

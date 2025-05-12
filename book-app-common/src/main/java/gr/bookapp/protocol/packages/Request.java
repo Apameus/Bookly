@@ -1,7 +1,5 @@
 package gr.bookapp.protocol.packages;
 
-import gr.bookapp.models.BookSales;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -11,7 +9,7 @@ public sealed interface Request {
         record AuthenticateRequest(String username, String password) implements Request.User{
             public static final byte TYPE = 11;
         }
-        record HireEmployeeRequest(String username, String password) implements Request.User {
+        record HireEmployeeRequest(String username, String password, String role) implements Request.User {
             public static final byte TYPE = 12;
         }
         record FireEmployeeRequest(long employeeID) implements Request.User {
@@ -25,6 +23,9 @@ public sealed interface Request {
         }
         record GetAllUsersRequest() implements Request.User {
             public static final byte TYPE = 16;
+        }
+        record AdminExistRequest() implements Request.User {
+            public static final byte TYPE = 17;
         }
     }
 

@@ -45,8 +45,8 @@ public final class Controller {
                     userServiceDb.authenticate(username, password);
                     yield new AuthenticateResponse();
                 }
-                case HireEmployeeRequest(String username, String password) -> {
-                    userServiceDb.addUser(username, password, Role.EMPLOYEE);
+                case HireEmployeeRequest(String username, String password, String role) -> {
+                    userServiceDb.addUser(username, password, Role.valueOf(role));
                     yield new GeneralSuccessResponse();
                 }
                 case FireEmployeeRequest(long employeeID) -> {
@@ -64,6 +64,10 @@ public final class Controller {
                 case GetAllUsersRequest() -> {
                     List<User> users = userServiceDb.getAllUsers();
                     yield new GetUsersResponse(users);
+                }
+                case AdminExistRequest() -> {
+                    userServiceDb.adminExist();
+                    yield new GeneralSuccessResponse();
                 }
 
                 // Book

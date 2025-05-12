@@ -1,9 +1,9 @@
 package gr.bookapp;
 
 import gr.bookapp.common.IdGenerator;
-import gr.bookapp.database.Controller;
-import gr.bookapp.database.Database;
-import gr.bookapp.database.TCPServer;
+import gr.bookapp.config.BooklyDatabaseConfig;
+import gr.bookapp.config.DatabaseConfigLoader;
+import gr.bookapp.database.*;
 import gr.bookapp.exceptions.ConfigurationFileLoadException;
 import gr.bookapp.log.CompositeLoggerFactory;
 import gr.bookapp.log.FileLogger;
@@ -19,6 +19,7 @@ import gr.bookapp.services.BookSalesServiceDbImpl;
 import gr.bookapp.services.BookServiceDbImpl;
 import gr.bookapp.services.OfferServiceDbImpl;
 import gr.bookapp.services.UserServiceDbImpl;
+import gr.bookapp.storage.codec.Audit;
 import gr.bookapp.storage.codec.AuditCodec;
 import gr.bookapp.storage.file.BinarySearchTree;
 import gr.bookapp.storage.file.FileBasedNodeStorageTree;
@@ -76,7 +77,7 @@ public final class AppServer {
 
         // Services
         UserServiceDbImpl userServiceDb = new UserServiceDbImpl(userRepository);
-        BookServiceDbImpl bookServiceDb = new BookServiceDbImpl(bookRepositoryDb);
+        BookServiceDbImpl bookServiceDb = new BookServiceDbImpl(bookRepositoryDb, bookSalesRepositoryDb);
         BookSalesServiceDbImpl bookSalesServiceDb = new BookSalesServiceDbImpl(bookSalesRepositoryDb);
         OfferServiceDbImpl offerServiceDb = new OfferServiceDbImpl(offerRepositoryDb);
 

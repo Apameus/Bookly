@@ -3,14 +3,14 @@ package gr.bookapp.repositories;
 import gr.bookapp.database.Database;
 import gr.bookapp.database.Index;
 import gr.bookapp.database.RangeIndex;
-import gr.bookapp.Audit;
+import gr.bookapp.storage.codec.Audit;
 
 import java.time.Instant;
 import java.util.List;
 
 public final class AuditRepositoryDbImpl implements AuditRepository {
     private final Database<Instant, Audit> auditDatabase;
-    private final Index<Audit, Long> empoyeeIdIndex = Audit::employeeID;
+    private final Index<Audit, Long> empoyeeIdIndex = Audit::userID;
     private final Index<Audit, String> actionIndex = Audit::action;
     private final RangeIndex<Audit, Instant> timeRangeIndex = RangeIndex.of(Audit::time, Instant::compareTo);
 

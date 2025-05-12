@@ -29,7 +29,7 @@ public final class AppClient {
 
     public static void main(String[] args) throws IOException, ConfigurationFileLoadException {
         ClientConfigLoader configLoader = new ClientConfigLoader();
-        BooklyClientConfig booklyConfig = configLoader.get(); //TODO: Remove
+        BooklyClientConfig booklyConfig = configLoader.get();
 
         Logger.Factory loggerFactory = new CompositeLoggerFactory(new ConsoleLogger(), new FileLogger(booklyConfig.logsPath()));
 
@@ -55,7 +55,7 @@ public final class AppClient {
 
         //Services
         BookSalesService bookSalesService = new BookSalesService(bookSalesRepository, loggerFactory);
-        BookService bookService = new BookService(bookRepository, bookSalesRepository, loggerFactory);
+        BookService bookService = new BookService(bookRepository, loggerFactory);
         OfferService offerService = new OfferService(offerRepository, Clock.systemUTC(), loggerFactory);
         UserService userService = new UserService(userRepository, bookRepository, offerService, bookSalesService, loggerFactory);
         AdminService adminService = new AdminService(userRepository, loggerFactory);

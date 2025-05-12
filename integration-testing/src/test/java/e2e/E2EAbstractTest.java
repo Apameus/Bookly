@@ -1,6 +1,6 @@
 package e2e;
 
-import gr.bookapp.Audit;
+import gr.bookapp.storage.codec.Audit;
 import gr.bookapp.client.Client;
 import gr.bookapp.client.ClientImpl;
 import gr.bookapp.common.IdGenerator;
@@ -105,7 +105,7 @@ public abstract class E2EAbstractTest {
         offerRepository = new OfferRepositoryDbImpl(offerDataBase, idGenerator);
         // Services
         userServiceDb = new UserServiceDbImpl(userRepository);
-        bookServiceDb = new BookServiceDbImpl(bookRepository);
+        bookServiceDb = new BookServiceDbImpl(bookRepository, bookSalesRepository, idGenerator);
         bookSalesServiceDb = new BookSalesServiceDbImpl(bookSalesRepository);
         offerServiceDb = new OfferServiceDbImpl(offerRepository);
 

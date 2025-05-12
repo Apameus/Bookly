@@ -3,6 +3,7 @@ package gr.bookapp.protocol.packages;
 import gr.bookapp.models.Book;
 import gr.bookapp.models.BookSales;
 import gr.bookapp.models.Offer;
+import gr.bookapp.models.Role;
 import gr.bookapp.protocol.codec.*;
 import gr.bookapp.protocol.packages.Request.Book.GetBooksByAuthorsRequest;
 import java.io.DataInput;
@@ -39,10 +40,11 @@ public final class RequestStreamCodec {
                 stringCodec.write(outputStream, username);
                 stringCodec.write(outputStream, password);
             }
-            case HireEmployeeRequest(String username, String password) -> {
+            case HireEmployeeRequest(String username, String password, String role) -> {
                 outputStream.write(HireEmployeeRequest.TYPE);
                 stringCodec.write(outputStream, username);
                 stringCodec.write(outputStream, password);
+                stringCodec.write(outputStream, role);
             }
             case FireEmployeeRequest(long employeeID) -> {
                 outputStream.write(FireEmployeeRequest.TYPE);
@@ -59,6 +61,10 @@ public final class RequestStreamCodec {
             case GetAllUsersRequest() -> {
                 outputStream.write(GetAllUsersRequest.TYPE);
             }
+            case AdminExistRequest() -> {
+                outputStream.write(AdminExistRequest.TYPE);
+            }
+            //
             case AddBookRequest(Book book) -> {
                 outputStream.write(AddBookRequest.TYPE);
                 bookCodec.write(outputStream, book);
@@ -142,7 +148,8 @@ public final class RequestStreamCodec {
             case HireEmployeeRequest.TYPE -> {
                 String username = stringCodec.read(dataInput);
                 String password = stringCodec.read(dataInput);
-                yield new HireEmployeeRequest(username, password);
+                String role = stringCodec.read(dataInput);
+                yield new HireEmployeeRequest(username, password, role);
             }
             case FireEmployeeRequest.TYPE -> {
                 long employeeID = dataInput.readLong();
@@ -158,6 +165,9 @@ public final class RequestStreamCodec {
             }
             case GetAllUsersRequest.TYPE -> {
                 yield new GetAllUsersRequest();
+            }
+            case AdminExistRequest.TYPE -> {
+                yield new AdminExistRequest();
             }
             case AddBookRequest.TYPE -> {
                 Book book = bookCodec.read(dataInput);

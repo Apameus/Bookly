@@ -118,7 +118,7 @@ class ControllerTest {
     }
 
     @Test
-    @DisplayName("Handle FireEmployeeRequest when employeeID is invalid")
+    @DisplayName("Handle FireEmployeeRequest when userID is invalid")
     void handleFireEmployeeRequestWhenEmployeeIdIsInvalid() {
         when(userRepository.getUserByID(anyLong())).thenReturn(null);
 

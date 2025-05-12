@@ -1,6 +1,5 @@
 package gr.bookapp.storage.codec;
 
-import gr.bookapp.Audit;
 import gr.bookapp.protocol.codec.InstantCodec;
 import gr.bookapp.protocol.codec.StringCodec;
 import org.junit.jupiter.api.BeforeEach;

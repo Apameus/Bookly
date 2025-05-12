@@ -48,4 +48,10 @@ public final class UserServiceDbImpl {
         if (users.isEmpty()) throw new InvalidInputException("No users registered");
         return users;
     }
+
+    public boolean adminExist() throws InvalidInputException {
+        boolean exist = userRepository.adminExist();
+        if (!exist) throw new InvalidInputException("Admin user isn't set");
+        return exist;
+    }
 }

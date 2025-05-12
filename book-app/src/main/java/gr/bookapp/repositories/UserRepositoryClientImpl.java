@@ -20,7 +20,7 @@ public final class UserRepositoryClientImpl implements UserRepository {
 
     @Override
     public void add(User user) throws InvalidInputException {
-        Response response = client.send(new HireEmployeeRequest(user.username(), user.password()));
+        Response response = client.send(new HireEmployeeRequest(user.username(), user.password(), user.role().toString()));
         switch (response) {
             case GeneralSuccessResponse() -> {}
             case ErrorResponse(String error) -> {}
@@ -64,6 +64,16 @@ public final class UserRepositoryClientImpl implements UserRepository {
         return switch (response) {
             case GetUsersResponse(List<User> users) -> users;
             case ErrorResponse(String error) -> new ArrayList<>();
+            default -> throw new IllegalStateException("Unexpected response: " + response);
+        };
+    }
+
+    @Override
+    public boolean adminExist() {
+        Response response = client.send(new AdminExistRequest());
+        return switch (response) {
+            case GeneralSuccessResponse() -> true;
+            case ErrorResponse(String error) -> false;
             default -> throw new IllegalStateException("Unexpected response: " + response);
         };
     }

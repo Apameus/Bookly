@@ -1,6 +1,5 @@
 package gr.bookapp.storage.codec;
 
-import gr.bookapp.Audit;
 import gr.bookapp.protocol.codec.InstantCodec;
 import gr.bookapp.protocol.codec.StreamCodec;
 import gr.bookapp.protocol.codec.StringCodec;
@@ -8,7 +7,6 @@ import gr.bookapp.protocol.codec.StringCodec;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.time.Instant;
 
 public record AuditCodec(StringCodec stringCodec, InstantCodec instantCodec) implements StreamCodec<Audit> {
@@ -27,7 +25,7 @@ public record AuditCodec(StringCodec stringCodec, InstantCodec instantCodec) imp
 
     @Override
     public void write(DataOutput dataOutput, Audit obj) throws IOException {
-        dataOutput.writeLong(obj.employeeID());
+        dataOutput.writeLong(obj.userID());
         stringCodec.write(dataOutput, obj.action());
         instantCodec.write(dataOutput, obj.time());
     }

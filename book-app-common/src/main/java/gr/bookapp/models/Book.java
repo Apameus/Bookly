@@ -13,7 +13,7 @@ public record Book(Long id, String name, List<String> authors, double price, Ins
         return new Book(id, name, authors, updatedPrice, releaseDate, tags);
     }
 
-    public Book withID(long setID, Book book) {
-        return new Book(setID, book.name(), book.authors, book.price(), book.releaseDate, book.tags);
+    public Book withID(long setID) {
+        return new Book(setID, this.name(), this.authors, this.price(), this.releaseDate, this.tags);
     }
 }

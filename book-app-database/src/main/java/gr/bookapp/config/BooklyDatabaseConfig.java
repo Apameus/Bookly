@@ -1,4 +1,4 @@
-package gr.bookapp;
+package gr.bookapp.config;
 
 import java.net.SocketAddress;
 import java.nio.file.Path;

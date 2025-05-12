@@ -21,8 +21,8 @@ public final class UserRepositoryDbImpl implements UserRepository {
 
     @Override
     public void add(User user) throws InvalidInputException { //TODO change the exception
-        if (getUserByUsername(user.username()) != null)
-            throw new InvalidInputException("Username already exist !");
+//        if (getUserByUsername(user.username()) != null)
+//            throw new InvalidInputException("Username already exist !");
         user = user.withID(idGenerator.generateID(), user);
         userDatabase.insert(user.id(), user);
     }
@@ -50,5 +50,10 @@ public final class UserRepositoryDbImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         return userDatabase.findAll();
+    }
+
+    @Override
+    public boolean adminExist() {
+        return userDatabase.findAll().stream().anyMatch(User::isAdmin);
     }
 }

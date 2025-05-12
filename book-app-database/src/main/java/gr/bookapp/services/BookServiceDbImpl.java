@@ -1,28 +1,38 @@
 package gr.bookapp.services;
 
+import gr.bookapp.common.IdGenerator;
 import gr.bookapp.exceptions.InvalidInputException;
 import gr.bookapp.models.Book;
+import gr.bookapp.models.BookSales;
 import gr.bookapp.protocol.packages.Response;
 import gr.bookapp.repositories.BookRepository;
+import gr.bookapp.repositories.BookSalesRepository;
 
 import java.time.Instant;
 import java.util.List;
 
 public final class BookServiceDbImpl {
     private final BookRepository bookRepository;
+    private final BookSalesRepository bookSalesRepository;
+    private final IdGenerator idGenerator;
 
-    public BookServiceDbImpl(BookRepository bookRepository) {
+    public BookServiceDbImpl(BookRepository bookRepository, BookSalesRepository bookSalesRepository, IdGenerator idGenerator) {
         this.bookRepository = bookRepository;
+        this.bookSalesRepository = bookSalesRepository;
+        this.idGenerator = idGenerator;
     }
 
     public void addBook(Book book) {
+        book = book.withID(idGenerator.generateID());
         bookRepository.add(book);
+        bookSalesRepository.add(new BookSales(book.id(), 0));
     }
 
     public void deleteBook(long bookID) throws InvalidInputException {
         if (bookRepository.getBookByID(bookID) == null)
             throw new InvalidInputException("Book with specified id does NOT exist!");
         bookRepository.deleteBookByID(bookID);
+        bookSalesRepository.delete(bookID);
     }
     public Book getBookById(long bookID) throws InvalidInputException {
         Book book = bookRepository.getBookByID(bookID);

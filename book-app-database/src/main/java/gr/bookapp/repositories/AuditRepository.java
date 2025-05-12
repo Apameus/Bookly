@@ -1,6 +1,6 @@
 package gr.bookapp.repositories;
 
-import gr.bookapp.Audit;
+import gr.bookapp.storage.codec.Audit;
 
 import java.time.Instant;
 import java.util.List;

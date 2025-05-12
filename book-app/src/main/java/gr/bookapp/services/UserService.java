@@ -65,7 +65,7 @@ public final class UserService {
     }
 
     public boolean hasAdminAccount() {
-        return userRepository.getAll().stream().anyMatch(User::isAdmin);
+        return userRepository.adminExist();
     }
 
 }
